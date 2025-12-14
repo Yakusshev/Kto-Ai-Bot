@@ -17,6 +17,8 @@ async def main():
 
     for model in list:
         print(model.name)
+        for method in model.supported_generation_methods:
+            print('    ' + method)
 
     # try:
     #     response = await model.generate_content_async(prompt)

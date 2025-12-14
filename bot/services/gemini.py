@@ -1,6 +1,6 @@
 import google.generativeai as genai
 
-async def generate_response(prompt: str, api_key: str, model: str = 'gemini-pro') -> str:
+async def generate_response(prompt: str, api_key: str, model: str) -> str:
     """
     Генерирует ответ от Google Gemini.
 

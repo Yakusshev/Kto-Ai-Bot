@@ -6,8 +6,8 @@ from bot.services.gemini import generate_response
 
 # Константы
 CONTEXT_MESSAGES_LIMIT = 10
-SUMMARIZATION_MODEL = 'gemini-1.5-flash'
-CHAT_MODEL = 'gemini-pro'
+SUMMARIZATION_MODEL = 'models/gemma-3-4b-it'
+CHAT_MODEL = 'models/gemma-3-12b-it'
 
 class ChatService:
     def __init__(self, session_repo: SessionRepository, analytics_repo: AnalyticsRepository):
