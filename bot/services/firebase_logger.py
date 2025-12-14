@@ -1,6 +1,7 @@
 import os
 import asyncio
 import firebase_admin
+import json
 from firebase_admin import credentials, firestore
 
 db = None
@@ -11,18 +12,17 @@ def init_firebase():
     """
     global db
     
-    key_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_KEY")
-    if not key_path:
-        print("Warning: FIREBASE_SERVICE_ACCOUNT_KEY environment variable not set. Logging will be disabled.")
+    key_path_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+
+    if not key_path_json:
+        print("Warning: FIREBASE_SERVICE_ACCOUNT_JSON environment variable not set. Logging will be disabled.")
         return
 
-    if not os.path.exists(key_path):
-        print(f"Warning: Firebase service account key file not found at path: {key_path}. Logging is disabled.")
-        return
+    cred_dict = json.loads(key_path_json)
 
     try:
         if not firebase_admin._apps:
-            cred = credentials.Certificate(key_path)
+            cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
         
         db = firestore.client()
