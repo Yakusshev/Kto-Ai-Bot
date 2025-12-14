@@ -9,9 +9,9 @@ async def generate_response(prompt: str, api_key: str, model: str) -> str:
     :param model: Название модели для использования.
     :return: Сгенерированный текст или сообщение об ошибке.
     """
-    genai.configure(api_key=api_key)
+    genai.configure(api_key = api_key)
     try:
-        genai_model = genai.GenerativeModel(model)
+        genai_model = genai.GenerativeModel(model_name = model)
         response = await genai_model.generate_content_async(prompt)
         return response.text
     except Exception as e:

@@ -8,7 +8,7 @@ router = Router()
 
 @router.message(Command("start"))
 async def start_handler(message: Message):
-    await message.answer("Привет! Я Gemini Proxy бот с улучшенной памятью. Просто отправь мне свой вопрос.")
+    await message.answer("Привет! Я мешок слов. Задавай вопросы")
 
 @router.message(F.text)
 async def handle_message(message: Message, bot: Bot, chat_service: ChatService):

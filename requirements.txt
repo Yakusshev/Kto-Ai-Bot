@@ -1,5 +1,7 @@
-aiogram
-python-dotenv
-google-generativeai
-firebase-admin
-aiohttp
+protobuf == 6.33.2
+aiogram == 3.22.0
+python-dotenv == 1.2.1
+google-generativeai == 0.8.5
+firebase-admin == 7.1.0
+aiohttp == 3.13.2
+

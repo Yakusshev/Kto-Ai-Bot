@@ -1,3 +1,4 @@
+import logging
 import time
 import asyncio
 from typing import Callable, Dict, Any, Awaitable
@@ -17,6 +18,8 @@ class FirestoreLoggingMiddleware(BaseMiddleware):
         event: Message,
         data: Dict[str, Any]
     ) -> Any:
+
+        logging.getLogger().log("FirestoreLoggingMiddleware" + event.text)
         # Логируем только текстовые сообщения
         if not event.text:
             return await handler(event, data)
