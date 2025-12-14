@@ -16,3 +16,4 @@ workspace.xml
 # И снова обязательно игнорируем workspace
 .idea/workspace.xml
 .firebaseServiceAccountKey.json
+/firebaseServiceAccountKey.json

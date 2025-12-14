@@ -24,9 +24,8 @@ async def main():
     bot = Bot(token=api_token)
     dp = Dispatcher()
     
-    # 5. Подключаем Middleware для логирования
-    # Он будет срабатывать для всех входящих обновлений
-    dp.update.middleware(FirestoreLoggingMiddleware())
+    # 5. Подключаем Middleware для логирования к роутеру
+    router.message.middleware(FirestoreLoggingMiddleware())
     
     # 6. Подключаем роутер с хендлерами
     dp.include_router(router)
