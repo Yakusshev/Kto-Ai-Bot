@@ -5,17 +5,33 @@ from aiogram import Bot, Dispatcher
 from dotenv import load_dotenv
 
 from bot.handlers import router
+from bot.middlewares.logger import FirestoreLoggingMiddleware
+from bot.services.firebase_logger import init_firebase
 
 async def main():
+    # 1. Загружаем переменные окружения
     load_dotenv()
-    # Загружаем токен из переменных окружения
+    
+    # 2. Инициализируем Firebase
+    init_firebase()
+
+    # 3. Загружаем токен бота и проверяем его наличие
     api_token = os.getenv("BOT_TOKEN")
     if not api_token:
         raise ValueError("Не удалось загрузить токен бота. Проверьте файл .env")
 
+    # 4. Настраиваем Dispatcher и Bot
     bot = Bot(token=api_token)
     dp = Dispatcher()
+    
+    # 5. Подключаем Middleware для логирования
+    # Он будет срабатывать для всех входящих обновлений
+    dp.update.middleware(FirestoreLoggingMiddleware())
+    
+    # 6. Подключаем роутер с хендлерами
     dp.include_router(router)
+    
+    # 7. Запускаем поллинг
     await dp.start_polling(bot)
 
 

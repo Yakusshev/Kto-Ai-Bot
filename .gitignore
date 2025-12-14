@@ -15,3 +15,4 @@ workspace.xml
 !.idea/vcs.xml
 # И снова обязательно игнорируем workspace
 .idea/workspace.xml
+.firebaseServiceAccountKey.json
