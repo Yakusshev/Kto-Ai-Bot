@@ -5,44 +5,45 @@ load_dotenv()
 import asyncio
 import logging
 import os
+import sys
 from aiogram import Bot, Dispatcher
 
 from bot.handlers import router
-from bot.services.firebase_logger import init_firebase
+# Обновленный импорт
+from bot.services.firebase_init import init_firebase
 from bot.infrastructure.session_repo import SessionRepository
 from bot.infrastructure.analytics_repo import AnalyticsRepository
 from bot.services.chat_service import ChatService
 
 async def main():
-    # 2. Инициализируем Firebase
-    init_firebase()
+    # 2. Инициализируем Firebase и получаем клиент БД
+    db_client = init_firebase()
+    if db_client is None:
+        logging.critical("Failed to initialize Firebase. Exiting.")
+        sys.exit(1)
 
-    # 3. Инициализируем репозитории и сервисы (Composition Root)
-    session_repo = SessionRepository()
-    analytics_repo = AnalyticsRepository()
+    # 3. Инициализируем репозитории, передавая им клиент БД
+    session_repo = SessionRepository(db=db_client)
+    analytics_repo = AnalyticsRepository(db=db_client)
+    
+    # 4. Инициализируем сервис, передавая ему репозитории
     chat_service = ChatService(session_repo, analytics_repo)
 
-    # 4. Загружаем токен бота
+    # 5. Загружаем токен бота
     api_token = os.getenv("BOT_TOKEN")
     if not api_token:
-        raise ValueError("Не удалось загрузить токен бота. Проверьте файл .env")
+        logging.critical("BOT_TOKEN not found. Exiting.")
+        sys.exit(1)
 
-    # 5. Настраиваем Dispatcher и Bot, внедряя зависимости
+    # 6. Настраиваем Dispatcher, внедряя chat_service
     dp = Dispatcher(chat_service=chat_service)
     bot = Bot(token=api_token)
     
-    # 6. Подключаем роутер
     dp.include_router(router)
     
-    # 7. Запускаем поллинг
     await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Бот остановлен")
-    except ValueError as e:
-        print(e)
+    asyncio.run(main())

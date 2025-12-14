@@ -1,18 +1,18 @@
 import asyncio
 from firebase_admin import firestore
-from google.cloud.firestore_v1.base_query import FieldFilter
-
-db = firestore.client()
+from google.cloud.firestore_v1.client import Client
 
 class SessionRepository:
+    def __init__(self, db: Client):
+        self.db = db
+
     async def get_session_data(self, user_id: int, session_id: str = "default") -> tuple[str, list[dict]]:
         """
         Получает саммари и историю сообщений для сессии.
         """
-        session_ref = db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
+        session_ref = self.db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
         messages_ref = session_ref.collection("messages").order_by("timestamp", direction="ASCENDING")
 
-        # Асинхронно получаем документы
         session_doc_task = asyncio.to_thread(session_ref.get)
         messages_docs_task = asyncio.to_thread(messages_ref.get)
 
@@ -32,31 +32,22 @@ class SessionRepository:
             "text": text,
             "timestamp": firestore.SERVER_TIMESTAMP
         }
-        messages_ref = db.collection("users").document(str(user_id)).collection("sessions").document(session_id).collection("messages")
+        messages_ref = self.db.collection("users").document(str(user_id)).collection("sessions").document(session_id).collection("messages")
         await asyncio.to_thread(messages_ref.add, message_data)
 
     async def update_summary_and_clear_messages(self, user_id: int, new_summary: str, session_id: str = "default"):
         """
         Атомарно обновляет саммари и удаляет все сообщения из под-коллекции.
         """
-        session_ref = db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
+        session_ref = self.db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
         messages_ref = session_ref.collection("messages")
 
         def batch_transaction():
-            # Получаем все документы для удаления
             docs_to_delete = list(messages_ref.stream())
-            
-            # Создаем батч (атомарную операцию)
-            batch = db.batch()
-            
-            # 1. Обновляем саммари
+            batch = self.db.batch()
             batch.set(session_ref, {"summary": new_summary}, merge=True)
-            
-            # 2. Удаляем все сообщения
             for doc in docs_to_delete:
                 batch.delete(doc.reference)
-            
-            # Коммитим батч
             batch.commit()
 
         await asyncio.to_thread(batch_transaction)
