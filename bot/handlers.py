@@ -1,4 +1,5 @@
 import os
+import time
 from dotenv import load_dotenv
 
 from aiogram import Router, F, Bot
@@ -8,6 +9,7 @@ from aiogram.filters import Command
 from aiogram.exceptions import TelegramBadRequest
 
 from bot.services.gemini import generate_response
+from bot.services.analytics import analytics # Импортируем сервис аналитики
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -23,6 +25,8 @@ async def start_handler(message: Message):
     """
     Обработчик команды /start.
     """
+    user_id = message.from_user.id
+    await analytics.log_event(user_id, "command_use", {"command": "start"})
     await message.answer("Привет! Я Gemini Proxy бот. Просто отправь мне свой вопрос.")
 
 
@@ -34,33 +38,25 @@ async def send_with_markdown_fallback(message: Message, text: str):
     try:
         await message.answer(text, parse_mode="MarkdownV2")
     except TelegramBadRequest:
-        # Если разметка некорректна, отправляем без нее
         await message.answer(text)
 
 
 def split_long_message(text: str, max_length: int = 4000) -> list[str]:
     """
-    Разбивает длинный текст на части, не превышающие max_length.
-    Старается разбивать по переносам строк или пробелам.
+    Разбивает длинный текст на части.
     """
     parts = []
     while len(text) > 0:
         if len(text) <= max_length:
             parts.append(text)
             break
-        
-        # Ищем ближайший перенос строки или пробел для разрыва
         split_pos = text.rfind('\n', 0, max_length)
         if split_pos == -1:
             split_pos = text.rfind(' ', 0, max_length)
-        
-        if split_pos == -1: # Если не нашли, режем как есть
+        if split_pos == -1:
             split_pos = max_length
-            
         parts.append(text[:split_pos])
-        # Обрезаем отправленную часть, удаляя пробел/перенос в начале следующей части
-        text = text[split_pos:].lstrip() 
-        
+        text = text[split_pos:].lstrip()
     return parts
 
 
@@ -69,8 +65,16 @@ async def handle_message(message: Message, bot: Bot):
     """
     Основной обработчик текстовых сообщений.
     """
-    # 1. Отправляем статус "печатает"
-    await bot.send_chat_action(chat_id=message.chat.id, action=ChatAction.TYPING)
+    user_id = message.from_user.id
+    start_time = time.time()
+
+    # Аналитика: начало обработки запроса
+    await analytics.log_event(user_id, "ai_request", {
+        "model": "gemini-pro", # или другая ваша модель
+        "input_chars": len(message.text)
+    })
+
+    await bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
 
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     if not gemini_api_key:
@@ -78,27 +82,31 @@ async def handle_message(message: Message, bot: Bot):
         return
 
     try:
-        # 2. Получаем ответ от Gemini
         prompt = message.text
         ai_response = await generate_response(prompt, gemini_api_key)
 
-        # Проверяем, не вернул ли сервис свою ошибку
         if ai_response == "Ошибка обращения к AI":
-             await message.answer("⚠ Произошла ошибка при обращении к нейросети. Попробуйте позже.")
-             return
+            await analytics.log_event(user_id, "ai_error", {"error_type": "ServiceError"})
+            await message.answer("⚠ Произошла ошибка при обращении к нейросети. Попробуйте позже.")
+            return
 
     except Exception as e:
-        # Логируем ошибку и сообщаем пользователю
+        # Аналитика: ошибка при генерации
+        await analytics.log_event(user_id, "ai_error", {"error_type": type(e).__name__})
         print(f"Ошибка при генерации ответа: {e}")
         await message.answer("⚠ Произошла ошибка при обращении к нейросети. Попробуйте позже.")
         return
 
-    # 3. Нарезаем и отправляем ответ
+    # Аналитика: успешный ответ
+    duration = time.time() - start_time
+    await analytics.log_event(user_id, "ai_complete", {
+        "duration_sec": round(duration, 2),
+        "output_chars": len(ai_response)
+    })
+
     if len(ai_response) <= TELEGRAM_MAX_MESSAGE_LENGTH:
-        # Если сообщение короткое, отправляем как есть
         await send_with_markdown_fallback(message, ai_response)
     else:
-        # Если длинное, режем на части
         parts = split_long_message(ai_response)
         for part in parts:
             await send_with_markdown_fallback(message, part)
