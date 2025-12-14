@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 1: &quot;Скелет&quot; (Hello World)">
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 7.2 Google Analytics Переименования">
+      <change afterPath="$PROJECT_DIR$/bot/infrastructure/analytics_repo.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/infrastructure/session_repo.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/services/chat_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/gemini.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/gemini.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
+    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,6 +21,16 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="Этап 2: Конфигурация и Безопасность" />
+        <option name="rewordedMessage" value="Этап 2: Конфигурация и Безопасность" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="644ebdd778b61bb7ff4b5f3e904661043f055307" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -27,23 +43,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.main.executor": "Run",
+    "Python.test_ai.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/viktorakusev/PycharmProjects/PythonProject",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager">
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PythonProject" />
       <option name="ENV_FILES" value="" />
@@ -67,9 +90,33 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_ai" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PythonProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_ai.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.test_ai" />
       </list>
     </recent_temporary>
   </component>
@@ -108,7 +155,111 @@
       <option name="project" value="LOCAL" />
       <updated>1765711673380</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Этап 3: Сервис для работы с Gemini">
+      <option name="closed" value="true" />
+      <created>1765714425556</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765714425556</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Этап 3: Сервис для работы с Gemini [Доработки аи кода]">
+      <option name="closed" value="true" />
+      <created>1765715780477</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1765715780477</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Этап 4: Интеграция с Gemini">
+      <option name="closed" value="true" />
+      <created>1765716039753</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1765716039753</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Этап 5: Интеграция с Firebase">
+      <option name="closed" value="true" />
+      <created>1765717796456</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765717796456</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Этап 5: Интеграция с Firebase">
+      <option name="closed" value="true" />
+      <created>1765719099219</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765719099219</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Этап 5: Интеграция с Firebase">
+      <option name="closed" value="true" />
+      <created>1765720303682</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765720303682</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Этап 5: Интеграция с Firebase">
+      <option name="closed" value="true" />
+      <created>1765720425944</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1765720425944</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Этап 6: Деление пользователей фаербейз по коллекциям">
+      <option name="closed" value="true" />
+      <created>1765721905464</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1765721905464</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Этап 7. Google Analytics">
+      <option name="closed" value="true" />
+      <created>1765728673689</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1765728673689</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Этап 7. Google Analytics">
+      <option name="closed" value="true" />
+      <created>1765728989755</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1765728989755</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Этап 7.1 Google Analytics Di">
+      <option name="closed" value="true" />
+      <created>1765729516691</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1765729516691</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Этап 7.2 Google Analytics Переименования">
+      <option name="closed" value="true" />
+      <created>1765729794755</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1765729794755</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Этап 7.2 Google Analytics Переименования">
+      <option name="closed" value="true" />
+      <created>1765730040279</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1765730040279</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,9 +279,18 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="Этап 1: &quot;Скелет&quot; (Hello World)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 1: &quot;Скелет&quot; (Hello World)" />
+    <MESSAGE value="Этап 3: Сервис для работы с Gemini" />
+    <MESSAGE value="Этап 3: Сервис для работы с Gemini [Доработки аи кода]" />
+    <MESSAGE value="Этап 4: Интеграция с Gemini" />
+    <MESSAGE value="Этап 5: Интеграция с Firebase" />
+    <MESSAGE value="Этап 6: Деление пользователей фаербейз по коллекциям" />
+    <MESSAGE value="Этап 7. Google Analytics" />
+    <MESSAGE value="Этап 7.1 Google Analytics Di" />
+    <MESSAGE value="Этап 7.2 Google Analytics Переименования" />
+    <option name="LAST_COMMIT_MESSAGE" value="Этап 7.2 Google Analytics Переименования" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765712397822" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765721539835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765734306489" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

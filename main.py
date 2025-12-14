@@ -8,29 +8,28 @@ import os
 from aiogram import Bot, Dispatcher
 
 from bot.handlers import router
-from bot.middlewares.FirestoreLoggingMiddleware import FirestoreLoggingMiddleware
 from bot.services.firebase_logger import init_firebase
-# Импортируем КЛАСС
-from bot.services.GoogleAnalyticsService import GoogleAnalyticsService
+from bot.infrastructure.session_repo import SessionRepository
+from bot.infrastructure.analytics_repo import AnalyticsRepository
+from bot.services.chat_service import ChatService
 
 async def main():
-    # 2. Инициализируем сервисы
+    # 2. Инициализируем Firebase
     init_firebase()
-    # Создаем экземпляр сервиса аналитики здесь, ПОСЛЕ load_dotenv()
-    analytics_service = GoogleAnalyticsService()
 
-    # 3. Загружаем токен бота
+    # 3. Инициализируем репозитории и сервисы (Composition Root)
+    session_repo = SessionRepository()
+    analytics_repo = AnalyticsRepository()
+    chat_service = ChatService(session_repo, analytics_repo)
+
+    # 4. Загружаем токен бота
     api_token = os.getenv("BOT_TOKEN")
     if not api_token:
         raise ValueError("Не удалось загрузить токен бота. Проверьте файл .env")
 
-    # 4. Настраиваем Dispatcher и Bot
-    # Передаем созданный сервис в DI-контейнер диспетчера
-    dp = Dispatcher(analytics=analytics_service)
+    # 5. Настраиваем Dispatcher и Bot, внедряя зависимости
+    dp = Dispatcher(chat_service=chat_service)
     bot = Bot(token=api_token)
-    
-    # 5. Подключаем Middleware
-    router.message.middleware(FirestoreLoggingMiddleware())
     
     # 6. Подключаем роутер
     dp.include_router(router)
