@@ -1,7 +1,7 @@
 import os
 import asyncio
-from bot.infrastructure.session_repo import SessionRepository
-from bot.infrastructure.analytics_repo import AnalyticsRepository
+from bot.infrastructure.SessionRepository import SessionRepository
+from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.gemini import generate_response
 
 # Константы

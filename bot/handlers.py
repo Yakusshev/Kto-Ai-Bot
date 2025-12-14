@@ -2,7 +2,7 @@ from aiogram import Router, F, Bot
 from aiogram.enums import ChatAction
 from aiogram.types import Message
 from aiogram.filters import Command
-from bot.services.chat_service import ChatService
+from bot.services.ChatService import ChatService
 
 router = Router()
 

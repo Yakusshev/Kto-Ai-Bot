@@ -11,9 +11,9 @@ from aiogram import Bot, Dispatcher
 from bot.handlers import router
 # Обновленный импорт
 from bot.services.firebase_init import init_firebase
-from bot.infrastructure.session_repo import SessionRepository
-from bot.infrastructure.analytics_repo import AnalyticsRepository
-from bot.services.chat_service import ChatService
+from bot.infrastructure.SessionRepository import SessionRepository
+from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
+from bot.services.ChatService import ChatService
 
 async def main():
     # 2. Инициализируем Firebase и получаем клиент БД
