@@ -1,33 +1,38 @@
+# 1. Загружаем переменные окружения в самом начале
+from dotenv import load_dotenv
+load_dotenv()
+
 import asyncio
 import logging
 import os
 from aiogram import Bot, Dispatcher
-from dotenv import load_dotenv
 
 from bot.handlers import router
 from bot.middlewares.logger import FirestoreLoggingMiddleware
 from bot.services.firebase_logger import init_firebase
+# Импортируем КЛАСС
+from bot.services.analytics import AnalyticsService
 
 async def main():
-    # 1. Загружаем переменные окружения
-    load_dotenv()
-    
-    # 2. Инициализируем Firebase
+    # 2. Инициализируем сервисы
     init_firebase()
+    # Создаем экземпляр сервиса аналитики здесь, ПОСЛЕ load_dotenv()
+    analytics_service = AnalyticsService()
 
-    # 3. Загружаем токен бота и проверяем его наличие
+    # 3. Загружаем токен бота
     api_token = os.getenv("BOT_TOKEN")
     if not api_token:
         raise ValueError("Не удалось загрузить токен бота. Проверьте файл .env")
 
     # 4. Настраиваем Dispatcher и Bot
+    # Передаем созданный сервис в DI-контейнер диспетчера
+    dp = Dispatcher(analytics=analytics_service)
     bot = Bot(token=api_token)
-    dp = Dispatcher()
     
-    # 5. Подключаем Middleware для логирования к роутеру
+    # 5. Подключаем Middleware
     router.message.middleware(FirestoreLoggingMiddleware())
     
-    # 6. Подключаем роутер с хендлерами
+    # 6. Подключаем роутер
     dp.include_router(router)
     
     # 7. Запускаем поллинг

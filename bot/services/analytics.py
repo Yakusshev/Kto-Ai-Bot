@@ -8,13 +8,16 @@ logger = logging.getLogger(__name__)
 
 class AnalyticsService:
     def __init__(self):
-        self.measurement_id = os.getenv("GOOGLE_ANALYTICS_MEASUREMENT_ID")
-        self.api_secret = os.getenv("GOOGLE_ANALYTICS_SECRET")
-        self.endpoint = f"https://www.google-analytics.com/mp/collect?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
-        self.is_configured = self.measurement_id and self.api_secret
-
-        if not self.is_configured:
+        self.measurement_id = os.getenv("GA_MEASUREMENT_ID")
+        self.api_secret = os.getenv("GA_API_SECRET")
+        
+        if not self.measurement_id or not self.api_secret:
+            self.is_configured = False
             logger.warning("Google Analytics is not configured. Analytics events will not be sent.")
+        else:
+            self.is_configured = True
+            self.endpoint = f"https://www.google-analytics.com/mp/collect?measurement_id={self.measurement_id}&api_secret={self.api_secret}"
+            logger.info("Google Analytics service configured.")
 
     async def log_event(self, user_id: int, event_name: str, params: dict = None):
         """
@@ -26,8 +29,6 @@ class AnalyticsService:
         if params is None:
             params = {}
         
-        # GA4 требует, чтобы все параметры были обернуты в 'params'
-        # Добавляем обязательный параметр для подсчета активных пользователей
         params['engagement_time_msec'] = '100'
 
         json_payload = {
@@ -49,5 +50,4 @@ class AnalyticsService:
         except Exception as e:
             logger.error(f"An exception occurred while sending analytics event: {e}")
 
-# Создаем синглтон-экземпляр сервиса
-analytics = AnalyticsService()
+# Синглтон удален. Теперь этот файл экспортирует только класс.

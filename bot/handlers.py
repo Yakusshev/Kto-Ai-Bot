@@ -1,6 +1,5 @@
 import os
 import time
-from dotenv import load_dotenv
 
 from aiogram import Router, F, Bot
 from aiogram.enums import ChatAction
@@ -9,10 +8,8 @@ from aiogram.filters import Command
 from aiogram.exceptions import TelegramBadRequest
 
 from bot.services.gemini import generate_response
-from bot.services.analytics import analytics # Импортируем сервис аналитики
-
-# Загружаем переменные окружения
-load_dotenv()
+# Импортируем только КЛАСС
+from bot.services.analytics import AnalyticsService
 
 router = Router()
 
@@ -21,9 +18,9 @@ TELEGRAM_MAX_MESSAGE_LENGTH = 4096
 
 
 @router.message(Command("start"))
-async def start_handler(message: Message):
+async def start_handler(message: Message, analytics: AnalyticsService):
     """
-    Обработчик команды /start.
+    Обработчик команды /start. Теперь принимает analytics как аргумент.
     """
     user_id = message.from_user.id
     await analytics.log_event(user_id, "command_use", {"command": "start"})
@@ -61,16 +58,15 @@ def split_long_message(text: str, max_length: int = 4000) -> list[str]:
 
 
 @router.message(F.text)
-async def handle_message(message: Message, bot: Bot):
+async def handle_message(message: Message, bot: Bot, analytics: AnalyticsService):
     """
-    Основной обработчик текстовых сообщений.
+    Основной обработчик. Теперь тоже принимает analytics как аргумент.
     """
     user_id = message.from_user.id
     start_time = time.time()
 
-    # Аналитика: начало обработки запроса
     await analytics.log_event(user_id, "ai_request", {
-        "model": "gemini-pro", # или другая ваша модель
+        "model": "gemini-pro",
         "input_chars": len(message.text)
     })
 
@@ -91,13 +87,11 @@ async def handle_message(message: Message, bot: Bot):
             return
 
     except Exception as e:
-        # Аналитика: ошибка при генерации
         await analytics.log_event(user_id, "ai_error", {"error_type": type(e).__name__})
         print(f"Ошибка при генерации ответа: {e}")
         await message.answer("⚠ Произошла ошибка при обращении к нейросети. Попробуйте позже.")
         return
 
-    # Аналитика: успешный ответ
     duration = time.time() - start_time
     await analytics.log_event(user_id, "ai_complete", {
         "duration_sec": round(duration, 2),
