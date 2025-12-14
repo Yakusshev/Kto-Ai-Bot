@@ -1,9 +1,10 @@
 import os
+from typing import Union
 import firebase_admin
 from firebase_admin import credentials, firestore
 from google.cloud.firestore_v1.client import Client
 
-def init_firebase() -> Client | None:
+def init_firebase() -> Union[Client, None]:
     """
     Инициализирует Firebase Admin SDK и возвращает клиент Firestore.
     """

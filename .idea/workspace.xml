@@ -4,14 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 7.2 Google Analytics Переименования">
-      <change afterPath="$PROJECT_DIR$/bot/infrastructure/analytics_repo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bot/infrastructure/session_repo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bot/services/chat_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/services/gemini.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/gemini.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 8.1 Ошибка">
+      <change beforePath="$PROJECT_DIR$/bot/services/firebase_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/firebase_init.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -259,7 +253,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765730040279</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Этап 8 Контекст и разделение архитектуры на слои. Ошибка">
+      <option name="closed" value="true" />
+      <created>1765734354932</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1765734354932</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Этап 8.1 Ошибка">
+      <option name="closed" value="true" />
+      <created>1765735028105</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1765735028105</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -287,10 +297,12 @@
     <MESSAGE value="Этап 7. Google Analytics" />
     <MESSAGE value="Этап 7.1 Google Analytics Di" />
     <MESSAGE value="Этап 7.2 Google Analytics Переименования" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 7.2 Google Analytics Переименования" />
+    <MESSAGE value="Этап 8 Контекст и разделение архитектуры на слои. Ошибка" />
+    <MESSAGE value="Этап 8.1 Ошибка" />
+    <option name="LAST_COMMIT_MESSAGE" value="Этап 8.1 Ошибка" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765721539835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765734306489" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765734987887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
