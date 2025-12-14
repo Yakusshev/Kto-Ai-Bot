@@ -10,7 +10,7 @@ async def generate_response(prompt: str, api_key: str) -> str:
     :return: Сгенерированный текст или сообщение об ошибке.
     """
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('models/gemini-2.5-flash-lite')
     try:
         response = await model.generate_content_async(prompt)
         return response.text

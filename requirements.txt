@@ -1,3 +1,4 @@
-aiogram
-python-dotenv
-google-generativeai
+protobuf == 6.33.2
+aiogram == 3.22.0
+python-dotenv == 1.2.1
+google-generativeai == 0.8.5
