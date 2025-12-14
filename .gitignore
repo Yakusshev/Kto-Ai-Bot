@@ -1,0 +1,17 @@
+# Environments
+.env
+/.env
+.venv
+venv/
+__pycache__/
+/.idea/misc.xml
+workspace.xml
+
+# Игнорируем всё внутри .idea
+.idea/*
+# НО оставляем файлы настроек проекта (если хотите делиться конфигами)
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/vcs.xml
+# И снова обязательно игнорируем workspace
+.idea/workspace.xml
