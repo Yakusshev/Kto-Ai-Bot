@@ -6,10 +6,10 @@ import aiohttp
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class AnalyticsService:
+class GoogleAnalyticsService:
     def __init__(self):
-        self.measurement_id = os.getenv("GA_MEASUREMENT_ID")
-        self.api_secret = os.getenv("GA_API_SECRET")
+        self.measurement_id = os.getenv("GOOGLE_ANALYTICS_MEASUREMENT_ID")
+        self.api_secret = os.getenv("GOOGLE_ANALYTICS_SECRET")
         
         if not self.measurement_id or not self.api_secret:
             self.is_configured = False
@@ -24,12 +24,11 @@ class AnalyticsService:
         Отправляет событие в Google Analytics 4.
         """
         if not self.is_configured:
+            logger.info("log_event: analytics is not configured")
             return
 
         if params is None:
             params = {}
-        
-        params['engagement_time_msec'] = '100'
 
         json_payload = {
             "client_id": str(user_id),
@@ -49,5 +48,3 @@ class AnalyticsService:
                         )
         except Exception as e:
             logger.error(f"An exception occurred while sending analytics event: {e}")
-
-# Синглтон удален. Теперь этот файл экспортирует только класс.

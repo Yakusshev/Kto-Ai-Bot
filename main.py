@@ -8,16 +8,16 @@ import os
 from aiogram import Bot, Dispatcher
 
 from bot.handlers import router
-from bot.middlewares.logger import FirestoreLoggingMiddleware
+from bot.middlewares.FirestoreLoggingMiddleware import FirestoreLoggingMiddleware
 from bot.services.firebase_logger import init_firebase
 # Импортируем КЛАСС
-from bot.services.analytics import AnalyticsService
+from bot.services.GoogleAnalyticsService import GoogleAnalyticsService
 
 async def main():
     # 2. Инициализируем сервисы
     init_firebase()
     # Создаем экземпляр сервиса аналитики здесь, ПОСЛЕ load_dotenv()
-    analytics_service = AnalyticsService()
+    analytics_service = GoogleAnalyticsService()
 
     # 3. Загружаем токен бота
     api_token = os.getenv("BOT_TOKEN")

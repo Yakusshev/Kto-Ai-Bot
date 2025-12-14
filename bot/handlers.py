@@ -9,7 +9,7 @@ from aiogram.exceptions import TelegramBadRequest
 
 from bot.services.gemini import generate_response
 # Импортируем только КЛАСС
-from bot.services.analytics import AnalyticsService
+from bot.services.GoogleAnalyticsService import GoogleAnalyticsService
 
 router = Router()
 
@@ -18,7 +18,7 @@ TELEGRAM_MAX_MESSAGE_LENGTH = 4096
 
 
 @router.message(Command("start"))
-async def start_handler(message: Message, analytics: AnalyticsService):
+async def start_handler(message: Message, analytics: GoogleAnalyticsService):
     """
     Обработчик команды /start. Теперь принимает analytics как аргумент.
     """
@@ -58,7 +58,7 @@ def split_long_message(text: str, max_length: int = 4000) -> list[str]:
 
 
 @router.message(F.text)
-async def handle_message(message: Message, bot: Bot, analytics: AnalyticsService):
+async def handle_message(message: Message, bot: Bot, analytics: GoogleAnalyticsService):
     """
     Основной обработчик. Теперь тоже принимает analytics как аргумент.
     """
