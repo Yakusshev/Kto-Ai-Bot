@@ -5,10 +5,10 @@ from typing import Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message
-from firebase_admin.firestore import SERVER_TIMESTAMP
+from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 # Импортируем новую функцию
-from bot.services.firebase_logger import log_message_to_history
+from bot.services.firebase_init import log_message_to_history
 
 
 class FirestoreLoggingMiddleware(BaseMiddleware):
