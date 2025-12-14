@@ -16,6 +16,17 @@ from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.ChatService import ChatService
 
 async def main():
+
+    logging.basicConfig(
+        force = True,
+        level=logging.DEBUG,  # <--- Самое важное: разрешаем DEBUG
+        format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
+        handlers=[
+            logging.StreamHandler(sys.stdout)  # Явно указываем вывод в консоль
+        ],
+        datefmt="%H:%M:%S",
+    )
+
     # 2. Инициализируем Firebase и получаем клиент БД
     db_client = init_firebase()
     if db_client is None:
