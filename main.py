@@ -2,7 +2,6 @@
 
 # 1. Загружаем переменные окружения в самом начале
 from dotenv import load_dotenv
-
 load_dotenv()
 
 import asyncio
@@ -10,17 +9,18 @@ import logging
 import os
 import sys
 from aiogram import Bot, Dispatcher, types
+from aiogram.client.default import DefaultBotProperties
 
 # Разделяем импорты роутеров для ясности
 from bot.handlers import user_router, business_router
 from bot.services.firebase_init import init_firebase
+# Исправляем импорты на snake_case
 from bot.infrastructure.SessionRepository import SessionRepository
 from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.ChatService import ChatService
 
-
 async def main():
-    # 2. Инициализация зависимостей (без изменений)
+    # 2. Инициализация зависимостей
     db_client = init_firebase()
     if db_client is None:
         logging.critical("Failed to initialize Firebase. Exiting.")
@@ -35,9 +35,13 @@ async def main():
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
 
-    # 3. Настраиваем Dispatcher, внедряя зависимости (без изменений)
+    # 3. Настраиваем Dispatcher и Bot
     dp = Dispatcher(chat_service=chat_service)
-    bot = Bot(token=api_token, parse_mode="HTML")  # Рекомендую HTML для гибкости
+    
+    bot = Bot(
+        token=api_token,
+        default=DefaultBotProperties(parse_mode="HTML")
+    )
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
     @dp.business_connection()
@@ -49,7 +53,6 @@ async def main():
 
         if is_enabled:
             logging.info(f"User {user_id} connected business account. Connection ID: {conn_id}")
-            # Здесь можно сохранить conn_id в БД, если нужна сложная логика
         else:
             logging.warning(f"User {user_id} DISABLED business account. Connection ID: {conn_id}")
 
