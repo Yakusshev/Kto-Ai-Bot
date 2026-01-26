@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 8.1 Ошибка">
-      <change beforePath="$PROJECT_DIR$/bot/services/firebase_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/firebase_init.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 9.4. Фикс requirements.txt и Dockerfile">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -14,8 +15,19 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Yakusshev&quot;
+  }
+}</component>
   <component name="GitRewordedCommitMessages">
     <option name="commitMessagesMapping">
       <RewordedCommitMessageMapping>
@@ -26,6 +38,12 @@
     <option name="currentCommit" value="1" />
     <option name="onto" value="644ebdd778b61bb7ff4b5f3e904661043f055307" />
   </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Yakusshev/Kto-Ai-Bot.git&quot;,
+    &quot;accountId&quot;: &quot;b5712c17-1ecc-4239-a59b-50921174e687&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -37,24 +55,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.main.executor": "Run",
-    "Python.test_ai.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/viktorakusev/PycharmProjects/PythonProject",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_ai.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;sprint1&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/viktorakusev/PycharmProjects/PythonProject&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -107,8 +125,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.test_ai" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.test_ai" />
       </list>
@@ -117,7 +143,6 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-PY-252.28238.29" />
         <option value="bundled-python-sdk-a101402ee41c-968fe969f28a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.28238.29" />
       </set>
     </attachedChunks>
@@ -269,7 +294,95 @@
       <option name="project" value="LOCAL" />
       <updated>1765735028105</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Этап 8.2 Ошибка">
+      <option name="closed" value="true" />
+      <created>1765735214087</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1765735214087</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Этап 8.3 Фиксы">
+      <option name="closed" value="true" />
+      <created>1765736576161</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1765736576161</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Этап 8.4 Фиксы названий файлов">
+      <option name="closed" value="true" />
+      <created>1765736751344</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1765736751344</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Этап 8.5 Фикс версий библиотек">
+      <option name="closed" value="true" />
+      <created>1765737051555</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1765737051555</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Этап 8.5 Фикс версий библиотек + кометические правки">
+      <option name="closed" value="true" />
+      <created>1765737269240</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1765737269240</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Этап 8.5 Фикс версий библиотек + кометические правки">
+      <option name="closed" value="true" />
+      <created>1765739880870</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1765739880870</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Этап 9. Развертывание. Dockerfile">
+      <option name="closed" value="true" />
+      <created>1765740217299</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1765740217299</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Этап 9.1. Развертывание. Fix доступа к фаербейз">
+      <option name="closed" value="true" />
+      <created>1765743656941</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1765743656941</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Этап 9.2. Развертывание. Fix доступа к фаербейз через Base64">
+      <option name="closed" value="true" />
+      <created>1765745619839</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1765745619839</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Этап 9.3. Фикс времени ответа модели, расширенное логирование">
+      <option name="closed" value="true" />
+      <created>1765748382414</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1765748382414</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Этап 9.4. Фикс requirements.txt и Dockerfile">
+      <option name="closed" value="true" />
+      <created>1765823471185</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1765823471185</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -280,7 +393,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -299,10 +424,20 @@
     <MESSAGE value="Этап 7.2 Google Analytics Переименования" />
     <MESSAGE value="Этап 8 Контекст и разделение архитектуры на слои. Ошибка" />
     <MESSAGE value="Этап 8.1 Ошибка" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 8.1 Ошибка" />
+    <MESSAGE value="Этап 8.2 Ошибка" />
+    <MESSAGE value="Этап 8.3 Фиксы" />
+    <MESSAGE value="Этап 8.4 Фиксы названий файлов" />
+    <MESSAGE value="Этап 8.5 Фикс версий библиотек" />
+    <MESSAGE value="Этап 8.5 Фикс версий библиотек + кометические правки" />
+    <MESSAGE value="Этап 9. Развертывание. Dockerfile" />
+    <MESSAGE value="Этап 9.1. Развертывание. Fix доступа к фаербейз" />
+    <MESSAGE value="Этап 9.2. Развертывание. Fix доступа к фаербейз через Base64" />
+    <MESSAGE value="Этап 9.3. Фикс времени ответа модели, расширенное логирование" />
+    <MESSAGE value="Этап 9.4. Фикс requirements.txt и Dockerfile" />
+    <option name="LAST_COMMIT_MESSAGE" value="Этап 9.4. Фикс requirements.txt и Dockerfile" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765721539835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765734987887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765747752294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PythonProject$main.coverage" NAME="main Coverage Results" MODIFIED="1765823412136" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
