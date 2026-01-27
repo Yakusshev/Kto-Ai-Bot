@@ -38,42 +38,57 @@ class ChatService:
             "event_type": "user_message"
         }))
 
-        summary, messages = await self.session_repo.get_session_data(user_id)
+        summary, messages_history = await self.session_repo.get_session_data(user_id)
 
-        prompt_parts = []
+        # 1. Собираем историю в универсальном формате
+        request_messages = []
         if summary:
-            prompt_parts.append(f"This is a summary of the previous conversation: {summary}")
+            # Для OpenAI-совместимых API лучше передавать саммари как системное сообщение
+            # Но для Gemini это будет преобразовано в строку, так что это универсально
+            request_messages.append({"role": "system", "content": f"This is a summary of the previous conversation: {summary}"})
         
-        for msg in messages:
-            prompt_parts.append(f"{msg['role']}: {msg['text']}")
+        for msg in messages_history:
+            # Преобразуем формат из БД ({'text':...}) в формат для API ({'content':...})
+            request_messages.append({"role": msg['role'], "content": msg['text']})
         
-        prompt_parts.append(f"user: {text}")
-        full_prompt = "\\n".join(prompt_parts)
+        # Добавляем текущее сообщение пользователя
+        request_messages.append({"role": "user", "content": text})
 
+        # 2. Передаем универсальный список сообщений в llm_client
         ai_response = await self.llm_client.generate_response(
-            prompt=full_prompt, 
+            messages=request_messages, 
             model=self.chat_model,
             system_prompt=self.system_prompt
         )
 
+        # 3. Сохраняем в БД
         asyncio.create_task(self.session_repo.add_message(user_id, "user", text))
         asyncio.create_task(self.session_repo.add_message(user_id, "model", ai_response))
 
-        if len(messages) + 2 > 10:
-            asyncio.create_task(self._summarize_and_clear(user_id, summary, messages + [{"role": "user", "text": text}, {"role": "model", "text": ai_response}]))
+        # 4. Фоновая суммаризация
+        if len(messages_history) + 2 > 10:
+            # Для суммаризации передаем всю историю, включая последний обмен
+            full_history_for_summary = messages_history + [
+                {"role": "user", "text": text},
+                {"role": "model", "text": ai_response}
+            ]
+            asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
 
         return ai_response
 
     async def _summarize_and_clear(self, user_id: int, old_summary: str, messages_to_summarize: list[dict]):
         print(f"INFO: Starting background summarization for user {user_id}")
         
-        conversation = "\\n".join([f"{msg['role']}: {msg['text']}" for msg in messages_to_summarize])
+        # Для суммаризации мы по-прежнему можем использовать простой строковый промпт
+        conversation_text = "\\n".join([f"{msg['role']}: {msg['text']}" for msg in messages_to_summarize])
+        prompt = f"Please summarize the following conversation, keeping all key facts and details. Previous summary was: '{old_summary}'. New conversation is:\\n\\n{conversation_text}"
         
-        prompt = f"Please summarize the following conversation, keeping all key facts and details. Previous summary was: '{old_summary}'. New conversation is:\\n\\n{conversation}"
-        
+        # Создаем временный список сообщений только для этого запроса
+        summarization_messages = [{"role": "user", "content": prompt}]
+
         try:
             new_summary = await self.llm_client.generate_response(
-                prompt=prompt, 
+                messages=summarization_messages,
                 model=self.summarize_model,
                 system_prompt=None # Для суммаризации системный промпт не нужен
             )

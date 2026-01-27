@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.3 deepseek">
-      <change afterPath="$PROJECT_DIR$/bot/services/llm_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/services/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/ChatService.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.4 Yandex">
+      <change beforePath="$PROJECT_DIR$/bot/services/gemini.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/llm_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -399,7 +399,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769454576194</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Этап 10.4 Yandex">
+      <option name="closed" value="true" />
+      <created>1769544870629</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1769544870629</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -453,7 +461,8 @@
     <MESSAGE value="Этап 9.4. Фикс requirements.txt и Dockerfile" />
     <MESSAGE value="Этап 10.0 бизнес" />
     <MESSAGE value="Этап 10.1 бизнес ворк" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 10.1 бизнес ворк" />
+    <MESSAGE value="Этап 10.4 Yandex" />
+    <option name="LAST_COMMIT_MESSAGE" value="Этап 10.4 Yandex" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765747752294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
