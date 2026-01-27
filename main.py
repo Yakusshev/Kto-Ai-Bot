@@ -2,6 +2,9 @@
 
 # 1. Загружаем переменные окружения в самом начале
 from dotenv import load_dotenv
+
+from bot.services.llm_service import get_llm_client
+
 load_dotenv()
 
 import asyncio
@@ -28,7 +31,7 @@ async def main():
 
     session_repo = SessionRepository(db=db_client)
     analytics_repo = AnalyticsRepository(db=db_client)
-    chat_service = ChatService(session_repo, analytics_repo)
+    chat_service = ChatService(session_repo, analytics_repo, get_llm_client())
 
     api_token = os.getenv("BOT_TOKEN")
     if not api_token:

@@ -3,11 +3,12 @@ import aiohttp
 import openai
 import google.generativeai as genai
 from abc import ABC, abstractmethod
+from typing import Union
 
 # --- Абстрактный базовый класс ---
 class LLMClient(ABC):
     @abstractmethod
-    async def generate_response(self, prompt: str, model: str, system_prompt: str | None) -> str:
+    async def generate_response(self, prompt: str, model: str, system_prompt: Union[str, None]) -> str:
         pass
 
 # --- Реализация для Gemini ---
@@ -15,8 +16,7 @@ class GeminiClient(LLMClient):
     def __init__(self, api_key: str):
         genai.configure(api_key=api_key)
 
-    async def generate_response(self, prompt: str, model: str, system_prompt: str | None) -> str:
-        # Gemini не имеет отдельного system prompt, поэтому добавляем его в начало
+    async def generate_response(self, prompt: str, model: str, system_prompt: Union[str, None]) -> str:
         if system_prompt:
             prompt = f"{system_prompt}\\n\\n{prompt}"
         try:
@@ -35,7 +35,7 @@ class DeepSeekClient(LLMClient):
             base_url="https://api.deepseek.com/v1"
         )
 
-    async def generate_response(self, prompt: str, model: str, system_prompt: str | None) -> str:
+    async def generate_response(self, prompt: str, model: str, system_prompt: Union[str, None]) -> str:
         messages = []
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
@@ -59,7 +59,7 @@ class YandexGPTClient(LLMClient):
         self.folder_id = folder_id
         self.endpoint = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
 
-    async def generate_response(self, prompt: str, model: str, system_prompt: str | None) -> str:
+    async def generate_response(self, prompt: str, model: str, system_prompt: Union[str, None]) -> str:
         headers = {
             "Authorization": f"Api-Key {self.api_key}",
             "Content-Type": "application/json"
