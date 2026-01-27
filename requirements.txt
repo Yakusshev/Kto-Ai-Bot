@@ -1,6 +1,7 @@
-protobuf == 6.33.2
+protobuf == 5.29.5
 aiogram == 3.22.0
+openai
 python-dotenv == 1.2.1
-google-generativeai == 0.8.5
+google-generativeai
 firebase-admin == 7.1.0
 
