@@ -2,7 +2,10 @@ import os
 import openai
 import google.generativeai as genai
 from abc import ABC, abstractmethod
-from typing import Union, List, Dict
+# Добавляем cast
+from typing import Union, List, Dict, cast
+# Импортируем тип для кастинга
+from openai.types.chat import ChatCompletionMessageParam
 
 # --- Абстрактный базовый класс ---
 class LLMClient(ABC):
@@ -39,14 +42,19 @@ class OpenAICompatibleClient(LLMClient):
         self.async_client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
 
     async def generate_response(self, messages: List[Dict[str, str]], model: str, system_prompt: Union[str, None]) -> str:
-        api_messages = list(messages)
+        # Динамически собираем список обычных словарей
+        api_messages = []
         if system_prompt:
-            api_messages.insert(0, {"role": "system", "content": system_prompt})
+            api_messages.append({"role": "system", "content": system_prompt})
         
+        for msg in messages:
+            api_messages.append({"role": msg["role"], "content": msg["content"]})
+
         try:
+            # Используем cast, чтобы "убедить" анализатор, что наш список имеет правильный тип
             response = await self.async_client.chat.completions.create(
                 model=model,
-                messages=api_messages,
+                messages=cast(List[ChatCompletionMessageParam], api_messages),
                 stream=False
             )
             return response.choices[0].message.content
@@ -63,7 +71,6 @@ def get_llm_client() -> LLMClient:
         if not api_key:
             raise ValueError("YANDEX_API_KEY должен быть указан в .env")
         print("INFO: Using YandexGPT LLM provider (OpenAI-compatible).")
-        # Добавляем слэш в конец base_url для Yandex
         return OpenAICompatibleClient(api_key, base_url="https://llm.api.cloud.yandex.net/openai/v1/")
 
     elif provider == "deepseek":
@@ -71,7 +78,6 @@ def get_llm_client() -> LLMClient:
         if not api_key:
             raise ValueError("DEEPSEEK_API_KEY не найден в .env")
         print("INFO: Using DeepSeek LLM provider.")
-        # Оставляем URL для DeepSeek без изменений, как в вашей версии
         return OpenAICompatibleClient(api_key, base_url="https://api.deepseek.com/v1")
     
     elif provider == "gemini":
