@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.4.2 Обновил питон">
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.4.4 yandex still not work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/services/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/ChatService.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/llm_service.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
@@ -440,7 +439,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769549568048</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Этап 10.4.3 Обновил питон">
+      <option name="closed" value="true" />
+      <created>1769550287617</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1769550287617</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Этап 10.4.4 yandex still not work">
+      <option name="closed" value="true" />
+      <created>1769550738383</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1769550738383</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -470,8 +485,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Этап 3: Сервис для работы с Gemini [Доработки аи кода]" />
-    <MESSAGE value="Этап 4: Интеграция с Gemini" />
     <MESSAGE value="Этап 5: Интеграция с Firebase" />
     <MESSAGE value="Этап 6: Деление пользователей фаербейз по коллекциям" />
     <MESSAGE value="Этап 7. Google Analytics" />
@@ -495,7 +508,9 @@
     <MESSAGE value="Этап 10.4.1 Yandex фиксы" />
     <MESSAGE value="Этап 10.4.1 Yandex попытка фикса" />
     <MESSAGE value="Этап 10.4.2 Обновил питон" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 10.4.2 Обновил питон" />
+    <MESSAGE value="Этап 10.4.3 Обновил питон" />
+    <MESSAGE value="Этап 10.4.4 yandex still not work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Этап 10.4.4 yandex still not work" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765747752294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
