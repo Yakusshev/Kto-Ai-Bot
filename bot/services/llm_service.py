@@ -1,5 +1,4 @@
 import os
-import aiohttp
 import openai
 import google.generativeai as genai
 from abc import ABC, abstractmethod
@@ -17,16 +16,14 @@ class GeminiClient(LLMClient):
         genai.configure(api_key=api_key)
 
     async def generate_response(self, messages: List[Dict[str, str]], model: str, system_prompt: Union[str, None]) -> str:
-        # Gemini не понимает списка ролей, поэтому мы преобразуем все в единый промпт-строку.
         prompt_parts = []
         if system_prompt:
             prompt_parts.append(system_prompt)
         
         for msg in messages:
-            # Gemini лучше работает с форматом "роль: текст"
             prompt_parts.append(f"{msg['role']}: {msg['content']}")
         
-        full_prompt = "\\n".join(prompt_parts)
+        full_prompt = "\n".join(prompt_parts)
 
         try:
             genai_model = genai.GenerativeModel(model)
@@ -36,16 +33,14 @@ class GeminiClient(LLMClient):
             print(f"Ошибка при обращении к Google Gemini (model: {model}): {e}")
             return "Ошибка обращения к AI"
 
-# --- Реализация для DeepSeek и YandexGPT (OpenAI-совместимые) ---
+# --- Универсальный клиент для OpenAI-совместимых API (DeepSeek, YandexGPT) ---
 class OpenAICompatibleClient(LLMClient):
     def __init__(self, api_key: str, base_url: str):
         self.async_client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
 
     async def generate_response(self, messages: List[Dict[str, str]], model: str, system_prompt: Union[str, None]) -> str:
-        # Создаем копию, чтобы не изменять оригинальный список
         api_messages = list(messages)
         if system_prompt:
-            # Вставляем системный промпт в начало
             api_messages.insert(0, {"role": "system", "content": system_prompt})
         
         try:
@@ -56,41 +51,7 @@ class OpenAICompatibleClient(LLMClient):
             )
             return response.choices[0].message.content
         except Exception as e:
-            print(f"Ошибка при обращении к OpenAI-совместимому API (model: {model}): {e}")
-            return "Ошибка обращения к AI"
-
-# --- НОВАЯ РЕАЛИЗАЦИЯ для YandexGPT ---
-class YandexGPTClient(LLMClient):
-    def __init__(self, api_key: str, folder_id: str):
-        self.api_key = api_key
-        self.folder_id = folder_id
-        self.endpoint = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
-
-    async def generate_response(self, messages: List[Dict[str, str]], model: str, system_prompt: Union[str, None]) -> str:
-        headers = {"Authorization": f"Api-Key {self.api_key}", "Content-Type": "application/json"}
-        
-        api_messages = list(messages)
-        if system_prompt:
-            api_messages.insert(0, {"role": "system", "content": system_prompt})
-
-        payload = {
-            "modelUri": f"gpt://{self.folder_id}/{model}",
-            "completionOptions": {"stream": False, "temperature": 0.6, "maxTokens": "2000"},
-            "messages": api_messages
-        }
-
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(self.endpoint, headers=headers, json=payload) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return data['result']['alternatives'][0]['message']['text']
-                    else:
-                        error_text = await response.text()
-                        print(f"Ошибка при обращении к YandexGPT. Статус: {response.status}, Ответ: {error_text}")
-                        return "Ошибка обращения к AI"
-        except Exception as e:
-            print(f"Исключение при обращении к YandexGPT: {e}")
+            print(f"Ошибка при обращении к OpenAI-совместимому API (model: {model}, url: {self.async_client.base_url}): {e}")
             return "Ошибка обращения к AI"
 
 # --- ОБНОВЛЕННАЯ Фабрика ---
@@ -99,18 +60,18 @@ def get_llm_client() -> LLMClient:
     
     if provider == "yandex":
         api_key = os.getenv("YANDEX_API_KEY")
-        folder_id = os.getenv("YANDEX_FOLDER_ID")
-        if not api_key or not folder_id:
-            raise ValueError("YANDEX_API_KEY и YANDEX_FOLDER_ID должны быть указаны в .env")
-        print("INFO: Using YandexGPT LLM provider.")
-        return YandexGPTClient(api_key, folder_id)
+        if not api_key:
+            raise ValueError("YANDEX_API_KEY должен быть указан в .env")
+        print("INFO: Using YandexGPT LLM provider (OpenAI-compatible).")
+        # Добавляем слэш в конец base_url для Yandex
+        return OpenAICompatibleClient(api_key, base_url="https://llm.api.cloud.yandex.net/openai/v1/")
 
     elif provider == "deepseek":
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             raise ValueError("DEEPSEEK_API_KEY не найден в .env")
         print("INFO: Using DeepSeek LLM provider.")
-        # Используем универсальный OpenAI-совместимый клиент
+        # Оставляем URL для DeepSeek без изменений, как в вашей версии
         return OpenAICompatibleClient(api_key, base_url="https://api.deepseek.com/v1")
     
     elif provider == "gemini":
