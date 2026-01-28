@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.4.4 yandex still not work">
+      <change afterPath="$PROJECT_DIR$/bot/env_const.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/ChatService.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/llm_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -455,7 +458,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769550738383</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Этап 10.4.4 yandex still not work">
+      <option name="closed" value="true" />
+      <created>1769551679294</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1769551679294</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

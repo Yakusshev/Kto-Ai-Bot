@@ -1,11 +1,6 @@
 # main.py
-
-# 1. Загружаем переменные окружения в самом начале
-from dotenv import load_dotenv
-
+from bot.env_const import TELEGRAM_BOT_TOKEN
 from bot.services.llm_service import get_llm_client
-
-load_dotenv()
 
 import asyncio
 import logging
@@ -33,8 +28,7 @@ async def main():
     analytics_repo = AnalyticsRepository(db=db_client)
     chat_service = ChatService(session_repo, analytics_repo, get_llm_client())
 
-    api_token = os.getenv("BOT_TOKEN")
-    if not api_token:
+    if not TELEGRAM_BOT_TOKEN:
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
 
@@ -42,7 +36,7 @@ async def main():
     dp = Dispatcher(chat_service=chat_service)
     
     bot = Bot(
-        token=api_token,
+        token=TELEGRAM_BOT_TOKEN,
         default=DefaultBotProperties(parse_mode="HTML")
     )
 

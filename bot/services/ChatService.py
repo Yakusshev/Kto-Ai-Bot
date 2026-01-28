@@ -1,5 +1,7 @@
 import os
 import asyncio
+
+from bot.env_const import YANDEX_FOLDER_ID
 from bot.infrastructure.SessionRepository import SessionRepository
 from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.llm_service import LLMClient
@@ -11,7 +13,6 @@ DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
 # Получаем Folder ID из .env для формирования имени модели Яндекса
-YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID")
 YANDEX_CHAT_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 YANDEX_SUMMARIZE_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 

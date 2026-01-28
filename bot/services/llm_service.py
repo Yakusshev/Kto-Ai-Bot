@@ -6,10 +6,8 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Dict, cast
 
 from openai import OpenAI
-# Импортируем тип для кастинга
-from openai.types.chat import ChatCompletionMessageParam
 
-from bot.services.ChatService import YANDEX_FOLDER_ID
+from bot.env_const import YANDEX_FOLDER_ID
 
 
 # --- Абстрактный базовый класс ---
@@ -49,11 +47,10 @@ class GeminiClient(LLMClient):
             return "Ошибка обращения к AI"
 
 
-YANDEX_API_KEY = os.getenv("YANDEX_API_KEY")
 YANDEX_CLOUD_MODEL = "yandexgpt-lite"
 
-# --- Универсальный клиент для OpenAI-совместимых API (DeepSeek, YandexGPT) ---
-class OpenAICompatibleClient(OpenAI):
+
+class YandexOpenAICompatibleClient(OpenAI, LLMClient):
 
     def __init__(self, api_key: str, base_url: str):
         super().__init__(
@@ -76,7 +73,6 @@ class OpenAICompatibleClient(OpenAI):
         for msg in messages:
             api_messages.append({"role": msg["role"], "content": msg["content"]})
 
-
         try:
             # Используем cast, чтобы "убедить" анализатор, что наш список имеет правильный тип
             response = self.responses.create(
@@ -87,7 +83,7 @@ class OpenAICompatibleClient(OpenAI):
             return response.output_text
         except Exception as e:
             print(
-                f"Ошибка при обращении к OpenAI-совместимому API (model: {model}, url: {self.async_client.base_url}): {e}")
+                f"Ошибка при обращении к OpenAI-совместимому API (model: {model}, url: {self.base_url}): {e}")
             return "Ошибка обращения к AI"
 
 
@@ -100,14 +96,17 @@ def get_llm_client() -> LLMClient:
         if not api_key:
             raise ValueError("YANDEX_API_KEY должен быть указан в .env")
         print("INFO: Using YandexGPT LLM provider (OpenAI-compatible).")
-        return OpenAICompatibleClient(api_key, base_url="https://llm.api.cloud.yandex.net/openai/v1/")
+        return YandexOpenAICompatibleClient(
+            api_key = api_key,
+            base_url="https://rest-assistant.api.cloud.yandex.net/v1",
+        )
 
     elif provider == "deepseek":
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             raise ValueError("DEEPSEEK_API_KEY не найден в .env")
         print("INFO: Using DeepSeek LLM provider.")
-        return OpenAICompatibleClient(api_key, base_url="https://api.deepseek.com/v1")
+        return YandexOpenAICompatibleClient(api_key, base_url="https://api.deepseek.com/v1")
 
     elif provider == "gemini":
         api_key = os.getenv("GEMINI_API_KEY")
