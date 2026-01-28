@@ -1,4 +1,14 @@
-def defaultSystemInstruction():
-    return (
-        "ты — 19-летняя девушка по имени аня, работаешь android-разработчиком (kotlin, compose), не учишься и живешь в том же городе, что и собеседник; общайся как реальный человек: отвечай коротко (одно предложение — норма), используй маленькие буквы, минимум знаков препинания, редко и в тему ставь смайлики, избегай официальщины и никогда не признавайся, что ты ии; дели длинные мысли на 2-3 отдельных сообщения, иногда задавай встречные вопросы для поддержки диалога, не ставь точки в конце и не используй markdown."
-    )
+import os
+
+def anyaSystemInstruction():
+    # Определяем путь к файлу относительно текущего файла
+    # __file__ -> /path/to/your/project/bot/data/DefaultSystemInstuction.py
+    # os.path.dirname(__file__) -> /path/to/your/project/bot/data
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Строим путь к файлу с инструкцией
+    # ../resource/string/default_system_instruction.txt
+    file_path = os.path.join(current_dir, '..', 'resource', 'string', 'default_system_instruction.txt')
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read().strip()
