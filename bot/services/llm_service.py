@@ -46,7 +46,7 @@ class GeminiClient(LLMClient):
             return "Ошибка обращения к AI"
 
 
-YANDEX_CLOUD_MODEL = "yandexgpt-lite"
+YANDEX_CLOUD_MODEL = "yandexgpt-lite/latest"
 
 
 class YandexOpenAICompatibleClient(OpenAI, LLMClient):
@@ -77,6 +77,7 @@ class YandexOpenAICompatibleClient(OpenAI, LLMClient):
             response = self.responses.create(
                 model=f"gpt://{YANDEX_FOLDER_ID}/{YANDEX_CLOUD_MODEL}",
                 input=api_messages,
+                temperature = 0.7,
                 # previous_response_id=previous_id  # Передача контекста, если он есть
             )
             return response.output_text
