@@ -52,7 +52,9 @@ class ChatService:
             request_messages.append({"role": "system", "content": f"This is a summary of the previous conversation: {summary}"})
         
         for msg in messages_history:
-            request_messages.append({"role": msg['role'], "content": msg['text']})
+            # Заменяем 'model' на 'assistant' при чтении из БД
+            role = "assistant" if msg['role'] == 'model' else msg['role']
+            request_messages.append({"role": role, "content": msg['text']})
         
         request_messages.append({"role": "user", "content": text})
 
@@ -62,13 +64,15 @@ class ChatService:
             system_prompt=self.system_prompt
         )
 
+        # Сохраняем ответ с правильной ролью 'assistant'
         asyncio.create_task(self.session_repo.add_message(user_id, "user", text))
-        asyncio.create_task(self.session_repo.add_message(user_id, "model", ai_response))
+        asyncio.create_task(self.session_repo.add_message(user_id, "assistant", ai_response))
 
         if len(messages_history) + 2 > 10:
             full_history_for_summary = messages_history + [
                 {"role": "user", "text": text},
-                {"role": "model", "text": ai_response}
+                # Также исправляем здесь
+                {"role": "assistant", "text": ai_response}
             ]
             asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
 
