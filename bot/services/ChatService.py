@@ -19,7 +19,13 @@ YANDEX_SUMMARIZE_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 
 
 class ChatService:
-    def __init__(self, session_repo: SessionRepository, analytics_repo: AnalyticsRepository, llm_client: LLMClient):
+
+    def __init__(
+            self,
+            session_repo: SessionRepository,
+            analytics_repo: AnalyticsRepository,
+            llm_client: LLMClient,
+    ):
         self.session_repo = session_repo
         self.analytics_repo = analytics_repo
         self.llm_client = llm_client
