@@ -1,13 +1,12 @@
 import os
-import openai
 import google.generativeai as genai
 from abc import ABC, abstractmethod
 # Добавляем cast
-from typing import Union, List, Dict, cast
+from typing import Union, List, Dict
 
 from openai import OpenAI
 
-from bot.env_const import YANDEX_FOLDER_ID
+from bot.data.const.env_const import YANDEX_FOLDER_ID
 
 
 # --- Абстрактный базовый класс ---
@@ -97,7 +96,7 @@ def get_llm_client() -> LLMClient:
             raise ValueError("YANDEX_API_KEY должен быть указан в .env")
         print("INFO: Using YandexGPT LLM provider (OpenAI-compatible).")
         return YandexOpenAICompatibleClient(
-            api_key = api_key,
+            api_key=api_key,
             base_url="https://rest-assistant.api.cloud.yandex.net/v1",
         )
 

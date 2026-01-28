@@ -1,10 +1,9 @@
 # main.py
-from bot.env_const import TELEGRAM_BOT_TOKEN
+from bot.data.const.env_const import TELEGRAM_BOT_TOKEN
 from bot.services.llm_service import get_llm_client
 
 import asyncio
 import logging
-import os
 import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties

@@ -1,7 +1,8 @@
 import os
 import asyncio
 
-from bot.env_const import YANDEX_FOLDER_ID
+from bot.data.DefaultSystemInstuction import defaultSystemInstruction
+from bot.data.const.env_const import YANDEX_FOLDER_ID
 from bot.infrastructure.SessionRepository import SessionRepository
 from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.llm_service import LLMClient
@@ -22,7 +23,7 @@ class ChatService:
         self.session_repo = session_repo
         self.analytics_repo = analytics_repo
         self.llm_client = llm_client
-        self.system_prompt = os.getenv("SYSTEM_PROMPT")
+        self.system_prompt = defaultSystemInstruction()
         
         provider = os.getenv("LLM_PROVIDER", "gemini").lower()
         if provider == 'yandex':
