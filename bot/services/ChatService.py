@@ -52,7 +52,6 @@ class ChatService:
             username: str,
             text: str,
     ) -> str:
-        # Логирование аналитики
         asyncio.create_task(self.analytics_repo.log_event({
             "user_id": user_id,
             "username": username,
@@ -60,8 +59,6 @@ class ChatService:
             "event_type": "user_message"
         }))
 
-        # Получаем данные из YDB.
-        # Ожидаем кортеж (summary, messages_history)
         summary, messages_history = await self.session_repo.get_session_data(chat_id=user_id)
 
         request_messages = []
@@ -78,15 +75,12 @@ class ChatService:
 
         request_messages.append({"role": "user", "content": text})
 
-        # Генерация ответа через LLM
         ai_response = await self.llm_client.generate_response(
             messages=request_messages,
             model=self.chat_model,
             system_prompt=self.system_prompt
         )
 
-        # ИСПРАВЛЕНО: вызываем add_message (или add_message) для сохранения входящего сообщения пользователя
-        # Передаем объект message целиком, чтобы репозиторий мог вытащить message_id и прочее
         asyncio.create_task(
             self.session_repo.add_message(
                 message=message,
@@ -112,9 +106,6 @@ class ChatService:
             self,
             message: Message,
     ):
-        """
-        Метод для сохранения ответа самого бота.
-        """
         asyncio.create_task(
             self.session_repo.add_message(
                 message=message,

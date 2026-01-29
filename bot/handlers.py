@@ -16,6 +16,8 @@ async def handle_business_message(message: Message, bot: Bot, chat_service: Chat
     Обрабатывает сообщения, приходящие через Telegram Business.
     """
 
+    print("handle_business_message ", message.text, "; ", message)
+
     if not message.business_connection_id:
         return
 
