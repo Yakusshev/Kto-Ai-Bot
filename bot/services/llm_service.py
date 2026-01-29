@@ -6,7 +6,7 @@ from typing import Union, List, Dict
 
 from openai import OpenAI
 
-from bot.data.const.env_const import YANDEX_FOLDER_ID
+from bot.domain.const.env_const import YANDEX_FOLDER_ID
 
 
 # --- Абстрактный базовый класс ---

@@ -2,8 +2,8 @@ import os
 
 def anyaSystemInstruction():
     # Определяем путь к файлу относительно текущего файла
-    # __file__ -> /path/to/your/project/bot/data/DefaultSystemInstuction.py
-    # os.path.dirname(__file__) -> /path/to/your/project/bot/data
+    # __file__ -> /path/to/your/project/bot/domain/DefaultSystemInstuction.py
+    # os.path.dirname(__file__) -> /path/to/your/project/bot/domain
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Строим путь к файлу с инструкцией

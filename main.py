@@ -1,5 +1,8 @@
 # main.py
-from bot.data.const.env_const import TELEGRAM_BOT_TOKEN
+import ydb
+
+from bot.data.ydb.CreateYdbDriver import create_ydb_driver
+from bot.domain.const.env_const import TELEGRAM_BOT_TOKEN
 from bot.services.llm_service import get_llm_client
 
 import asyncio
@@ -12,18 +15,22 @@ from aiogram.client.default import DefaultBotProperties
 from bot.handlers import user_router, business_router
 from bot.services.firebase_init import init_firebase
 # Исправляем импорты на snake_case
-from bot.infrastructure.SessionRepository import SessionRepository
-from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
+from bot.data.infrastructure.SessionRepository import SessionRepository
+from bot.data.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.ChatService import ChatService
 
 async def main():
     # 2. Инициализация зависимостей
+
+    driver = create_ydb_driver()
+    ydb_session_pool = ydb.SessionPool(driver)
+
     db_client = init_firebase()
     if db_client is None:
         logging.critical("Failed to initialize Firebase. Exiting.")
         sys.exit(1)
 
-    session_repo = SessionRepository(db=db_client)
+    session_repo = SessionRepository(ydb_session_pool = ydb_session_pool)
     analytics_repo = AnalyticsRepository(db=db_client)
     chat_service = ChatService(session_repo, analytics_repo, get_llm_client())
 

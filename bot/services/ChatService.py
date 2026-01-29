@@ -1,10 +1,10 @@
 import os
 import asyncio
 
-from bot.data.DefaultSystemInstuction import anyaSystemInstruction
-from bot.data.const.env_const import YANDEX_FOLDER_ID
-from bot.infrastructure.SessionRepository import SessionRepository
-from bot.infrastructure.AnalyticsRepository import AnalyticsRepository
+from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
+from bot.domain.const.env_const import YANDEX_FOLDER_ID
+from bot.data.infrastructure.SessionRepository import SessionRepository
+from bot.data.infrastructure.AnalyticsRepository import AnalyticsRepository
 from bot.services.llm_service import LLMClient
 
 # --- Константы моделей ---

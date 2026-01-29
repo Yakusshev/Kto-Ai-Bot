@@ -1,22 +1,14 @@
 import asyncio
 
+import ydb
 from aiogram.types import Message
-from firebase_admin import firestore
-from google.cloud.firestore_v1.client import Client
+from ydb import SessionPool
 
 
 class SessionRepository:
-    def __init__(self, db: Client):
-        # 1. Создаем драйвер (настройка связи)
-        driver = ydb.Driver(endpoint="ваш_endpoint", database="путь_к_базе")
-        driver.wait(fail_fast=True, timeout=5)
 
-        # 2. Создаем пул сессий (ту самую "корзину" с пропусками)
-        # size=10 означает, что бот может держать до 10 открытых соединений одновременно
-        ydb_pool = ydb.SessionPool(driver, size=10)
-
-        # 3. Теперь передаем этот ydb_pool в наш метод
-        await save_message(pool=ydb_pool, message=msg, role='user')
+    def __init__(self, ydb_session_pool: SessionPool):
+        self.ydb_session_pool = ydb_session_pool
 
     async def get_session_data(
             self,
