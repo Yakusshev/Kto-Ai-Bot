@@ -7,17 +7,12 @@ from aiogram.types import Message
 class SessionRepository:
 
     def __init__(self, ydb_session_pool: ydb.SessionPool):
-        # В YDB мы работаем через пул сессий
         self.pool = ydb_session_pool
 
-    async def get_session_data(
-            self,
-            chat_id: int,
-    ) -> list[dict]:
+    async def get_session_data(self, chat_id: int) -> tuple[str, list[dict]]:
         """
-        Получает историю сообщений для чата из YDB.
-        Примечание: В текущей схеме таблицы 'summary' хранится отдельно
-        или высчитывается. Пока выгружаем только историю.
+        Получает историю сообщений.
+        Возвращает кортеж (summary, messages) для совместимости с ChatService.
         """
         query = """
             DECLARE $chat_id AS Uint64;
@@ -27,33 +22,42 @@ class SessionRepository:
         """
 
         def execute(session):
-            # Выполняем запрос на чтение
+            # Явная подготовка запроса обязательна для корректной типизации
+            prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
-                query,
-                {'$chat_id': chat_id},
+                query=prepared_query,
+                parameters={'$chat_id': int(chat_id)},
                 commit_tx=True
             )
-            # Превращаем результат в список словарей
+            # Преобразуем строки YDB в обычные словари Python
             return [row for row in result_sets[0].rows]
 
-        # retry_operation_sync делает код отказоустойчивым
-        messages = await asyncio.to_thread(self.pool.retry_operation_sync, execute)
-        return messages
+        # Используем именованный аргумент callee для retry_operation_sync
+        messages = await asyncio.to_thread(
+            self.pool.retry_operation_sync,
+            callee=execute
+        )
 
-    async def save_message(
+        # Возвращаем пустую строку вместо саммари и список сообщений
+        return "", messages
+
+    async def add_message(
             self,
             message: Message,
             role: str,
             content: str = None,
     ):
+        """
+        Сохраняет сообщение в YDB.
+        """
         final_content = content or message.text or message.caption or ""
         reply_to_id = None
         text_quote = None
 
         if message.reply_to_message:
-            reply_to_id = message.reply_to_message.message_id
+            reply_to_id = int(message.reply_to_message.message_id)
             if message.quote:
-                text_quote = message.quote.text
+                text_quote = str(message.quote.text)
 
         query = """
             DECLARE $chat_id AS Uint64;
@@ -75,31 +79,35 @@ class SessionRepository:
             );
         """
 
+        # Подготовка параметров с явным приведением типов
+        params = {
+            '$chat_id': int(message.chat.id),
+            '$created_at': datetime.datetime.now(),
+            '$message_id': int(message.message_id),
+            '$role': str(role),
+            '$content': str(final_content),
+            '$event_type': 'text',
+            '$reply_to_id': reply_to_id,
+            '$text_quote': text_quote,
+            '$business_conn_id': str(message.business_connection_id) if message.business_connection_id else None
+        }
+
         def execute(session):
+            prepared_query = session.prepare(query)
             session.transaction().execute(
-                query,
-                {
-                    '$chat_id': message.chat.id,
-                    # ИСПРАВЛЕНО: используем стандартный datetime
-                    '$created_at': datetime.datetime.now(),
-                    '$message_id': message.message_id,
-                    '$role': role,
-                    '$content': final_content,
-                    '$event_type': 'text',
-                    '$reply_to_id': reply_to_id,
-                    '$text_quote': text_quote,
-                    '$business_conn_id': message.business_connection_id
-                },
+                query=prepared_query,
+                parameters=params,
                 commit_tx=True
             )
 
-        # ИСПРАВЛЕНО: используем self.pool и запускаем в потоке, если метод асинхронный
-        return await asyncio.to_thread(self.pool.retry_operation_sync, execute)
+        return await asyncio.to_thread(
+            self.pool.retry_operation_sync,
+            callee=execute
+        )
 
     async def clear_chat_history(self, chat_id: int):
         """
-        Удаляет все сообщения пользователя.
-        В YDB нет 'коллекций', удаляем через DELETE по ключу.
+        Удаляет историю чата.
         """
         query = """
             DECLARE $chat_id AS Uint64;
@@ -107,7 +115,15 @@ class SessionRepository:
         """
 
         def execute(session):
-            session.transaction().execute(query, {'$chat_id': chat_id}, commit_tx=True)
+            prepared_query = session.prepare(query)
+            session.transaction().execute(
+                query=prepared_query,
+                parameters={'$chat_id': int(chat_id)},
+                commit_tx=True
+            )
 
-        await asyncio.to_thread(self.pool.retry_operation_sync, execute)
+        await asyncio.to_thread(
+            self.pool.retry_operation_sync,
+            callee=execute
+        )
         print(f"SUCCESS: Cleared history for chat {chat_id}")
