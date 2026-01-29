@@ -1,36 +1,44 @@
 import asyncio
-
+import datetime
 import ydb
 from aiogram.types import Message
-from ydb import SessionPool
 
 
 class SessionRepository:
 
-    def __init__(self, ydb_session_pool: SessionPool):
-        self.ydb_session_pool = ydb_session_pool
+    def __init__(self, ydb_session_pool: ydb.SessionPool):
+        # В YDB мы работаем через пул сессий
+        self.pool = ydb_session_pool
 
     async def get_session_data(
             self,
-            user_id: int,
-            session_id: str = "default",
-    ) -> tuple[str, list[dict]]:
+            chat_id: int,
+    ) -> list[dict]:
         """
-        Получает саммари и историю сообщений для сессии.
+        Получает историю сообщений для чата из YDB.
+        Примечание: В текущей схеме таблицы 'summary' хранится отдельно
+        или высчитывается. Пока выгружаем только историю.
         """
-        session_ref = self.db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
-        messages_ref = session_ref.collection("messages").order_by("timestamp", direction="ASCENDING")
+        query = """
+            DECLARE $chat_id AS Uint64;
+            SELECT * FROM chat_events 
+            WHERE chat_id = $chat_id 
+            ORDER BY created_at ASC;
+        """
 
-        session_doc_task = asyncio.to_thread(session_ref.get)
-        messages_docs_task = asyncio.to_thread(messages_ref.get)
+        def execute(session):
+            # Выполняем запрос на чтение
+            result_sets = session.transaction().execute(
+                query,
+                {'$chat_id': chat_id},
+                commit_tx=True
+            )
+            # Превращаем результат в список словарей
+            return [row for row in result_sets[0].rows]
 
-        session_doc, messages_docs = await asyncio.gather(session_doc_task, messages_docs_task)
-
-        summary = session_doc.to_dict().get("summary", "") if session_doc.exists else ""
-        messages = [doc.to_dict() for doc in messages_docs]
-
-        return summary, messages
-
+        # retry_operation_sync делает код отказоустойчивым
+        messages = await asyncio.to_thread(self.pool.retry_operation_sync, execute)
+        return messages
 
     async def save_message(
             self,
@@ -38,12 +46,10 @@ class SessionRepository:
             role: str,
             content: str = None,
     ):
-        # Если content не передан (для входящих), берем текст из сообщения
         final_content = content or message.text or message.caption or ""
-
-        # Извлекаем данные о реплае и цитате
         reply_to_id = None
         text_quote = None
+
         if message.reply_to_message:
             reply_to_id = message.reply_to_message.message_id
             if message.quote:
@@ -59,7 +65,7 @@ class SessionRepository:
             DECLARE $reply_to_id AS Uint64?;
             DECLARE $text_quote AS Utf8?;
             DECLARE $business_conn_id AS Utf8?;
-    
+
             UPSERT INTO chat_events (
                 chat_id, created_at, message_id, role, content, 
                 event_type, reply_to_id, text_quote, business_conn_id
@@ -74,7 +80,8 @@ class SessionRepository:
                 query,
                 {
                     '$chat_id': message.chat.id,
-                    '$created_at': message.datetime.now(),
+                    # ИСПРАВЛЕНО: используем стандартный datetime
+                    '$created_at': datetime.datetime.now(),
                     '$message_id': message.message_id,
                     '$role': role,
                     '$content': final_content,
@@ -86,22 +93,21 @@ class SessionRepository:
                 commit_tx=True
             )
 
-        return pool.retry_operation_sync(execute)
+        # ИСПРАВЛЕНО: используем self.pool и запускаем в потоке, если метод асинхронный
+        return await asyncio.to_thread(self.pool.retry_operation_sync, execute)
 
-    async def update_summary_and_clear_messages(self, user_id: int, new_summary: str, session_id: str = "default"):
+    async def clear_chat_history(self, chat_id: int):
         """
-        Атомарно обновляет саммари и удаляет все сообщения из под-коллекции.
+        Удаляет все сообщения пользователя.
+        В YDB нет 'коллекций', удаляем через DELETE по ключу.
         """
-        session_ref = self.db.collection("users").document(str(user_id)).collection("sessions").document(session_id)
-        messages_ref = session_ref.collection("messages")
+        query = """
+            DECLARE $chat_id AS Uint64;
+            DELETE FROM chat_events WHERE chat_id = $chat_id;
+        """
 
-        def batch_transaction():
-            docs_to_delete = list(messages_ref.stream())
-            batch = self.db.batch()
-            batch.set(session_ref, {"summary": new_summary}, merge=True)
-            for doc in docs_to_delete:
-                batch.delete(doc.reference)
-            batch.commit()
+        def execute(session):
+            session.transaction().execute(query, {'$chat_id': chat_id}, commit_tx=True)
 
-        await asyncio.to_thread(batch_transaction)
-        print(f"SUCCESS: Summarized and cleared messages for user {user_id}")
+        await asyncio.to_thread(self.pool.retry_operation_sync, execute)
+        print(f"SUCCESS: Cleared history for chat {chat_id}")
