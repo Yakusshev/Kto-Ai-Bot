@@ -38,15 +38,15 @@ async def handle_business_message(message: Message, bot: Bot, chat_service: Chat
             text=message.text
         )
 
-        await bot.send_message(
+        answer_message = await bot.send_message(
             chat_id=chat_id,
             text=response_text,
             business_connection_id=message.business_connection_id
         )
+
+        await chat_service.handle_self_message(message=answer_message)
     else:
         #TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
-        await chat_service.handle_self_message(
-            message = message,
-        )
+        await chat_service.handle_self_message(message = message)
 
 

@@ -85,7 +85,6 @@ class ChatService:
             self.session_repo.add_message(
                 message=message,
                 role="user",
-                content=text
             )
         )
 
