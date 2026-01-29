@@ -12,7 +12,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
 # Разделяем импорты роутеров для ясности
-from bot.handlers import user_router, business_router
+from bot.handlers import business_router
 from bot.services.firebase_init import init_firebase
 # Исправляем импорты на snake_case
 from bot.data.infrastructure.SessionRepository import SessionRepository
@@ -60,7 +60,6 @@ async def main():
             logging.warning(f"User {user_id} DISABLED business account. Connection ID: {conn_id}")
 
     # 5. Подключаем ОБА роутера
-    dp.include_router(user_router)
     dp.include_router(business_router)
 
     logging.info("Starting bot...")

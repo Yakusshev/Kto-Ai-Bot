@@ -44,7 +44,12 @@ class ChatService:
             self.chat_model = GEMINI_CHAT_MODEL
             self.summarize_model = GEMINI_SUMMARIZE_MODEL
 
-    async def handle_user_message(self, user_id: int, username: str, text: str) -> str:
+    async def handle_user_message(
+            self,
+            user_id: int,
+            username: str,
+            text: str,
+    ) -> str:
         asyncio.create_task(self.analytics_repo.log_event({
             "user_id": user_id,
             "username": username,
@@ -84,6 +89,14 @@ class ChatService:
             asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
 
         return ai_response
+
+    async def handle_self_message(
+            self,
+            chat_id: int,
+            username: str,
+            text: str
+    ):
+        pass
 
     async def _summarize_and_clear(self, user_id: int, old_summary: str, messages_to_summarize: list[dict]):
         print(f"INFO: Starting background summarization for user {user_id}")
