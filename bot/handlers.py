@@ -30,6 +30,7 @@ async def handle_business_message(message: Message, bot: Bot, chat_service: Chat
         )
 
         response_text = await chat_service.handle_user_message(
+            message = message,
             user_id=chat_id,
             username=message.chat.full_name,
             text=message.text
@@ -43,9 +44,7 @@ async def handle_business_message(message: Message, bot: Bot, chat_service: Chat
     else:
         #TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
         await chat_service.handle_self_message(
-            chat_id=chat_id,
-            username=message.chat.full_name,
-            text=message.text
+            message = message,
         )
 
 

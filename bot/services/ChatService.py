@@ -1,6 +1,8 @@
 import os
 import asyncio
 
+from aiogram.types import Message
+
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
 from bot.domain.const.env_const import YANDEX_FOLDER_ID
 from bot.data.infrastructure.SessionRepository import SessionRepository
@@ -46,6 +48,7 @@ class ChatService:
 
     async def handle_user_message(
             self,
+            message: Message,
             user_id: int,
             username: str,
             text: str,
@@ -77,8 +80,12 @@ class ChatService:
         )
 
         # Сохраняем ответ с правильной ролью 'assistant'
-        asyncio.create_task(self.session_repo.add_message(user_id, "user", text))
-        asyncio.create_task(self.session_repo.add_message(user_id, "assistant", ai_response))
+        asyncio.create_task(
+            coro = self.session_repo.add_message(
+                message = message,
+                role = "user",
+            )
+        )
 
         if len(messages_history) + 2 > 10:
             full_history_for_summary = messages_history + [
@@ -92,11 +99,14 @@ class ChatService:
 
     async def handle_self_message(
             self,
-            chat_id: int,
-            username: str,
-            text: str
+            message: Message,
     ):
-        pass
+        asyncio.create_task(
+            coro = self.session_repo.add_message(
+                message = message,
+                role = "assistant",
+            )
+        )
 
     async def _summarize_and_clear(self, user_id: int, old_summary: str, messages_to_summarize: list[dict]):
         print(f"INFO: Starting background summarization for user {user_id}")
