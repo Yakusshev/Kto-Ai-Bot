@@ -1,6 +1,8 @@
 # Environments
 .env
 /.env
+.ydb_authorized_key.json
+/ydb_authorized_key.json
 .venv
 venv/
 __pycache__/

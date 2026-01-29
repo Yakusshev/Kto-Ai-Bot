@@ -4,18 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.4.4 yandex still not work">
-      <change afterPath="$PROJECT_DIR$/bot/env_const.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.5.2 System Instruction">
+      <change afterPath="$PROJECT_DIR$/bot/db-scratch.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/services/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/ChatService.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/services/llm_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/infrastructure/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/infrastructure/SessionRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
-    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
+    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -47,6 +55,23 @@
     &quot;accountId&quot;: &quot;b5712c17-1ecc-4239-a59b-50921174e687&quot;
   }
 }</component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="6" end1="8" start2="6" end2="13" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="9" end1="12" start2="14" end2="14" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="13" end1="14" start2="15" end2="15" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="18" end1="18" start2="19" end2="26" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="49" end1="49" start2="57" end2="73" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="60" end1="77" start2="84" end2="101" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="78" end1="79" start2="102" end2="103" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="83" end1="83" start2="107" end2="110" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="468" end1="469" start2="495" end2="544" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="498" end1="504" start2="573" end2="573" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="523" end1="524" start2="592" end2="640" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+      </ranges>
+    </file>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
