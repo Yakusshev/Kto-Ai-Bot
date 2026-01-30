@@ -1,5 +1,7 @@
 import os
 import asyncio
+import re
+
 from aiogram.types import Message
 
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
@@ -22,10 +24,10 @@ YANDEX_SUMMARIZE_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 class ChatService:
 
     def __init__(
-            self,
-            session_repo: SessionRepository,
-            analytics_repo: AnalyticsRepository,
-            llm_client: LLMClient,
+        self,
+        session_repo: SessionRepository,
+        analytics_repo: AnalyticsRepository,
+        llm_client: LLMClient,
     ):
         self.session_repo = session_repo
         self.analytics_repo = analytics_repo
@@ -46,13 +48,13 @@ class ChatService:
             self.summarize_model = GEMINI_SUMMARIZE_MODEL
 
     async def handle_user_message(
-            self,
-            message: Message,
-            user_id: int,
-            text: str,
+        self,
+        message: Message,
+        user_id: int,
+        text: str,
     ) -> str:
 
-        summary, messages_history = await self.session_repo.get_session_data(chat_id=user_id)
+        summary, messages_history = await self.session_repo.get_session_data(chat_id = user_id)
 
         request_messages = []
         if summary:
@@ -69,39 +71,35 @@ class ChatService:
         request_messages.append({"role": "user", "content": text})
 
         ai_response = await self.llm_client.generate_response(
-            messages=request_messages,
-            model=self.chat_model,
-            system_prompt=self.system_prompt
+            messages = request_messages,
+            model = self.chat_model,
+            system_prompt = self.system_prompt
         )
 
         asyncio.create_task(
             self.session_repo.add_message(
-                message=message,
-                role="user",
+                message = message,
+                role = "user",
             )
         )
 
-        # Проверка лимита истории для суммаризации
-        # if len(messages_history) + 2 > 10:
-        #     full_history_for_summary = []
-        #     for m in messages_history:
-        #         full_history_for_summary.append({"role": m['role'], "content": m['content']})
-        #
-        #     full_history_for_summary.append({"role": "user", "content": text})
-        #     full_history_for_summary.append({"role": "assistant", "content": ai_response})
-        #
-        #     asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
+        return self.humanize(ai_response)
 
-        return ai_response
+    def humanize(
+        self,
+        text: str,
+    ) -> str:
+        text = re.sub(r'  +', '\n', text)
+        return text
 
     async def handle_self_message(
-            self,
-            message: Message,
+        self,
+        message: Message,
     ):
         asyncio.create_task(
             self.session_repo.add_message(
-                message=message,
-                role="assistant"
+                message = message,
+                role = "assistant"
             )
         )
 
@@ -120,12 +118,12 @@ class ChatService:
 
         try:
             new_summary = await self.llm_client.generate_response(
-                messages=summarization_messages,
-                model=self.summarize_model,
-                system_prompt=None
+                messages = summarization_messages,
+                model = self.summarize_model,
+                system_prompt = None
             )
             # Убедись, что этот метод реализован в SessionRepository
-            await self.session_repo.clear_chat_history(chat_id=user_id)
+            await self.session_repo.clear_chat_history(chat_id = user_id)
             # Здесь можно добавить логику сохранения new_summary в отдельную таблицу или колонку
         except Exception as e:
             print(f"ERROR: Background summarization failed for user {user_id}: {e}")
