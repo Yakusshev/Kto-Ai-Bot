@@ -49,15 +49,8 @@ class ChatService:
             self,
             message: Message,
             user_id: int,
-            username: str,
             text: str,
     ) -> str:
-        asyncio.create_task(self.analytics_repo.log_event({
-            "user_id": user_id,
-            "username": username,
-            "text": text,
-            "event_type": "user_message"
-        }))
 
         summary, messages_history = await self.session_repo.get_session_data(chat_id=user_id)
 
@@ -89,15 +82,15 @@ class ChatService:
         )
 
         # Проверка лимита истории для суммаризации
-        if len(messages_history) + 2 > 10:
-            full_history_for_summary = []
-            for m in messages_history:
-                full_history_for_summary.append({"role": m['role'], "content": m['content']})
-
-            full_history_for_summary.append({"role": "user", "content": text})
-            full_history_for_summary.append({"role": "assistant", "content": ai_response})
-
-            asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
+        # if len(messages_history) + 2 > 10:
+        #     full_history_for_summary = []
+        #     for m in messages_history:
+        #         full_history_for_summary.append({"role": m['role'], "content": m['content']})
+        #
+        #     full_history_for_summary.append({"role": "user", "content": text})
+        #     full_history_for_summary.append({"role": "assistant", "content": ai_response})
+        #
+        #     asyncio.create_task(self._summarize_and_clear(user_id, summary, full_history_for_summary))
 
         return ai_response
 
