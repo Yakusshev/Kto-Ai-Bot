@@ -54,14 +54,9 @@ class ChatService:
         text: str,
     ) -> str:
 
-        summary, messages_history = await self.session_repo.get_session_data(chat_id = user_id)
+        _, messages_history = await self.session_repo.get_session_data(chat_id = user_id)
 
         request_messages = []
-        if summary:
-            request_messages.append({
-                "role": "system",
-                "content": f"This is a summary of the previous conversation: {summary}"
-            })
 
         for msg in messages_history:
             # ИСПРАВЛЕНО: используем 'content' вместо 'text' (согласно схеме YDB)
