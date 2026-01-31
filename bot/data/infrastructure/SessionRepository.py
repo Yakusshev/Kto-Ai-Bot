@@ -9,7 +9,7 @@ class SessionRepository:
     def __init__(self, ydb_session_pool: ydb.SessionPool):
         self.pool = ydb_session_pool
 
-    async def get_session_data(self, chat_id: int) -> tuple[str, list[dict]]:
+    async def get_session_data(self, chat_id: int) -> list[dict]:
         """
         Получает историю сообщений.
         Возвращает кортеж (summary, messages) для совместимости с ChatService.
@@ -25,27 +25,25 @@ class SessionRepository:
             # Явная подготовка запроса обязательна для корректной типизации
             prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
-                query=prepared_query,
-                parameters={'$chat_id': int(chat_id)},
-                commit_tx=True
+                query = prepared_query,
+                parameters = {'$chat_id': int(chat_id)},
+                commit_tx = True
             )
-            # Преобразуем строки YDB в обычные словари Python
             return [row for row in result_sets[0].rows]
 
         # Используем именованный аргумент callee для retry_operation_sync
         messages = await asyncio.to_thread(
             self.pool.retry_operation_sync,
-            callee=execute
+            callee = execute
         )
 
-        # Возвращаем пустую строку вместо саммари и список сообщений
-        return "", messages
+        return messages
 
     async def add_message(
-            self,
-            message: Message,
-            role: str,
-            content: str = None,
+        self,
+        message: Message,
+        role: str,
+        content: str = None,
     ):
         """
         Сохраняет сообщение в YDB.
@@ -95,14 +93,14 @@ class SessionRepository:
         def execute(session):
             prepared_query = session.prepare(query)
             session.transaction().execute(
-                query=prepared_query,
-                parameters=params,
-                commit_tx=True
+                query = prepared_query,
+                parameters = params,
+                commit_tx = True
             )
 
         return await asyncio.to_thread(
             self.pool.retry_operation_sync,
-            callee=execute
+            callee = execute
         )
 
     async def clear_chat_history(self, chat_id: int):
@@ -117,13 +115,13 @@ class SessionRepository:
         def execute(session):
             prepared_query = session.prepare(query)
             session.transaction().execute(
-                query=prepared_query,
-                parameters={'$chat_id': int(chat_id)},
-                commit_tx=True
+                query = prepared_query,
+                parameters = {'$chat_id': int(chat_id)},
+                commit_tx = True
             )
 
         await asyncio.to_thread(
             self.pool.retry_operation_sync,
-            callee=execute
+            callee = execute
         )
         print(f"SUCCESS: Cleared history for chat {chat_id}")

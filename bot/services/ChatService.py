@@ -54,7 +54,7 @@ class ChatService:
         text: str,
     ) -> str:
 
-        _, messages_history = await self.session_repo.get_session_data(chat_id = user_id)
+        messages_history = await self.session_repo.get_session_data(chat_id = user_id)
 
         request_messages = []
 
