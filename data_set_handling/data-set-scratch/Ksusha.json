@@ -1,14 +1,6 @@
 {
   "request": [
     {
-      "role": "assistant",
-      "text": "[Time: 08-26T22:11:55] привет спасиб"
-    },
-    {
-      "role": "assistant",
-      "text": "[Time: 08-26T22:11:58] ты тож шикарна"
-    },
-    {
       "role": "user",
       "text": "[Time: 08-27T12:32:29] Оуу"
     },
