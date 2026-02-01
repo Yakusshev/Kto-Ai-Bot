@@ -4,8 +4,8 @@ import sys
 import os
 import re  # Добавили для работы с регулярками
 
-INPUT_FILE = "data-set-scratch/Kiruha-wz.json"
-OUTPUT_FILE = "data-set-prod/Kiruha-wz.jsonl"
+INPUT_FILE = "data-set-scratch/imran.json"
+OUTPUT_FILE = "data-set-prod/imran.jsonl"
 
 
 def clean_timestamp(text):
