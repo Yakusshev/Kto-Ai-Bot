@@ -152,9 +152,10 @@ def process_file(input_path, output_path):
                 # Выбираем случайный системный промпт
                 system_prompt = random.choice(SYSTEM_PROMPTS)
 
-                # Добавляем системный промпт в начало request
-                system_message = {"role": "system", "text": system_prompt}
-                data["request"].insert(0, system_message)
+                if system_prompt != "":
+                    # Добавляем системный промпт в начало request
+                    system_message = {"role": "system", "text": system_prompt}
+                    data["request"].insert(0, system_message)
 
                 # Записываем обратно
                 f_out.write(json.dumps(data, ensure_ascii = False) + '\n')
