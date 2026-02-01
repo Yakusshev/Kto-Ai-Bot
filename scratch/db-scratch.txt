@@ -1,0 +1,17 @@
+CREATE TABLE chat_events (
+    chat_id Uint64,
+    created_at Timestamp,
+    message_id Uint64,
+    event_type Utf8,    -- 'text', 'voice', 'photo', 'sticker', 'reply'
+    role Utf8,          -- 'user', 'assistant'
+    content Utf8,       -- Текст или описание медиа
+    reply_to_id Uint64, -- ID сообщения, на которое ответили
+    metadata Json,      -- Сюда можно кидать всё остальное (ссылку на фото, эмодзи стикера)
+    PRIMARY KEY (chat_id, created_at)
+);
+
+DELETE FROM `table_name_1`;
+
+{"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}], "response": "ну спасибо блин"}
+{"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}, {"role": "assistant", "text": "ну спасибо блин"}, {"role": "user", "text": "[Time: 01-26T02:37:57] почему стакан"}], "response": "почему нет"}
+{"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}, {"role": "assistant", "text": "ну спасибо блин"}, {"role": "user", "text": "[Time: 01-26T02:37:57] почему стакан"}, {"role": "assistant", "text": "почему нет"}, {"role": "user", "text": "[Time: 01-26T03:17:21] чем занята?"}], "response": "думаю как канал развивать"}
