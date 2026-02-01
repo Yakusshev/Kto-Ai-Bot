@@ -62,6 +62,6 @@ lines = split_chat_history(source_json_str)
 for line in lines:
     print(line)
 
-with open("data-set-prod/kirill-dataset.jsonl", "w", encoding= "utf-8") as f:
+with open("data-set-prod/kirill-dataset (daniil yo).jsonl", "w", encoding= "utf-8") as f:
     for line in lines:
         f.write(line + "\n")
