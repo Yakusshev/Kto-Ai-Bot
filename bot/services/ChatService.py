@@ -17,7 +17,9 @@ DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
 # Формирование имени модели Яндекса
-YANDEX_CHAT_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
+YANDEX_MODEL_LITE_DEFAULT = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
+YANDEX_MODEL_LITE_TYAN_V3 = f"gpt://b1gcpkqkev1v9o1ocqme/yandexgpt-lite/latest@tamrvrm78gd2asvsqtnel"
+YANDEX_CHAT_MODEL = YANDEX_MODEL_LITE_TYAN_V3
 YANDEX_SUMMARIZE_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 
 
@@ -84,7 +86,7 @@ class ChatService:
         self,
         text: str,
     ) -> str:
-        text = re.sub(r'  +', '\n', text)
+        # text = re.sub('\n', '\n', text)
         return text
 
     async def handle_self_message(

@@ -1,5 +1,3 @@
-import os
-import google.generativeai as genai
 from abc import ABC, abstractmethod
 # Добавляем cast
 from typing import Union, List, Dict
@@ -61,9 +59,10 @@ class YandexOpenAICompatibleClient(OpenAI, LLMClient):
         print('generate_response: api_messages\n', api_messages)
         try:
             response = self.responses.create(
-                model = f"gpt://{YANDEX_FOLDER_ID}/{YANDEX_CLOUD_MODEL}",
+                model = model,
                 input = api_messages,
                 temperature = 0.7,
+                max_output_tokens = 100,
             )
             return response.output[0].content[0].text
         except Exception as e:
