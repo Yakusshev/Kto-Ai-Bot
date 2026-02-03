@@ -3,9 +3,9 @@ import random
 from pathlib import Path
 
 # ===== НАСТРОЙКИ =====
-INPUT_FOLDER = "data-set-prod-system-prompt"  # Папка с обработанными файлами
-TRAIN_FILE = "data-set-prod-v3-validation/train-v3.jsonl"  # Выходной файл для обучения
-VAL_FILE = "data-set-prod-v3-validation/validation-v3.jsonl"  # Выходной файл для валидации
+INPUT_FOLDER = "data-set-prod"  # Папка с обработанными файлами
+TRAIN_FILE = "data-set-prod-v4/train-v4.jsonl"  # Выходной файл для обучения
+VAL_FILE = "data-set-prod-v4/validation-v4.jsonl"  # Выходной файл для валидации
 VAL_SPLIT = 0.1  # 10% на валидацию
 SEED = 42  # Для воспроизводимости
 
