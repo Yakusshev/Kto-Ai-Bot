@@ -19,7 +19,8 @@ DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 # Формирование имени модели Яндекса
 YANDEX_MODEL_LITE_DEFAULT = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 YANDEX_MODEL_LITE_TYAN_V3 = f"gpt://b1gcpkqkev1v9o1ocqme/yandexgpt-lite/latest@tamrvrm78gd2asvsqtnel"
-YANDEX_CHAT_MODEL = YANDEX_MODEL_LITE_TYAN_V3
+YANDEX_MODEL_LITE_TYAN_V4 = f"gpt://b1gcpkqkev1v9o1ocqme/yandexgpt-lite/latest@tamr970ah35581cqvna2m"
+YANDEX_CHAT_MODEL = YANDEX_MODEL_LITE_TYAN_V4
 YANDEX_SUMMARIZE_MODEL = f"gpt://{YANDEX_FOLDER_ID}/yandexgpt-lite"
 
 
@@ -81,7 +82,7 @@ class ChatService:
             )
         )
 
-        return self.humanize(ai_response)
+        return truncate_ai_refusal(ai_response)
 
     def humanize(
         self,
@@ -97,7 +98,8 @@ class ChatService:
         asyncio.create_task(
             self.session_repo.add_text_message(
                 message = message,
-                role = "assistant"
+                role = "assistant",
+                content = message.text,
             )
         )
 
@@ -125,3 +127,29 @@ class ChatService:
             # Здесь можно добавить логику сохранения new_summary в отдельную таблицу или колонку
         except Exception as e:
             print(f"ERROR: Background summarization failed for user {user_id}: {e}")
+
+
+def truncate_ai_refusal(text: str) -> str:
+    """
+    Находит шаблон отказа в тексте и обрубает всё, что идет после него.
+    Возвращает очищенную строку.
+    """
+    if not text:
+        return ""
+    # Список паттернов-маркеров (регулярные выражения)
+    # Используем |, чтобы объединить их, и ищем первое совпадение
+    refusal_patterns = [
+        r"я не могу обсужд[а-я ]+ эту тему",
+        r"я н могу обсуждать",
+        r"давайте поговорим о чём-нибудь ещё",
+        r"извините, но я не могу",
+        r"как искусственный интеллект, я"
+    ]
+    # Объединяем паттерны в один большой поиск (ignorecase для надежности)
+    combined_pattern = re.compile("|".join(refusal_patterns), re.IGNORECASE)
+    match = combined_pattern.search(text)
+    if match:
+        # Берем текст от начала до индекса старта найденной фразы
+        cleaned_text = text[:match.start()].strip()
+        return cleaned_text
+    return text.strip()
