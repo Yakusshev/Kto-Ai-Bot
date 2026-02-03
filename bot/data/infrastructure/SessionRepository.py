@@ -3,6 +3,8 @@ import datetime
 import ydb
 from aiogram.types import Message
 
+from bot.resource.string.strings import EMPTY_MESSAGE
+
 
 class SessionRepository:
 
@@ -39,16 +41,15 @@ class SessionRepository:
 
         return messages
 
-    async def add_message(
+    async def add_text_message(
         self,
         message: Message,
         role: str,
-        content: str = None,
+        content: str,
     ):
         """
         Сохраняет сообщение в YDB.
         """
-        final_content = content or message.text or message.caption or ""
         reply_to_id = None
         text_quote = None
 
@@ -77,13 +78,16 @@ class SessionRepository:
             );
         """
 
+        if content == "":
+            content = EMPTY_MESSAGE
+
         # Подготовка параметров с явным приведением типов
         params = {
             '$chat_id': int(message.chat.id),
             '$created_at': datetime.datetime.now(),
             '$message_id': int(message.message_id),
             '$role': str(role),
-            '$content': str(final_content),
+            '$content': str(content),
             '$event_type': 'text',
             '$reply_to_id': reply_to_id,
             '$text_quote': text_quote,

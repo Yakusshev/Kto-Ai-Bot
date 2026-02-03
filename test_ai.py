@@ -20,13 +20,6 @@ async def main():
         for method in model.supported_generation_methods:
             print('    ' + method)
 
-    # try:
-    #     response = await model.generate_content_async(prompt)
-    #     return response.text
-    # except Exception as e:
-    #     print(f"Ошибка при обращении к Google Gemini: {e}")
-    #     return "Ошибка обращения к AI"
-
     prompt = "Привет! Как дела?"
     response = await generate_response(prompt, gemini_api_key)
     print(f"Промпт: {prompt}")

@@ -10,7 +10,7 @@ CREATE TABLE chat_events (
     PRIMARY KEY (chat_id, created_at)
 );
 
-DELETE FROM `table_name_1`;
+DELETE FROM chat_events;
 
 {"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}], "response": "ну спасибо блин"}
 {"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}, {"role": "assistant", "text": "ну спасибо блин"}, {"role": "user", "text": "[Time: 01-26T02:37:57] почему стакан"}], "response": "почему нет"}

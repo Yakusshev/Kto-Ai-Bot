@@ -52,20 +52,20 @@ class ChatService:
     async def handle_user_message(
         self,
         message: Message,
-        user_id: int,
-        text: str,
+        content: str,
     ) -> str:
 
-        messages_history = await self.session_repo.get_session_data(chat_id = user_id)
+        messages_history = await self.session_repo.get_session_data(chat_id = message.chat.id)
+
+        print('messages_history = ', messages_history)
 
         request_messages = []
 
         for msg in messages_history:
-            # ИСПРАВЛЕНО: используем 'content' вместо 'text' (согласно схеме YDB)
             role = "assistant" if msg['role'] == 'model' else msg['role']
             request_messages.append({"role": role, "content": msg['content']})
 
-        request_messages.append({"role": "user", "content": text})
+        request_messages.append({"role": "user", "content": content})
 
         ai_response = await self.llm_client.generate_response(
             messages = request_messages,
@@ -74,9 +74,10 @@ class ChatService:
         )
 
         asyncio.create_task(
-            self.session_repo.add_message(
+            self.session_repo.add_text_message(
                 message = message,
                 role = "user",
+                content = content,
             )
         )
 
@@ -94,7 +95,7 @@ class ChatService:
         message: Message,
     ):
         asyncio.create_task(
-            self.session_repo.add_message(
+            self.session_repo.add_text_message(
                 message = message,
                 role = "assistant"
             )
