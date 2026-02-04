@@ -35,7 +35,7 @@ class ChatService:
         self.session_repo = session_repo
         self.analytics_repo = analytics_repo
         self.llm_client = llm_client
-        self.system_prompt = anyaSystemInstruction()
+        self.system_prompt = None
 
         provider = os.getenv("LLM_PROVIDER", "gemini").lower()
         if provider == 'yandex':
@@ -71,6 +71,10 @@ class ChatService:
         request_messages.append({"role": "user", "content": content})
 
         print('request_messages = ', request_messages)
+        print('message.chat.username = ', message.chat.username)
+
+        if self.system_prompt is None:
+            self.system_prompt = anyaSystemInstruction(user_nickname = message.chat.username)
 
         ai_response = await self.llm_client.generate_response(
             messages = request_messages,
