@@ -80,19 +80,21 @@ async def handle_business_message(
             business_connection_id = message.business_connection_id
         )
 
-        response_text = await response_text_coroutine
+        ai_answer_list = await response_text_coroutine
 
         if not DEBUG_MODE:
-            write_time = len(response_text) / 10
+            write_time = len(" ".join(ai_answer_list)) / 10
             await asyncio.sleep(write_time)
 
-        answer_message = await bot.send_message(
-            chat_id = chat_id,
-            text = response_text,
-            business_connection_id = message.business_connection_id
-        )
+        for i, ai_answer in enumerate(ai_answer_list):
+            ##TODO async
+            answer_message = await bot.send_message(
+                chat_id = chat_id,
+                text = ai_answer,
+                business_connection_id = message.business_connection_id
+            )
+            await chat_service.handle_self_message(message = answer_message)
 
-        await chat_service.handle_self_message(message = answer_message)
     else:
         # TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
         await chat_service.handle_self_message(message = message)

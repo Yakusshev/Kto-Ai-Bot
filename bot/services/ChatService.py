@@ -54,19 +54,23 @@ class ChatService:
         self,
         message: Message,
         content: str,
-    ) -> str:
+    ) -> list[str]:
 
         messages_history = await self.session_repo.get_session_data(chat_id = message.chat.id)
-
-        print('messages_history = ', messages_history)
 
         request_messages = []
 
         for msg in messages_history:
             role = "assistant" if msg['role'] == 'model' else msg['role']
-            request_messages.append({"role": role, "content": msg['content']})
+
+            if request_messages and request_messages[-1]['role'] == role:
+                request_messages[-1]['content'] += "\n" + msg['content']
+            else:
+                request_messages.append({"role": role, "content": msg['content']})
 
         request_messages.append({"role": "user", "content": content})
+
+        print('request_messages = ', request_messages)
 
         ai_response = await self.llm_client.generate_response(
             messages = request_messages,
@@ -82,7 +86,7 @@ class ChatService:
             )
         )
 
-        return truncate_ai_refusal(ai_response)
+        return truncate_ai_refusal(ai_response).split('\n')
 
     def humanize(
         self,

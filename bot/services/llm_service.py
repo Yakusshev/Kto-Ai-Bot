@@ -61,7 +61,7 @@ class YandexOpenAICompatibleClient(OpenAI, LLMClient):
             response = self.responses.create(
                 model = model,
                 input = api_messages,
-                temperature = 0.7,
+                temperature = 0.5,
                 max_output_tokens = 100,
             )
             return response.output[0].content[0].text
