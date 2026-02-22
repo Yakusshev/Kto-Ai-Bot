@@ -82,11 +82,16 @@ async def handle_business_message(
 
         ai_answer_list = await response_text_coroutine
 
-        if not DEBUG_MODE:
-            write_time = len(" ".join(ai_answer_list)) / 10
-            await asyncio.sleep(write_time)
+        # if not DEBUG_MODE:
+        #     write_time = len(" ".join(ai_answer_list)) / 10
+        #     await asyncio.sleep(write_time)
 
-        for i, ai_answer in enumerate(ai_answer_list):
+        for _, ai_answer in enumerate(ai_answer_list):
+
+            if not DEBUG_MODE:
+                write_time = len(ai_answer) / random.uniform(a = 3, b = 10)
+                await asyncio.sleep(delay = write_time)
+
             ##TODO async
             answer_message = await bot.send_message(
                 chat_id = chat_id,
