@@ -37,7 +37,7 @@ class ChatService:
         self.llm_client = llm_client
         self.system_prompt = None
 
-        provider = os.getenv("LLM_PROVIDER", "gemini").lower()
+        provider = os.getenv("LLM_PROVIDER", "deepseek").lower()
         if provider == 'yandex':
             if not YANDEX_FOLDER_ID:
                 raise ValueError("YANDEX_FOLDER_ID должен быть указан в .env для YandexGPT")
