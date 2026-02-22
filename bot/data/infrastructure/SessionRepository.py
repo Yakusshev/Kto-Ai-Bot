@@ -3,22 +3,23 @@ import datetime
 import ydb
 from aiogram.types import Message
 
+from bot.domain.const.env_const import DEBUG_MODE, DEBUG_MODE_DATABASE
 from bot.resource.string.strings import EMPTY_MESSAGE
-
 
 class SessionRepository:
 
     def __init__(self, ydb_session_pool: ydb.SessionPool):
         self.pool = ydb_session_pool
+        self.table_name = "chat_events_debug" if DEBUG_MODE_DATABASE else "chat_events_release"
 
     async def get_session_data(self, chat_id: int) -> list[dict]:
         """
         Получает историю сообщений.
         Возвращает кортеж (summary, messages) для совместимости с ChatService.
         """
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
-            SELECT * FROM chat_events 
+            SELECT * FROM {self.table_name} 
             WHERE chat_id = $chat_id 
             ORDER BY created_at ASC;
         """
@@ -58,7 +59,7 @@ class SessionRepository:
             if message.quote:
                 text_quote = str(message.quote.text)
 
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
             DECLARE $created_at AS Timestamp;
             DECLARE $message_id AS Uint64;
@@ -69,7 +70,7 @@ class SessionRepository:
             DECLARE $text_quote AS Utf8?;
             DECLARE $business_conn_id AS Utf8?;
 
-            UPSERT INTO chat_events (
+            UPSERT INTO {self.table_name} (
                 chat_id, created_at, message_id, role, content, 
                 event_type, reply_to_id, text_quote, business_conn_id
             ) VALUES (
@@ -111,9 +112,9 @@ class SessionRepository:
         """
         Удаляет историю чата.
         """
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
-            DELETE FROM chat_events WHERE chat_id = $chat_id;
+            DELETE FROM {self.table_name} WHERE chat_id = $chat_id;
         """
 
         def execute(session):
@@ -121,7 +122,7 @@ class SessionRepository:
             session.transaction().execute(
                 query = prepared_query,
                 parameters = {'$chat_id': int(chat_id)},
-                commit_tx = True
+                commit_tx = True,
             )
 
         await asyncio.to_thread(

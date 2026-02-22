@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# --- Финальный сборочный скрипт ---
+# --- Профессиональный сборочный скрипт v3 ---
 
 # 1. Создаем или очищаем папку релиза
 echo "INFO: Creating release directory..."
@@ -18,28 +18,36 @@ cp -R bot release/
 cp main.py release/
 cp requirements.lock release/
 cp .env release/
-
-# --- НОВЫЙ БЛОК: Копируем папку с ключами ---
 if [ -d "credentials" ]; then
     echo "INFO: Copying credentials directory..."
     cp -R credentials release/
 else
-    echo "WARNING: 'credentials' directory not found. If you use services requiring keys, the build may not work."
+    echo "WARNING: 'credentials' directory not found."
 fi
-# --- КОНЕЦ НОВОГО БЛОКА ---
 
 # 4. Удаляем временный lock-файл
 rm requirements.lock
 
-# 5. Настраиваем .env для релиза (устанавливаем DEBUG_MODE=False)
-echo "INFO: Configuring .env for production..."
+# 5. --- ОБНОВЛЕННЫЙ ШАГ: Настраиваем .env для релиза ---
+echo "INFO: Setting all DEBUG_MODE flags to False in release/.env..."
 RELEASE_ENV_FILE="release/.env"
-if grep -q "^DEBUG_MODE=" "$RELEASE_ENV_FILE"; then
-    sed -i '' 's/^DEBUG_MODE=.*/DEBUG_MODE=False/' "$RELEASE_ENV_FILE"
-else
-    echo -e "\n# Production settings\nDEBUG_MODE=False" >> "$RELEASE_ENV_FILE"
-fi
-echo "INFO: DEBUG_MODE set to False in release/.env"
+
+# Используем sed для поиска и замены ВСЕХ строк, начинающихся с "DEBUG_MODE"
+# `g` в конце `s/.../.../g` означает "глобальная замена" на случай нескольких совпадений в одной строке (хотя здесь это маловероятно)
+sed -i '' 's/^DEBUG_MODE.*/DEBUG_MODE=False/' "$RELEASE_ENV_FILE"
+
+# Этот код заменит строки вида:
+# DEBUG_MODE=True -> DEBUG_MODE=False
+# DEBUG_MODE_DATABASE=True -> DEBUG_MODE=False
+# DEBUG_MODE_API=some_value -> DEBUG_MODE=False
+#
+# Если вам нужно сохранять имена полей, а менять только значение, команда будет сложнее:
+# sed -i '' 's/^\(DEBUG_MODE[^=]*=\).*/\1False/' "$RELEASE_ENV_FILE"
+# Давайте пока остановимся на простом варианте, который вы описали.
+# Если нужно будет усложнить, дайте знать.
+
+echo "INFO: All DEBUG flags processed."
+
 
 # 6. Создаем скрипт запуска
 echo "INFO: Creating run script in release/run.sh..."

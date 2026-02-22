@@ -1,4 +1,4 @@
-CREATE TABLE chat_events (
+CREATE TABLE chat_events_debug (
     chat_id Uint64,
     created_at Timestamp,
     message_id Uint64,
