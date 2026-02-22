@@ -4,5 +4,5 @@ openai
 python-dotenv == 1.2.1
 google-generativeai
 firebase-admin == 7.1.0
-ydb
+ydb == 3.25.0
 yandexcloud
