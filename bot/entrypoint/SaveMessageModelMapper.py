@@ -16,6 +16,12 @@ def to_save_message_model(
         content = content,
         event_type = 'text',
         reply_to_id = int(message.reply_to_message.message_id) if message.reply_to_message else None,
-        text_quote = str(message.quote.text) if message.quote else None,
+        text_quote = __get_quote(message = message),
         business_connection_id = str(message.business_connection_id) if message.business_connection_id else None,
     )
+
+def __get_quote(message: Message) -> str | None:
+    if message.reply_to_message is not None and message.quote is not None:
+        return str(message.quote.text)
+    else:
+        return None
