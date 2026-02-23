@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.4.2 Localization Script">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.4.4 Localization Script">
       <change beforePath="$PROJECT_DIR$/bot/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/ChatService.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/entrypoint/SaveMessageModelMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/SaveMessageModelMapper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/locales/Strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/locales/Strings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/GenerateStrings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/GenerateStrings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/Strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/Strings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/locales/ru/strings.ftl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
@@ -228,35 +226,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_ai.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;sprint2&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/viktorakusev/PycharmProjects/PythonProject&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.ChatService.executor": "Run",
+    "Python.GenerateStrings.executor": "Run",
+    "Python.business_message_handlers.executor": "Run",
+    "Python.data_cutter_script.executor": "Run",
+    "Python.handlers.executor": "Debug",
+    "Python.llm_service.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.system_prompt_scrypt.executor": "Run",
+    "Python.test_ai.executor": "Run",
+    "Python.validation-script.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHELLCHECK.PATH": "/Users/viktorakusev/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
+    "git-widget-placeholder": "sprint2",
+    "last_opened_file_path": "/Users/viktorakusev/PycharmProjects/PythonProject/bot/resource",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bot/resource" />
+      <recent name="$PROJECT_DIR$/data_set_handling" />
+      <recent name="$PROJECT_DIR$/bot/resource/string" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bot/resource" />
+      <recent name="$PROJECT_DIR$/bot/locales" />
       <recent name="$PROJECT_DIR$/bot/entrypoint" />
       <recent name="$PROJECT_DIR$/bot/data/repository" />
       <recent name="$PROJECT_DIR$/bot/domain/repository" />
-      <recent name="$PROJECT_DIR$/credentials" />
-      <recent name="$PROJECT_DIR$/data_set_handling/data-set-prod" />
     </key>
   </component>
   <component name="RunManager" selected="Python.main">

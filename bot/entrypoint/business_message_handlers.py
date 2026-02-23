@@ -9,7 +9,7 @@ from aiogram_i18n import I18nContext
 
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.entrypoint.ChatService import ChatService
-from bot.locales.Strings import Strings
+from bot.resource.Strings import Strings
 
 business_router = Router()
 
@@ -151,9 +151,9 @@ async def __handle_message(
                 text = ai_answer,
                 business_connection_id = message.business_connection_id
             )
-            await chat_service.handle_self_message(message = answer_message)
+            await chat_service.handle_self_message(message = answer_message, strings = strings)
 
     else:
         print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
         # TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
-        await chat_service.handle_self_message(message = message)
+        await chat_service.handle_self_message(message = message, strings = strings)

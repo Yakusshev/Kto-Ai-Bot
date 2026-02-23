@@ -2,13 +2,12 @@ import asyncio
 import re
 
 from aiogram.types import Message
-from aiogram_i18n import I18nContext
 
 from bot.domain.model.UserMessageModel import UserMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
-from bot.locales.Strings import Strings
+from bot.resource.Strings import Strings
 
 GEMINI_CHAT_MODEL = 'gemini-pro'
 GEMINI_SUMMARIZE_MODEL = 'gemini-1.5-flash'

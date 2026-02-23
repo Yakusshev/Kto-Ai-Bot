@@ -1,4 +1,6 @@
 # main.py
+import os
+
 import ydb
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
@@ -21,6 +23,8 @@ from bot.entrypoint.business_message_handlers import business_router
 from bot.data.repository.SessionRepository import SessionRepository
 from bot.entrypoint.ChatService import ChatService
 
+# Get the absolute path to the project root
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 async def main():
@@ -45,8 +49,8 @@ async def main():
     dispatcher = Dispatcher(chat_service = chat_service)
 
     i18n_middleware = I18nMiddleware(
-        core = FluentRuntimeCore(path = "bot/locales/{locale}"),
-        default_locale = "ru"
+        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
+        default_locale = "ru",
     )
     i18n_middleware.setup(dispatcher)
 
@@ -80,4 +84,3 @@ if __name__ == '__main__':
         format = '%(asctime)s - %(levelname)s - %(message)s',
     )
     asyncio.run(main())
-
