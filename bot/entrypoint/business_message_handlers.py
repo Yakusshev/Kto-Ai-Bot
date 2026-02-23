@@ -78,7 +78,6 @@ async def __handle_photo(
             user = message.from_user.full_name,
         )
 
-
     await __handle_message(
         message = message,
         bot = bot,
@@ -86,6 +85,7 @@ async def __handle_photo(
         text_content = text_content,
         strings = Strings(i18n = i18n),
     )
+
 
 @business_router.business_message(F.voice)
 async def __handle_voice_message(
@@ -107,6 +107,7 @@ async def __handle_voice_message(
         text_content = text_content,
         strings = Strings(i18n = i18n),
     )
+
 
 @business_router.business_message(F.video_note)
 async def __handle_voice_message(
@@ -130,7 +131,6 @@ async def __handle_voice_message(
     )
 
 
-# TODO убрать делеи, разобраться с message quee
 async def __handle_message(
     message: Message,
     bot: Bot,
@@ -138,7 +138,6 @@ async def __handle_message(
     text_content: str,
     strings: Strings,
 ):
-    # logger = logging.getLogger(__name__)
     print("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
 
     if not message.business_connection_id:
@@ -151,7 +150,7 @@ async def __handle_message(
         response_text_coroutine = chat_service.handle_user_text_message(
             message = message,
             content = text_content,
-            strings = strings
+            strings = strings,
         )
 
         if not DEBUG_MODE:
@@ -167,29 +166,65 @@ async def __handle_message(
             read_time = len(text_content.split()) / 2.5
             await asyncio.sleep(read_time)
 
-        await bot.send_chat_action(
-            chat_id = chat_id,
-            action = "typing",
-            business_connection_id = message.business_connection_id
+        # --- запускаем фоновый typing ---
+        stop_typing = asyncio.Event()
+        typing_task = asyncio.create_task(
+            __typing_loop(
+                bot = bot,
+                chat_id = chat_id,
+                business_connection_id = message.business_connection_id,
+                stop_event = stop_typing,
+            )
         )
 
-        ai_answer_list = await response_text_coroutine
+        try:
+            ai_answer_list = await response_text_coroutine
 
-        for _, ai_answer in enumerate(ai_answer_list):
+            for ai_answer in ai_answer_list:
+                if not DEBUG_MODE:
+                    write_time = len(ai_answer) / random.uniform(3, 10)
+                    await asyncio.sleep(write_time)
 
-            if not DEBUG_MODE:
-                write_time = len(ai_answer) / random.uniform(a = 3, b = 10)
-                await asyncio.sleep(delay = write_time)
-
-            ##TODO async
-            answer_message = await bot.send_message(
-                chat_id = chat_id,
-                text = ai_answer,
-                business_connection_id = message.business_connection_id
-            )
-            await chat_service.handle_self_message(message = answer_message, strings = strings)
+                answer_message = await bot.send_message(
+                    chat_id = chat_id,
+                    text = ai_answer,
+                    business_connection_id = message.business_connection_id,
+                )
+                await chat_service.handle_self_message(message = answer_message, strings = strings)
+        finally:
+            # --- останавливаем typing в любом случае (даже при ошибке) ---
+            stop_typing.set()
+            typing_task.cancel()
+            try:
+                await typing_task
+            except asyncio.CancelledError:
+                pass
 
     else:
         print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
-        # TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
         await chat_service.handle_self_message(message = message, strings = strings)
+
+
+# TODO убрать делеи, разобраться с message quee
+async def __typing_loop(
+    bot: Bot,
+    chat_id: int,
+    business_connection_id: str,
+    stop_event: asyncio.Event,
+):
+    """Поддерживает typing indicator всё время, пока не выставлен stop_event.
+    Иногда делает паузу 1–3 сек (имитирует "задумался")."""
+    while not stop_event.is_set():
+        await bot.send_chat_action(
+            chat_id = chat_id,
+            action = "typing",
+            business_connection_id = business_connection_id,
+        )
+        # typing живёт ~5 сек — обновляем каждые 4 сек,
+        # но иногда делаем случайную паузу (1–3 сек), из-за которой он ненадолго гаснет
+        base_interval = 4.0
+        if random.random() < 0.32:
+            pause = random.uniform(1.0, 3.0)
+            await asyncio.sleep(pause)
+        else:
+            await asyncio.sleep(base_interval)
