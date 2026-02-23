@@ -20,6 +20,9 @@ from bot.data.repository.SessionRepository import SessionRepository
 from bot.entrypoint.ChatService import ChatService
 
 
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger(__name__)
+
 async def main():
 
     driver = create_ydb_driver()

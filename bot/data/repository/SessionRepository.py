@@ -7,9 +7,14 @@ from bot.domain.const.env_const import DEBUG_MODE, DEBUG_MODE_DATABASE
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.resource.string.strings import EMPTY_MESSAGE
 
+#TODO abstract
+#TODO data sources
 class SessionRepository:
 
-    def __init__(self, ydb_session_pool: ydb.SessionPool):
+    def __init__(
+        self,
+        ydb_session_pool: ydb.SessionPool,
+    ):
         self.pool = ydb_session_pool
         self.table_name = "chat_events_debug" if DEBUG_MODE_DATABASE else "chat_events_release"
 

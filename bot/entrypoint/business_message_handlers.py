@@ -1,5 +1,6 @@
 # bot/business_message_handlers.py
 import asyncio
+import logging
 import random
 
 from aiogram import Router, F, Bot
@@ -8,8 +9,10 @@ from aiogram.types import Message
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.resource.string.dynamic_strings import dynamic_string_sticker_emoji
 from bot.entrypoint.ChatService import ChatService
+from main import logger
 
 business_router = Router()
+
 
 @business_router.business_message(F.text)
 async def __handle_text(
@@ -38,15 +41,32 @@ async def __handle_sticker(
         text_content = dynamic_string_sticker_emoji(message.sticker.emoji),
     )
 
+@business_router.business_message(F.photo)
+async def __handle_photo(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService
+):
+    if message.photo:
+        message.photo.s
+    len(message.photo)
 
-#TODO убрать делеи, разобраться с message quee
+    await __handle_message(
+        message = message,
+        bot = bot,
+        chat_service = chat_service,
+        text_content = "",
+    )
+
+
+# TODO убрать делеи, разобраться с message quee
 async def __handle_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
     text_content: str,
 ):
-    print("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
+    logger.debug("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
 
     if not message.business_connection_id:
         return
@@ -70,7 +90,7 @@ async def __handle_message(
         )
 
         if not DEBUG_MODE:
-            read_time = len(text_content.split()) / 3.5
+            read_time = len(text_content.split()) / 2.5
             await asyncio.sleep(read_time)
 
         await bot.send_chat_action(
@@ -99,4 +119,3 @@ async def __handle_message(
         print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
         # TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
         await chat_service.handle_self_message(message = message)
-
