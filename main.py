@@ -7,7 +7,6 @@ from aiogram_i18n.cores import FluentRuntimeCore
 
 from bot.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.di.llm_module import get_llm_repository
-from bot.domain.const.env_const import TELEGRAM_BOT_TOKEN
 
 import asyncio
 import logging
@@ -15,6 +14,7 @@ import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
+from bot.domain.get_bot_token import get_bot_token
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 # Разделяем импорты роутеров для ясности
@@ -41,7 +41,7 @@ async def main():
         save_message_use_case = SaveMessageUseCase(session_repository = session_repository),
     )
 
-    if not TELEGRAM_BOT_TOKEN:
+    if not get_bot_token():
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
 
@@ -55,7 +55,7 @@ async def main():
     i18n_middleware.setup(dispatcher)
 
     bot = Bot(
-        token = TELEGRAM_BOT_TOKEN,
+        token = get_bot_token(),
         default = DefaultBotProperties(parse_mode = "HTML")
     )
 
