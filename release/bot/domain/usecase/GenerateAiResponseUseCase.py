@@ -1,3 +1,6 @@
+from random import random
+from typing import List
+
 from bot.data.repository.SessionRepository import SessionRepository
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
 from bot.domain.model.UserMessageModel import UserMessageModel
@@ -22,7 +25,7 @@ class GenerateAiResponseUseCase:
     async def invoke(
         self,
         user_message_model: UserMessageModel,
-    ) -> str:
+    ) -> List[str]:
         messages_history = await self.session_repository.get_session_data(
             chat_id = user_message_model.id,
         )
@@ -39,9 +42,31 @@ class GenerateAiResponseUseCase:
 
         request_messages.append({ROLE_TITLE: ROLE_USER, CONTENT: user_message_model.content})
 
-        return await self.llm_repository.generate_response(
+        ai_response = await self.llm_repository.generate_response(
             messages = request_messages,
             system_prompt = anyaSystemInstruction(
                 user_nickname = user_message_model.username
             )
         )
+
+        return self.split_messages(response = ai_response)
+
+    @staticmethod
+    def split_messages(
+        response: str,
+    ) -> List[str]:
+
+        lines = response.split('\n')
+        result = []
+        current = lines[0]
+
+        for line in lines[1:]:
+            if random() < 0.3:
+                result.append(current)
+                current = line
+            else:
+                current += '\n' + line
+
+        result.append(current)
+
+        return result

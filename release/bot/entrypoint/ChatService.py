@@ -1,5 +1,6 @@
 import asyncio
 import re
+from random import random
 
 from aiogram.types import Message
 
@@ -30,14 +31,6 @@ class ChatService:
         content: str,
         strings: Strings,
     ) -> list[str]:
-        ai_response = await self.generate_ai_response_use_case.invoke(
-            user_message_model = UserMessageModel(
-                id = message.chat.id,
-                username = message.chat.username,
-                content = content,
-            )
-        )
-
         asyncio.create_task(
             self.save_message_use_case.invoke(
                 save_message_model = to_save_message_model(
@@ -49,7 +42,16 @@ class ChatService:
             )
         )
 
-        return truncate_ai_refusal(ai_response).split('\n')
+        ai_response = self.generate_ai_response_use_case.invoke(
+            user_message_model = UserMessageModel(
+                id = message.chat.id,
+                username = message.chat.username,
+                content = content,
+            )
+        )
+
+        return await ai_response
+
 
     async def handle_self_message(
         self,
