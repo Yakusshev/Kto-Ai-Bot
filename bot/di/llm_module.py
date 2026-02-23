@@ -4,7 +4,7 @@ from bot.data.repository.DeepseekRepository import DeepseekRepository
 from bot.domain.repository import LLMRepository
 
 
-def get_llm_client() -> LLMRepository:
+def get_llm_repository() -> LLMRepository:
     provider = os.getenv("LLM_PROVIDER", "deepseek").lower()  # По умолчанию теперь deepseek
 
     if provider == "deepseek":

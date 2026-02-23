@@ -17,7 +17,7 @@ async def __handle_text(
     bot: Bot,
     chat_service: ChatService
 ):
-    await __handle_text(
+    await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -31,7 +31,7 @@ async def __handle_sticker(
     bot: Bot,
     chat_service: ChatService
 ):
-    await __handle_text(
+    await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,

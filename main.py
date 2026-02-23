@@ -2,7 +2,7 @@
 import ydb
 
 from bot.data.ydb.CreateYdbDriver import create_ydb_driver
-from bot.di.llm_module import get_llm_client
+from bot.di.llm_module import get_llm_repository
 from bot.domain.const.env_const import TELEGRAM_BOT_TOKEN
 
 import asyncio
@@ -11,6 +11,8 @@ import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
+from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 # Разделяем импорты роутеров для ясности
 from bot.entrypoint.business_message_handlers import business_router
 # Исправляем импорты на snake_case
@@ -23,10 +25,14 @@ async def main():
     driver = create_ydb_driver()
     ydb_session_pool = ydb.SessionPool(driver)
 
-    session_repo = SessionRepository(ydb_session_pool = ydb_session_pool)
+    session_repository = SessionRepository(ydb_session_pool = ydb_session_pool)
+
     chat_service = ChatService(
-        session_repository = session_repo,
-        llm_repository = get_llm_client(),
+        generate_ai_response_use_case = GenerateAiResponseUseCase(
+            session_repository = session_repository,
+            llm_repository = get_llm_repository(),
+        ),
+        save_message_use_case = SaveMessageUseCase(session_repository = session_repository),
     )
 
     if not TELEGRAM_BOT_TOKEN:
