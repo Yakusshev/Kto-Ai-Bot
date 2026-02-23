@@ -7,6 +7,7 @@ CREATE TABLE chat_events_debug (
     content Utf8,       -- Текст или описание медиа
     reply_to_id Uint64, -- ID сообщения, на которое ответили
     metadata Json,      -- Сюда можно кидать всё остальное (ссылку на фото, эмодзи стикера)
+    business_conn_id Utf8,
     PRIMARY KEY (chat_id, created_at)
 );
 

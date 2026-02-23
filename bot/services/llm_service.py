@@ -5,24 +5,30 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Dict, cast
 from openai.types.chat import ChatCompletionMessageParam
 
+
 # --- Абстрактный базовый класс ---
 class LLMClient(ABC):
     @abstractmethod
     async def generate_response(
-            self,
-            messages: List[Dict[str, str]],
-            model: str,
-            system_prompt: Union[str, None]
+        self,
+        messages: List[Dict[str, str]],
+        model: str,
+        system_prompt: Union[str, None]
     ) -> str:
         pass
+
 
 # --- Реализация для Gemini ---
 class GeminiClient(LLMClient):
     def __init__(self, api_key: str):
-        genai.configure(api_key=api_key)
+        genai.configure(api_key = api_key)
 
-    async def generate_response(self, messages: List[Dict[str, str]], model: str,
-                                system_prompt: Union[str, None]) -> str:
+    async def generate_response(
+        self,
+        messages: List[Dict[str, str]],
+        model: str,
+        system_prompt: Union[str, None]
+    ) -> str:
         prompt_parts = []
         if system_prompt:
             prompt_parts.append(system_prompt)
@@ -38,18 +44,23 @@ class GeminiClient(LLMClient):
             return response.text
         except Exception as e:
             print(f"Ошибка при обращении к Google Gemini (model: {model}): {e}")
-            return "Ошибка обращения к AI"
+            return ""
+
 
 # --- Универсальный клиент для OpenAI-совместимых API (DeepSeek, YandexGPT) ---
 class OpenAICompatibleClient(LLMClient):
-    def __init__(self, api_key: str, base_url: str):
-        self.async_client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str,
+    ):
+        self.async_client = openai.AsyncOpenAI(api_key = api_key, base_url = base_url)
 
     async def generate_response(
-            self,
-            messages: List[Dict[str, str]],
-            model: str,
-            system_prompt: Union[str, None],
+        self,
+        messages: List[Dict[str, str]],
+        model: str,
+        system_prompt: Union[str, None],
     ) -> str:
         api_messages = []
         if system_prompt:
@@ -60,9 +71,9 @@ class OpenAICompatibleClient(LLMClient):
 
         try:
             response = await self.async_client.chat.completions.create(
-                model=model,
-                messages=cast(List[ChatCompletionMessageParam], api_messages),
-                stream=False
+                model = model,
+                messages = cast(List[ChatCompletionMessageParam], api_messages),
+                stream = False
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -70,16 +81,17 @@ class OpenAICompatibleClient(LLMClient):
                 f"Ошибка при обращении к OpenAI-совместимому API (model: {model}, url: {self.async_client.base_url}): {e}")
             return "Ошибка обращения к AI"
 
+
 # --- ВОССТАНОВЛЕННАЯ Фабрика ---
 def get_llm_client() -> LLMClient:
-    provider = os.getenv("LLM_PROVIDER", "deepseek").lower() # По умолчанию теперь deepseek
+    provider = os.getenv("LLM_PROVIDER", "deepseek").lower()  # По умолчанию теперь deepseek
 
     if provider == "deepseek":
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             raise ValueError("DEEPSEEK_API_KEY не найден в .env")
         print("INFO: Using DeepSeek LLM provider.")
-        return OpenAICompatibleClient(api_key, base_url="https://api.deepseek.com/v1")
+        return OpenAICompatibleClient(api_key, base_url = "https://api.deepseek.com/v1")
 
     elif provider == "yandex":
         api_key = os.getenv("YANDEX_API_KEY")
@@ -87,8 +99,8 @@ def get_llm_client() -> LLMClient:
             raise ValueError("YANDEX_API_KEY должен быть указан в .env")
         print("INFO: Using YandexGPT LLM provider (OpenAI-compatible).")
         return OpenAICompatibleClient(
-            api_key=api_key,
-            base_url="https://llm.api.cloud.yandex.net/openai/v1/"
+            api_key = api_key,
+            base_url = "https://llm.api.cloud.yandex.net/openai/v1/"
         )
 
     elif provider == "gemini":
