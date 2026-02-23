@@ -5,6 +5,7 @@ photo-cannot-be-loaded-text = [{ $user } отправил фотографию, 
 photo-list-cannot-be-loaded = [{ $user } отправил несколько фотографий ({ $photo_number}), они не могут быть загружены]
 photo-list-cannot-be-loaded-text = [{ $user } отправил несколько фотографий ({ $photo_number}), они не могут быть загружены] { $text }
 
-photo-list-cannot-be-loaded-text = [{ $user } отправил несколько фотографий ({ $photo_number}), они не могут быть загружены] { $text }
+voice-message-cannot-be-loaded = [{ $user } отправил голосовое сообщение, но оно не может быть загружено]
+video-message-cannot-be-loaded = [{ $user } отправил видеосообщение, но оно не может быть загружено]
 
 next-text = Далее текст картинок

@@ -87,10 +87,47 @@ async def __handle_photo(
         strings = Strings(i18n = i18n),
     )
 
-# @business_router.business_message(F.voice)
-# async def __handle_voice_message(
-#
-# ):
+@business_router.business_message(F.voice)
+async def __handle_voice_message(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService,
+    i18n: I18nContext
+):
+    strings = Strings(i18n = i18n)
+
+    text_content = strings.voice_message_cannot_be_loaded(
+        user = message.from_user.full_name,
+    )
+
+    await __handle_message(
+        message = message,
+        bot = bot,
+        chat_service = chat_service,
+        text_content = text_content,
+        strings = Strings(i18n = i18n),
+    )
+
+@business_router.business_message(F.video_note)
+async def __handle_voice_message(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService,
+    i18n: I18nContext
+):
+    strings = Strings(i18n = i18n)
+
+    text_content = strings.video_message_cannot_be_loaded(
+        user = message.from_user.full_name,
+    )
+
+    await __handle_message(
+        message = message,
+        bot = bot,
+        chat_service = chat_service,
+        text_content = text_content,
+        strings = Strings(i18n = i18n),
+    )
 
 
 # TODO убрать делеи, разобраться с message quee

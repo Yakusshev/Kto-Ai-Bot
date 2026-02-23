@@ -139,12 +139,14 @@ def write_stubs(code: str, output_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    ftl_path = Path("locales/ru/strings.ftl")
+    base_dir = Path(__file__).parent  # bot/resource/
+    ftl_path = base_dir / "locales/ru/strings.ftl"
+
     if not ftl_path.exists():
         print(f"❌  File not found: {ftl_path}")
         sys.exit(1)
 
-    output_path = Path("Strings.py")
+    output_path = base_dir / "Strings.py"
 
     bundle = parse_ftl(ftl_path)
     code = generate_stubs(bundle)

@@ -32,8 +32,11 @@ class Strings:
     def photo_list_cannot_be_loaded_text(self, *, user: object, photo_number: object, text: object) -> str:
         return self._i18n.get('photo-list-cannot-be-loaded-text', user=user, photo_number=photo_number, text=text)
 
-    def photo_list_cannot_be_loaded_text(self, *, user: object, photo_number: object, text: object) -> str:
-        return self._i18n.get('photo-list-cannot-be-loaded-text', user=user, photo_number=photo_number, text=text)
+    def voice_message_cannot_be_loaded(self, *, user: object) -> str:
+        return self._i18n.get('voice-message-cannot-be-loaded', user=user)
+
+    def video_message_cannot_be_loaded(self, *, user: object) -> str:
+        return self._i18n.get('video-message-cannot-be-loaded', user=user)
 
     def next_text(self) -> str:
         return self._i18n.get('next-text')
