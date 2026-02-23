@@ -45,7 +45,7 @@ async def main():
     dispatcher = Dispatcher(chat_service = chat_service)
 
     i18n_middleware = I18nMiddleware(
-        core = FluentRuntimeCore(path = "locales/{locale}"),
+        core = FluentRuntimeCore(path = "bot/locales/{locale}"),
         default_locale = "ru"
     )
     i18n_middleware.setup(dispatcher)
