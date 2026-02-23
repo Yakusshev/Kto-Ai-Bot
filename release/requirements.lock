@@ -7,6 +7,10 @@
 aiofiles==24.1.0
     # via aiogram
 aiogram==3.22.0
+    # via
+    #   -r requirements.txt
+    #   aiogram-i18n
+aiogram-i18n==1.4
     # via -r requirements.txt
 aiohappyeyeballs==2.6.1
     # via aiohttp
@@ -25,7 +29,11 @@ anyio==4.12.1
 async-timeout==5.0.1
     # via aiohttp
 attrs==25.4.0
-    # via aiohttp
+    # via
+    #   aiohttp
+    #   fluent-runtime
+babel==2.18.0
+    # via fluent-runtime
 cachecontrol==0.14.3
     # via firebase-admin
 certifi==2026.1.4
@@ -38,6 +46,8 @@ cffi==2.0.0
     # via cryptography
 charset-normalizer==3.4.4
     # via requests
+click==8.1.8
+    # via aiogram-i18n
 cryptography==46.0.5
     # via
     #   google-auth
@@ -51,6 +61,10 @@ exceptiongroup==1.3.1
     # via anyio
 firebase-admin==7.1.0
     # via -r requirements.txt
+fluent-runtime==0.4.0
+    # via -r requirements.txt
+fluent-syntax==0.19.0
+    # via fluent-runtime
 frozenlist==1.8.0
     # via
     #   aiohttp
@@ -146,7 +160,7 @@ multidict==6.7.1
     # via
     #   aiohttp
     #   yarl
-openai==2.21.0
+openai==2.22.0
     # via -r requirements.txt
 packaging==26.0
     # via ydb
@@ -195,6 +209,8 @@ pyparsing==3.3.2
     # via httplib2
 python-dotenv==1.2.1
     # via -r requirements.txt
+pytz==2025.2
+    # via fluent-runtime
 requests==2.32.5
     # via
     #   cachecontrol
@@ -218,6 +234,8 @@ typing-extensions==4.15.0
     #   anyio
     #   cryptography
     #   exceptiongroup
+    #   fluent-runtime
+    #   fluent-syntax
     #   google-generativeai
     #   grpcio
     #   multidict
@@ -233,7 +251,7 @@ urllib3==2.6.3
     # via requests
 wrapt==2.1.1
     # via deprecated
-yandexcloud==0.378.0
+yandexcloud==0.379.0
     # via -r requirements.txt
 yarl==1.22.0
     # via aiohttp

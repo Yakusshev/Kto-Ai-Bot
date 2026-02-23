@@ -1,24 +1,29 @@
 import asyncio
 import datetime
 import ydb
-from aiogram.types import Message
 
-from bot.resource.string.strings import EMPTY_MESSAGE
+from bot.domain.const.env_const import DEBUG_MODE, DEBUG_MODE_DATABASE
+from bot.domain.model.SaveMessageModel import SaveMessageModel
 
-
+#TODO abstract
+#TODO data sources
 class SessionRepository:
 
-    def __init__(self, ydb_session_pool: ydb.SessionPool):
+    def __init__(
+        self,
+        ydb_session_pool: ydb.SessionPool,
+    ):
         self.pool = ydb_session_pool
+        self.table_name = "chat_events_debug" if DEBUG_MODE_DATABASE else "chat_events_release"
 
     async def get_session_data(self, chat_id: int) -> list[dict]:
         """
         Получает историю сообщений.
         Возвращает кортеж (summary, messages) для совместимости с ChatService.
         """
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
-            SELECT * FROM chat_events 
+            SELECT * FROM {self.table_name} 
             WHERE chat_id = $chat_id 
             ORDER BY created_at ASC;
         """
@@ -43,22 +48,13 @@ class SessionRepository:
 
     async def add_text_message(
         self,
-        message: Message,
-        role: str,
-        content: str,
+        message: SaveMessageModel,
     ):
         """
         Сохраняет сообщение в YDB.
         """
-        reply_to_id = None
-        text_quote = None
 
-        if message.reply_to_message:
-            reply_to_id = int(message.reply_to_message.message_id)
-            if message.quote:
-                text_quote = str(message.quote.text)
-
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
             DECLARE $created_at AS Timestamp;
             DECLARE $message_id AS Uint64;
@@ -69,7 +65,7 @@ class SessionRepository:
             DECLARE $text_quote AS Utf8?;
             DECLARE $business_conn_id AS Utf8?;
 
-            UPSERT INTO chat_events (
+            UPSERT INTO {self.table_name} (
                 chat_id, created_at, message_id, role, content, 
                 event_type, reply_to_id, text_quote, business_conn_id
             ) VALUES (
@@ -78,19 +74,16 @@ class SessionRepository:
             );
         """
 
-        if content == "":
-            content = EMPTY_MESSAGE
-
         # Подготовка параметров с явным приведением типов
         params = {
-            '$chat_id': int(message.chat.id),
+            '$chat_id': int(message.chat_id),
             '$created_at': datetime.datetime.now(),
             '$message_id': int(message.message_id),
-            '$role': str(role),
-            '$content': str(content),
+            '$role': str(message.role),
+            '$content': str(message.content),
             '$event_type': 'text',
-            '$reply_to_id': reply_to_id,
-            '$text_quote': text_quote,
+            '$reply_to_id': message.reply_to_id,
+            '$text_quote': message.text_quote,
             '$business_conn_id': str(message.business_connection_id) if message.business_connection_id else None
         }
 
@@ -111,9 +104,9 @@ class SessionRepository:
         """
         Удаляет историю чата.
         """
-        query = """
+        query = f"""
             DECLARE $chat_id AS Uint64;
-            DELETE FROM chat_events WHERE chat_id = $chat_id;
+            DELETE FROM {self.table_name} WHERE chat_id = $chat_id;
         """
 
         def execute(session):
@@ -121,7 +114,7 @@ class SessionRepository:
             session.transaction().execute(
                 query = prepared_query,
                 parameters = {'$chat_id': int(chat_id)},
-                commit_tx = True
+                commit_tx = True,
             )
 
         await asyncio.to_thread(

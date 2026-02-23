@@ -1,9 +1,12 @@
 # main.py
+import os
+
 import ydb
+from aiogram_i18n import I18nMiddleware
+from aiogram_i18n.cores import FluentRuntimeCore
 
 from bot.data.ydb.CreateYdbDriver import create_ydb_driver
-from bot.domain.const.env_const import TELEGRAM_BOT_TOKEN
-from bot.services.llm_service import get_llm_client
+from bot.di.llm_module import get_llm_repository
 
 import asyncio
 import logging
@@ -11,43 +14,53 @@ import sys
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
+from bot.domain.get_bot_token import get_bot_token
+from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 # Разделяем импорты роутеров для ясности
-from bot.handlers import business_router
-from bot.services.firebase_init import init_firebase
+from bot.entrypoint.business_message_handlers import business_router
 # Исправляем импорты на snake_case
-from bot.data.infrastructure.SessionRepository import SessionRepository
-from bot.data.infrastructure.AnalyticsRepository import AnalyticsRepository
-from bot.services.ChatService import ChatService
+from bot.data.repository.SessionRepository import SessionRepository
+from bot.entrypoint.ChatService import ChatService
+
+# Get the absolute path to the project root
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 async def main():
-    # 2. Инициализация зависимостей
-
     driver = create_ydb_driver()
     ydb_session_pool = ydb.SessionPool(driver)
 
-    db_client = init_firebase()
-    if db_client is None:
-        logging.critical("Failed to initialize Firebase. Exiting.")
-        sys.exit(1)
+    session_repository = SessionRepository(ydb_session_pool = ydb_session_pool)
 
-    session_repo = SessionRepository(ydb_session_pool = ydb_session_pool)
-    analytics_repo = AnalyticsRepository(db=db_client)
-    chat_service = ChatService(session_repo, analytics_repo, get_llm_client())
+    chat_service = ChatService(
+        generate_ai_response_use_case = GenerateAiResponseUseCase(
+            session_repository = session_repository,
+            llm_repository = get_llm_repository(),
+        ),
+        save_message_use_case = SaveMessageUseCase(session_repository = session_repository),
+    )
 
-    if not TELEGRAM_BOT_TOKEN:
+    if not get_bot_token():
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
 
     # 3. Настраиваем Dispatcher и Bot
-    dp = Dispatcher(chat_service=chat_service)
-    
+    dispatcher = Dispatcher(chat_service = chat_service)
+
+    i18n_middleware = I18nMiddleware(
+        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
+        default_locale = "ru",
+    )
+    i18n_middleware.setup(dispatcher)
+
     bot = Bot(
-        token=TELEGRAM_BOT_TOKEN,
-        default=DefaultBotProperties(parse_mode="HTML")
+        token = get_bot_token(),
+        default = DefaultBotProperties(parse_mode = "HTML")
     )
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
-    @dp.business_connection()
+    @dispatcher.business_connection()
     async def on_business_connection(connection: types.BusinessConnection):
         """Логирует факт подключения или отключения."""
         conn_id = connection.id
@@ -59,13 +72,15 @@ async def main():
         else:
             logging.warning(f"User {user_id} DISABLED business account. Connection ID: {conn_id}")
 
-    # 5. Подключаем ОБА роутера
-    dp.include_router(business_router)
+    dispatcher.include_router(router = business_router)
 
     logging.info("Starting bot...")
-    await dp.start_polling(bot)
+    await dispatcher.start_polling(bot)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(
+        level = logging.INFO,
+        format = '%(asctime)s - %(levelname)s - %(message)s',
+    )
     asyncio.run(main())
