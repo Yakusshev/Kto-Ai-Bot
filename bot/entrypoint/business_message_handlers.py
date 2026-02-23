@@ -138,9 +138,8 @@ async def __handle_message(
     text_content: str,
     strings: Strings,
 ):
-    logger = logging.getLogger(__name__)
-    logger.debug("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ",
-                 message)
+    # logger = logging.getLogger(__name__)
+    print("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
 
     if not message.business_connection_id:
         return
