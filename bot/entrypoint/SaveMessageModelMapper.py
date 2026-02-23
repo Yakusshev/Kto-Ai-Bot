@@ -7,13 +7,14 @@ def to_save_message_model(
     message: Message,
     content: str,
     role: str,
+    empty_message: str,
 ) -> SaveMessageModel:
     return SaveMessageModel(
         chat_id = message.chat.id,
         created_at = message.date,
         message_id = message.message_id,
         role = role,
-        content = content,
+        content = empty_message if not content else content,
         event_type = 'text',
         reply_to_id = int(message.reply_to_message.message_id) if message.reply_to_message else None,
         text_quote = __get_quote(message = message),

@@ -9,7 +9,7 @@ from aiogram_i18n import I18nContext
 
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.entrypoint.ChatService import ChatService
-from main import logger
+from bot.locales.Strings import Strings
 
 business_router = Router()
 
@@ -26,7 +26,7 @@ async def __handle_text(
         bot = bot,
         chat_service = chat_service,
         text_content = message.text,
-        i18n = i18n
+        strings = Strings(i18n = i18n),
     )
 
 
@@ -42,7 +42,7 @@ async def __handle_sticker(
         bot = bot,
         chat_service = chat_service,
         text_content = i18n.get('sticker-not-loaded', emoji = message.sticker.emoji),
-        i18n = i18n
+        strings = Strings(i18n = i18n),
     )
 
 
@@ -53,21 +53,44 @@ async def __handle_photo(
     chat_service: ChatService,
     i18n: I18nContext
 ):
-    if message.photo:
-        if len(message.photo) > 1:
-            text_content = i18n.get('photo-list-cannot-be-loaded', user = message.from_user.full_name)
-        else:
-            text_content = i18n.get('photo-cannot-be-loaded', user = message.from_user.full_name)
+    strings = Strings(i18n = i18n)
+
+    text_content: str
+
+    if len(message.photo) > 1 and message.text is not None:
+        text_content = strings.photo_list_cannot_be_loaded_text(
+            user = message.from_user.full_name,
+            photo_number = len(message.photo),
+            text = message.text,
+        )
+    elif len(message.photo) > 1:
+        text_content = strings.photo_list_cannot_be_loaded(
+            user = message.from_user.full_name,
+            photo_number = len(message.photo),
+        )
+    elif message.text is not None:
+        text_content = strings.photo_cannot_be_loaded_text(
+            user = message.from_user.full_name,
+            text = message.text,
+        )
     else:
-        text_content = ""
+        text_content = strings.photo_cannot_be_loaded(
+            user = message.from_user.full_name,
+        )
+
 
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        i18n = i18n
+        strings = Strings(i18n = i18n),
     )
+
+# @business_router.business_message(F.voice)
+# async def __handle_voice_message(
+#
+# ):
 
 
 # TODO убрать делеи, разобраться с message quee
@@ -76,8 +99,9 @@ async def __handle_message(
     bot: Bot,
     chat_service: ChatService,
     text_content: str,
-    i18n: I18nContext
+    strings: Strings,
 ):
+    logger = logging.getLogger(__name__)
     logger.debug("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ",
                  message)
 
@@ -91,7 +115,7 @@ async def __handle_message(
         response_text_coroutine = chat_service.handle_user_text_message(
             message = message,
             content = text_content,
-            i18n = i18n
+            strings = strings
         )
 
         if not DEBUG_MODE:

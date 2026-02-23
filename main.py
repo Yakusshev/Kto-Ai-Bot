@@ -22,9 +22,6 @@ from bot.data.repository.SessionRepository import SessionRepository
 from bot.entrypoint.ChatService import ChatService
 
 
-logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 
 async def main():
     driver = create_ydb_driver()
@@ -48,7 +45,7 @@ async def main():
     dispatcher = Dispatcher(chat_service = chat_service)
 
     i18n_middleware = I18nMiddleware(
-        core = FluentRuntimeCore(path = "bot/locales/{locale}"),
+        core = FluentRuntimeCore(path = "locales/{locale}"),
         default_locale = "ru"
     )
     i18n_middleware.setup(dispatcher)
@@ -78,5 +75,9 @@ async def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(
+        level = logging.INFO,
+        format = '%(asctime)s - %(levelname)s - %(message)s',
+    )
     asyncio.run(main())
 

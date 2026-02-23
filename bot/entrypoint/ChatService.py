@@ -4,11 +4,11 @@ import re
 from aiogram.types import Message
 from aiogram_i18n import I18nContext
 
-from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.model.UserMessageModel import UserMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
+from bot.locales.Strings import Strings
 
 GEMINI_CHAT_MODEL = 'gemini-pro'
 GEMINI_SUMMARIZE_MODEL = 'gemini-1.5-flash'
@@ -29,7 +29,7 @@ class ChatService:
         self,
         message: Message,
         content: str,
-        i18n: I18nContext,
+        strings: Strings,
     ) -> list[str]:
         ai_response = await self.generate_ai_response_use_case.invoke(
             user_message_model = UserMessageModel(
@@ -45,8 +45,8 @@ class ChatService:
                     message = message,
                     content = content,
                     role = ROLE_USER,
+                    empty_message = strings.empty_message(),
                 ),
-                i18n = i18n
             )
         )
 
@@ -55,7 +55,7 @@ class ChatService:
     async def handle_self_message(
         self,
         message: Message,
-        i18n: I18nContext,
+        strings: Strings,
     ):
         asyncio.create_task(
             self.save_message_use_case.invoke(
@@ -63,8 +63,8 @@ class ChatService:
                     message = message,
                     content = message.text,
                     role = ROLE_ASSISTANT,
+                    empty_message = strings.empty_message(),
                 ),
-                i18n = i18n
             )
         )
 

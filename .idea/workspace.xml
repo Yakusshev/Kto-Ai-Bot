@@ -4,14 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.3.3 текста">
-      <change afterPath="$PROJECT_DIR$/bot/locales/ru/messages.ftl" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.4.2 Localization Script">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/data/repository/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/data/repository/SessionRepository.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/ChatService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/entrypoint/SaveMessageModelMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/SaveMessageModelMapper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/Strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/locales/Strings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -83,133 +85,135 @@
   <component name="LineStatusTrackerManager">
     <file path="$PROJECT_DIR$/.idea/workspace.xml">
       <ranges>
-        <range start1="6" end1="23" start2="6" end2="13" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="24" end1="29" start2="14" end2="14" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="75" end1="75" start2="60" end2="82" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="78" end1="89" start2="85" end2="212" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="103" end1="120" start2="226" end2="251" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="121" end1="122" start2="252" end2="253" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="124" end1="124" start2="255" end2="257" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="234" end1="234" start2="367" end2="369" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="236" end1="237" start2="371" end2="371" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="258" end1="259" start2="392" end2="417" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="260" end1="263" start2="418" end2="421" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="264" end1="265" start2="422" end2="423" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="266" end1="267" start2="424" end2="425" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="268" end1="271" start2="426" end2="429" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="272" end1="273" start2="430" end2="431" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="274" end1="275" start2="432" end2="433" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="276" end1="279" start2="434" end2="437" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="280" end1="281" start2="438" end2="439" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="282" end1="283" start2="440" end2="441" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="284" end1="287" start2="442" end2="445" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="288" end1="289" start2="446" end2="447" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="290" end1="291" start2="448" end2="449" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="292" end1="295" start2="450" end2="453" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="296" end1="297" start2="454" end2="455" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="298" end1="299" start2="456" end2="457" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="300" end1="303" start2="458" end2="461" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="304" end1="305" start2="462" end2="463" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="306" end1="307" start2="464" end2="465" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="308" end1="311" start2="466" end2="469" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="312" end1="313" start2="470" end2="471" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="314" end1="315" start2="472" end2="473" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="316" end1="319" start2="474" end2="477" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="320" end1="321" start2="478" end2="479" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="322" end1="323" start2="480" end2="481" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="324" end1="327" start2="482" end2="485" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="328" end1="329" start2="486" end2="487" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="330" end1="331" start2="488" end2="489" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="332" end1="335" start2="490" end2="493" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="336" end1="337" start2="494" end2="495" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="338" end1="339" start2="496" end2="497" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="340" end1="343" start2="498" end2="501" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="344" end1="345" start2="502" end2="503" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="346" end1="347" start2="504" end2="505" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="348" end1="351" start2="506" end2="509" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="352" end1="353" start2="510" end2="511" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="354" end1="355" start2="512" end2="513" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="356" end1="359" start2="514" end2="517" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="360" end1="361" start2="518" end2="519" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="362" end1="363" start2="520" end2="521" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="364" end1="367" start2="522" end2="525" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="368" end1="369" start2="526" end2="527" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="370" end1="371" start2="528" end2="529" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="372" end1="375" start2="530" end2="533" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="376" end1="377" start2="534" end2="535" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="378" end1="379" start2="536" end2="537" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="380" end1="383" start2="538" end2="541" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="384" end1="385" start2="542" end2="543" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="386" end1="387" start2="544" end2="545" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="388" end1="391" start2="546" end2="549" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="392" end1="393" start2="550" end2="551" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="394" end1="395" start2="552" end2="553" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="396" end1="399" start2="554" end2="557" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="400" end1="401" start2="558" end2="559" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="402" end1="403" start2="560" end2="561" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="404" end1="407" start2="562" end2="565" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="408" end1="409" start2="566" end2="567" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="410" end1="411" start2="568" end2="569" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="412" end1="415" start2="570" end2="573" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="416" end1="417" start2="574" end2="575" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="418" end1="419" start2="576" end2="577" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="420" end1="423" start2="578" end2="581" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="424" end1="425" start2="582" end2="583" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="426" end1="427" start2="584" end2="585" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="428" end1="431" start2="586" end2="589" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="432" end1="433" start2="590" end2="591" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="434" end1="435" start2="592" end2="593" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="436" end1="439" start2="594" end2="597" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="440" end1="441" start2="598" end2="599" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="442" end1="443" start2="600" end2="601" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="444" end1="447" start2="602" end2="605" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="448" end1="449" start2="606" end2="607" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="450" end1="451" start2="608" end2="609" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="452" end1="455" start2="610" end2="613" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="456" end1="457" start2="614" end2="615" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="458" end1="459" start2="616" end2="617" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="460" end1="463" start2="618" end2="621" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="464" end1="465" start2="622" end2="623" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="466" end1="467" start2="624" end2="625" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="468" end1="471" start2="626" end2="629" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="472" end1="473" start2="630" end2="631" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="474" end1="475" start2="632" end2="633" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="476" end1="479" start2="634" end2="637" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="480" end1="481" start2="638" end2="639" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="482" end1="483" start2="640" end2="641" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="484" end1="487" start2="642" end2="645" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="488" end1="489" start2="646" end2="647" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="490" end1="491" start2="648" end2="649" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="492" end1="495" start2="650" end2="653" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="496" end1="497" start2="654" end2="655" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="498" end1="499" start2="656" end2="657" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="500" end1="503" start2="658" end2="661" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="504" end1="505" start2="662" end2="663" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="506" end1="507" start2="664" end2="665" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="508" end1="511" start2="666" end2="669" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="512" end1="513" start2="670" end2="671" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="514" end1="515" start2="672" end2="673" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="516" end1="519" start2="674" end2="677" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="520" end1="521" start2="678" end2="679" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="522" end1="523" start2="680" end2="681" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="524" end1="527" start2="682" end2="685" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="528" end1="529" start2="686" end2="687" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="530" end1="531" start2="688" end2="689" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="532" end1="535" start2="690" end2="693" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="536" end1="537" start2="694" end2="695" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="538" end1="539" start2="696" end2="697" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="540" end1="543" start2="698" end2="701" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="544" end1="545" start2="702" end2="703" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="546" end1="547" start2="704" end2="705" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="548" end1="551" start2="706" end2="709" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="552" end1="553" start2="710" end2="711" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="554" end1="555" start2="712" end2="713" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="556" end1="559" start2="714" end2="717" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="560" end1="561" start2="718" end2="719" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="562" end1="563" start2="720" end2="785" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="592" end1="596" start2="814" end2="814" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="617" end1="618" start2="835" end2="840" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="641" end1="646" start2="863" end2="863" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="6" end1="10" start2="6" end2="7" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="12" end1="12" start2="9" end2="10" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="13" end1="14" start2="11" end2="14" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="81" end1="214" start2="81" end2="81" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="226" end1="243" start2="93" end2="119" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="244" end1="245" start2="120" end2="121" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="247" end1="247" start2="123" end2="125" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="250" end1="250" start2="128" end2="129" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="254" end1="255" start2="133" end2="133" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="258" end1="258" start2="136" end2="158" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="356" end1="358" start2="256" end2="256" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="359" end1="359" start2="257" end2="260" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="381" end1="382" start2="282" end2="283" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="383" end1="386" start2="284" end2="287" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="387" end1="388" start2="288" end2="289" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="389" end1="390" start2="290" end2="291" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="391" end1="394" start2="292" end2="295" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="395" end1="396" start2="296" end2="297" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="397" end1="398" start2="298" end2="299" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="399" end1="402" start2="300" end2="303" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="403" end1="404" start2="304" end2="305" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="405" end1="406" start2="306" end2="307" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="407" end1="410" start2="308" end2="311" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="411" end1="412" start2="312" end2="313" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="413" end1="414" start2="314" end2="315" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="415" end1="418" start2="316" end2="319" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="419" end1="420" start2="320" end2="321" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="421" end1="422" start2="322" end2="323" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="423" end1="426" start2="324" end2="327" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="427" end1="428" start2="328" end2="329" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="429" end1="430" start2="330" end2="331" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="431" end1="434" start2="332" end2="335" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="435" end1="436" start2="336" end2="337" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="437" end1="438" start2="338" end2="339" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="439" end1="442" start2="340" end2="343" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="443" end1="444" start2="344" end2="345" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="445" end1="446" start2="346" end2="347" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="447" end1="450" start2="348" end2="351" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="451" end1="452" start2="352" end2="353" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="453" end1="454" start2="354" end2="355" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="455" end1="458" start2="356" end2="359" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="459" end1="460" start2="360" end2="361" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="461" end1="462" start2="362" end2="363" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="463" end1="466" start2="364" end2="367" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="467" end1="468" start2="368" end2="369" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="469" end1="470" start2="370" end2="371" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="471" end1="474" start2="372" end2="375" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="475" end1="476" start2="376" end2="377" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="477" end1="478" start2="378" end2="379" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="479" end1="482" start2="380" end2="383" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="483" end1="484" start2="384" end2="385" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="485" end1="486" start2="386" end2="387" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="487" end1="490" start2="388" end2="391" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="491" end1="492" start2="392" end2="393" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="493" end1="494" start2="394" end2="395" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="495" end1="498" start2="396" end2="399" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="499" end1="500" start2="400" end2="401" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="501" end1="502" start2="402" end2="403" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="503" end1="506" start2="404" end2="407" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="507" end1="508" start2="408" end2="409" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="509" end1="510" start2="410" end2="411" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="511" end1="514" start2="412" end2="415" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="515" end1="516" start2="416" end2="417" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="517" end1="518" start2="418" end2="419" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="519" end1="522" start2="420" end2="423" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="523" end1="524" start2="424" end2="425" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="525" end1="526" start2="426" end2="427" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="527" end1="530" start2="428" end2="431" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="531" end1="532" start2="432" end2="433" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="533" end1="534" start2="434" end2="435" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="535" end1="538" start2="436" end2="439" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="539" end1="540" start2="440" end2="441" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="541" end1="542" start2="442" end2="443" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="543" end1="546" start2="444" end2="447" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="547" end1="548" start2="448" end2="449" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="549" end1="550" start2="450" end2="451" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="551" end1="554" start2="452" end2="455" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="555" end1="556" start2="456" end2="457" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="557" end1="558" start2="458" end2="459" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="559" end1="562" start2="460" end2="463" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="563" end1="564" start2="464" end2="465" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="565" end1="566" start2="466" end2="467" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="567" end1="570" start2="468" end2="471" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="571" end1="572" start2="472" end2="473" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="573" end1="574" start2="474" end2="475" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="575" end1="578" start2="476" end2="479" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="579" end1="580" start2="480" end2="481" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="581" end1="582" start2="482" end2="483" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="583" end1="586" start2="484" end2="487" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="587" end1="588" start2="488" end2="489" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="589" end1="590" start2="490" end2="491" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="591" end1="594" start2="492" end2="495" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="595" end1="596" start2="496" end2="497" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="597" end1="598" start2="498" end2="499" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="599" end1="602" start2="500" end2="503" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="603" end1="604" start2="504" end2="505" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="605" end1="606" start2="506" end2="507" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="607" end1="610" start2="508" end2="511" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="611" end1="612" start2="512" end2="513" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="613" end1="614" start2="514" end2="515" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="615" end1="618" start2="516" end2="519" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="619" end1="620" start2="520" end2="521" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="621" end1="622" start2="522" end2="523" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="623" end1="626" start2="524" end2="527" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="627" end1="628" start2="528" end2="529" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="629" end1="630" start2="530" end2="531" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="631" end1="634" start2="532" end2="535" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="635" end1="636" start2="536" end2="537" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="637" end1="638" start2="538" end2="539" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="639" end1="642" start2="540" end2="543" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="643" end1="644" start2="544" end2="545" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="645" end1="646" start2="546" end2="547" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="647" end1="650" start2="548" end2="551" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="651" end1="652" start2="552" end2="553" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="653" end1="654" start2="554" end2="555" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="655" end1="658" start2="556" end2="559" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="659" end1="660" start2="560" end2="561" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="661" end1="662" start2="562" end2="563" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="663" end1="666" start2="564" end2="567" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="667" end1="668" start2="568" end2="569" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="669" end1="670" start2="570" end2="571" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="671" end1="674" start2="572" end2="575" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="675" end1="676" start2="576" end2="577" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="677" end1="678" start2="578" end2="579" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="679" end1="682" start2="580" end2="583" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="683" end1="684" start2="584" end2="585" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="685" end1="686" start2="586" end2="675" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="715" end1="722" start2="704" end2="704" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="740" end1="741" start2="722" end2="730" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
       </ranges>
     </file>
   </component>
@@ -256,6 +260,28 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
+    <configuration name="GenerateStrings" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PythonProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bot/locales" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot/locales/GenerateStrings.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="business_message_handlers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PythonProject" />
       <option name="ENV_FILES" value="" />
@@ -355,8 +381,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.test_ai" />
-        <item itemvalue="Python.main" />
+        <item itemvalue="Python.GenerateStrings" />
+        <item itemvalue="Python.business_message_handlers" />
+        <item itemvalue="Python.data_cutter_script" />
         <item itemvalue="Python.test_ai" />
       </list>
     </recent_temporary>

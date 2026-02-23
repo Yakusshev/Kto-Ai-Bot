@@ -6,3 +6,4 @@ google-generativeai
 firebase-admin == 7.1.0
 ydb == 3.25.0
 yandexcloud
+fluent.runtime
