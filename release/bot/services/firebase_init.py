@@ -60,6 +60,6 @@ async def log_message_to_history(user_id: int, data: dict):
         # Используем to_thread для выполнения синхронной операции в отдельном потоке
         update_time, doc_ref = await asyncio.to_thread(history_collection_ref.add, data)
 
-        print(f"SUCCESS: Logged message for user {user_id} with document ID: {doc_ref.id}")
+        print(f"SUCCESS: Logged message for user {user_id} with document ID: {doc_ref.chat_id}")
     except Exception as e:
         print(f"CRITICAL: Failed to write to Firestore for user {user_id}: {e}")

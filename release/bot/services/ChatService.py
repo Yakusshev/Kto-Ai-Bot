@@ -7,9 +7,9 @@ from aiogram.types import Message
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
 # Убираем импорт YANDEX_FOLDER_ID, так как он больше не нужен
 # from bot.domain.const.env_const import YANDEX_FOLDER_ID 
-from bot.data.infrastructure.SessionRepository import SessionRepository
+from bot.data.repository.SessionRepository import SessionRepository
 from bot.data.infrastructure.AnalyticsRepository import AnalyticsRepository
-from bot.services.llm_service import LLMClient
+from bot.domain.repository.LLMRepository import LLMRepository
 
 # --- Константы моделей ---
 GEMINI_CHAT_MODEL = 'gemini-pro'
@@ -27,7 +27,7 @@ class ChatService:
         self,
         session_repo: SessionRepository,
         analytics_repo: AnalyticsRepository,
-        llm_client: LLMClient,
+        llm_client: LLMRepository,
     ):
         self.session_repo = session_repo
         self.analytics_repo = analytics_repo

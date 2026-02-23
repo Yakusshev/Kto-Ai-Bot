@@ -1,7 +1,7 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from bot.services.gemini import generate_response
+from bot.entrypoint.gemini import generate_response
 import google.generativeai as genai
 
 

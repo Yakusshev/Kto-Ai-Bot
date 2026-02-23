@@ -1,4 +1,4 @@
-# bot/handlers.py
+# bot/business_message_handlers.py
 import asyncio
 import random
 
@@ -7,18 +7,17 @@ from aiogram.types import Message
 
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.resource.string.dynamic_strings import dynamic_string_sticker_emoji
-from bot.services.ChatService import ChatService
+from bot.entrypoint.ChatService import ChatService
 
 business_router = Router()
 
-
 @business_router.business_message(F.text)
-async def handle_business_message(
+async def __handle_text(
     message: Message,
     bot: Bot,
     chat_service: ChatService
 ):
-    await handle_business_message(
+    await __handle_text(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -27,12 +26,12 @@ async def handle_business_message(
 
 
 @business_router.business_message(F.sticker)
-async def handle_business_message(
+async def __handle_sticker(
     message: Message,
     bot: Bot,
     chat_service: ChatService
 ):
-    await handle_business_message(
+    await __handle_text(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -40,8 +39,8 @@ async def handle_business_message(
     )
 
 
-# убрать делеи, разобраться с message quee
-async def handle_business_message(
+#TODO убрать делеи, разобраться с message quee
+async def __handle_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
@@ -56,7 +55,7 @@ async def handle_business_message(
 
     if message.from_user.id == message.chat.id:
 
-        response_text_coroutine = chat_service.handle_user_message(
+        response_text_coroutine = chat_service.handle_user_text_message(
             message = message,
             content = text_content,
         )
@@ -82,10 +81,6 @@ async def handle_business_message(
 
         ai_answer_list = await response_text_coroutine
 
-        # if not DEBUG_MODE:
-        #     write_time = len(" ".join(ai_answer_list)) / 10
-        #     await asyncio.sleep(write_time)
-
         for _, ai_answer in enumerate(ai_answer_list):
 
             if not DEBUG_MODE:
@@ -101,6 +96,7 @@ async def handle_business_message(
             await chat_service.handle_self_message(message = answer_message)
 
     else:
+        print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
         # TODO рассмотреть возможность записывать ответ на сообщение во время отправки ответа
         await chat_service.handle_self_message(message = message)
 

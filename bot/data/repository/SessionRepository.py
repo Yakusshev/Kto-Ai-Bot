@@ -4,6 +4,7 @@ import ydb
 from aiogram.types import Message
 
 from bot.domain.const.env_const import DEBUG_MODE, DEBUG_MODE_DATABASE
+from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.resource.string.strings import EMPTY_MESSAGE
 
 class SessionRepository:
@@ -44,20 +45,11 @@ class SessionRepository:
 
     async def add_text_message(
         self,
-        message: Message,
-        role: str,
-        content: str,
+        message: SaveMessageModel,
     ):
         """
         Сохраняет сообщение в YDB.
         """
-        reply_to_id = None
-        text_quote = None
-
-        if message.reply_to_message:
-            reply_to_id = int(message.reply_to_message.message_id)
-            if message.quote:
-                text_quote = str(message.quote.text)
 
         query = f"""
             DECLARE $chat_id AS Uint64;
@@ -79,19 +71,19 @@ class SessionRepository:
             );
         """
 
-        if content == "":
+        if message.content == "":
             content = EMPTY_MESSAGE
 
         # Подготовка параметров с явным приведением типов
         params = {
-            '$chat_id': int(message.chat.id),
+            '$chat_id': int(message.chat_id),
             '$created_at': datetime.datetime.now(),
             '$message_id': int(message.message_id),
-            '$role': str(role),
-            '$content': str(content),
+            '$role': str(message.role),
+            '$content': str(message.content),
             '$event_type': 'text',
-            '$reply_to_id': reply_to_id,
-            '$text_quote': text_quote,
+            '$reply_to_id': message.reply_to_id,
+            '$text_quote': message.text_quote,
             '$business_conn_id': str(message.business_connection_id) if message.business_connection_id else None
         }
 

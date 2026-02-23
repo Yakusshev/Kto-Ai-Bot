@@ -1,4 +1,4 @@
-# bot/handlers.py
+# bot/business_message_handlers.py
 import asyncio
 import random
 
@@ -7,7 +7,7 @@ from aiogram.types import Message
 
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.resource.string.dynamic_strings import dynamic_string_sticker_emoji
-from bot.services.ChatService import ChatService
+from bot.entrypoint.ChatService import ChatService
 
 business_router = Router()
 
@@ -56,7 +56,7 @@ async def handle_business_message(
 
     if message.from_user.id == message.chat.id:
 
-        response_text_coroutine = chat_service.handle_user_message(
+        response_text_coroutine = chat_service.handle_user_text_message(
             message = message,
             content = text_content,
         )

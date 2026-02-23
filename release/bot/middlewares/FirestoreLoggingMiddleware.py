@@ -8,7 +8,7 @@ from aiogram.types import Message
 from google.cloud.firestore_v1 import SERVER_TIMESTAMP
 
 # Импортируем новую функцию
-from bot.services.firebase_init import log_message_to_history
+from bot.entrypoint.firebase_init import log_message_to_history
 
 
 class FirestoreLoggingMiddleware(BaseMiddleware):

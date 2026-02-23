@@ -4,11 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Этап 10.5.2 System Instruction">
-      <change afterPath="$PROJECT_DIR$/bot/db-scratch.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/infrastructure/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/infrastructure/SessionRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.2.6 release bd scratch">
+      <change afterPath="$PROJECT_DIR$/bot/data/repository/DeepseekRepository.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/data/repository/GeminiRepository.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/di/llm_module.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/domain/model/SaveMessageModel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/domain/model/UserMessageModel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/entrypoint/ChatService.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/entrypoint/SaveMessageModelMapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/data/infrastructure/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/data/repository/SessionRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/middlewares/FirestoreLoggingMiddleware.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/ChatService.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/GoogleAnalyticsService.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/firebase_init.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/services/llm_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/repository/LLMRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/middlewares/FirestoreLoggingMiddleware.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/middlewares/FirestoreLoggingMiddleware.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/services/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/services/ChatService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/services/firebase_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/services/firebase_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_ai.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -106,8 +124,59 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/bot/entrypoint" />
+      <recent name="$PROJECT_DIR$/bot/data/repository" />
+      <recent name="$PROJECT_DIR$/bot/domain/repository" />
+      <recent name="$PROJECT_DIR$/credentials" />
+      <recent name="$PROJECT_DIR$/data_set_handling/data-set-prod" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.main">
+    <configuration name="business_message_handlers" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PythonProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bot" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="data_cutter_script" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="PythonProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data_set_handling" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data_set_handling/data_cutter_script.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PythonProject" />
       <option name="ENV_FILES" value="" />
@@ -521,32 +590,63 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Этап 5: Интеграция с Firebase" />
-    <MESSAGE value="Этап 6: Деление пользователей фаербейз по коллекциям" />
-    <MESSAGE value="Этап 7. Google Analytics" />
-    <MESSAGE value="Этап 7.1 Google Analytics Di" />
-    <MESSAGE value="Этап 7.2 Google Analytics Переименования" />
-    <MESSAGE value="Этап 8 Контекст и разделение архитектуры на слои. Ошибка" />
-    <MESSAGE value="Этап 8.1 Ошибка" />
-    <MESSAGE value="Этап 8.2 Ошибка" />
-    <MESSAGE value="Этап 8.3 Фиксы" />
-    <MESSAGE value="Этап 8.4 Фиксы названий файлов" />
-    <MESSAGE value="Этап 8.5 Фикс версий библиотек" />
-    <MESSAGE value="Этап 8.5 Фикс версий библиотек + кометические правки" />
-    <MESSAGE value="Этап 9. Развертывание. Dockerfile" />
-    <MESSAGE value="Этап 9.1. Развертывание. Fix доступа к фаербейз" />
-    <MESSAGE value="Этап 9.2. Развертывание. Fix доступа к фаербейз через Base64" />
-    <MESSAGE value="Этап 9.3. Фикс времени ответа модели, расширенное логирование" />
-    <MESSAGE value="Этап 9.4. Фикс requirements.txt и Dockerfile" />
-    <MESSAGE value="Этап 10.0 бизнес" />
-    <MESSAGE value="Этап 10.1 бизнес ворк" />
-    <MESSAGE value="Этап 10.4 Yandex" />
-    <MESSAGE value="Этап 10.4.1 Yandex фиксы" />
-    <MESSAGE value="Этап 10.4.1 Yandex попытка фикса" />
-    <MESSAGE value="Этап 10.4.2 Обновил питон" />
-    <MESSAGE value="Этап 10.4.3 Обновил питон" />
-    <MESSAGE value="Этап 10.4.4 yandex still not work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Этап 10.4.4 yandex still not work" />
+    <MESSAGE value="Этап 10.8.8. Ксюша реди" />
+    <MESSAGE value="Этап 10.8.9. Ксюша Сашко" />
+    <MESSAGE value="Этап 10.8.10. еще датасеты" />
+    <MESSAGE value="Этап 10.8.11. системные промпты" />
+    <MESSAGE value="Этап 10.8.12. системные промпты добавлены&#10;Датасетов 849" />
+    <MESSAGE value="Этап 10.8.12. системные промпты добавлены&#10;Датасетов 849" />
+    <MESSAGE value="Этап 10.8.13. validation data set" />
+    <MESSAGE value="Этап 10.9.0" />
+    <MESSAGE value="Этап 10.10" />
+    <MESSAGE value="Этап 10.11 v4 data seti" />
+    <MESSAGE value="Этап 10.12 v4 data seti inst syst" />
+    <MESSAGE value="Этап 10.13 ready to train" />
+    <MESSAGE value="Этап 11.0.0 v4" />
+    <MESSAGE value="Этап 11.0.1 v4" />
+    <MESSAGE value="Этап 11.0.2 v4" />
+    <MESSAGE value="Этап 11.0.3 system prompt" />
+    <MESSAGE value="Этап 11.1.0 deepseel" />
+    <MESSAGE value="11.1.0 deepseek" />
+    <MESSAGE value="11.2.0 release" />
+    <MESSAGE value="11.2.1 release" />
+    <MESSAGE value="11.2.2 release" />
+    <MESSAGE value="11.2.3 release" />
+    <MESSAGE value="11.2.4 release" />
+    <MESSAGE value="11.2.5 release" />
+    <MESSAGE value="11.2.6 release bd scratch" />
+    <option name="LAST_COMMIT_MESSAGE" value="11.2.6 release bd scratch" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot/domain/repository/LLMRepository.py</url>
+          <line>66</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot/domain/repository/LLMRepository.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot/domain/repository/LLMRepository.py</url>
+          <line>77</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot/domain/repository/LLMRepository.py</url>
+          <line>79</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py</url>
+          <line>99</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PythonProject$test_ai.coverage" NAME="test_ai Coverage Results" MODIFIED="1765747752294" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
