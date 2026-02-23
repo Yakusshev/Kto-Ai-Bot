@@ -2,6 +2,7 @@ import asyncio
 import re
 
 from aiogram.types import Message
+from aiogram_i18n import I18nContext
 
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.model.UserMessageModel import UserMessageModel
@@ -28,8 +29,8 @@ class ChatService:
         self,
         message: Message,
         content: str,
+        i18n: I18nContext,
     ) -> list[str]:
-
         ai_response = await self.generate_ai_response_use_case.invoke(
             user_message_model = UserMessageModel(
                 id = message.chat.id,
@@ -44,7 +45,8 @@ class ChatService:
                     message = message,
                     content = content,
                     role = ROLE_USER,
-                )
+                ),
+                i18n = i18n
             )
         )
 
@@ -53,6 +55,7 @@ class ChatService:
     async def handle_self_message(
         self,
         message: Message,
+        i18n: I18nContext,
     ):
         asyncio.create_task(
             self.save_message_use_case.invoke(
@@ -60,7 +63,8 @@ class ChatService:
                     message = message,
                     content = message.text,
                     role = ROLE_ASSISTANT,
-                )
+                ),
+                i18n = i18n
             )
         )
 

@@ -1,11 +1,9 @@
 import asyncio
 import datetime
 import ydb
-from aiogram.types import Message
 
 from bot.domain.const.env_const import DEBUG_MODE, DEBUG_MODE_DATABASE
 from bot.domain.model.SaveMessageModel import SaveMessageModel
-from bot.resource.string.strings import EMPTY_MESSAGE
 
 #TODO abstract
 #TODO data sources
@@ -75,9 +73,6 @@ class SessionRepository:
                 $event_type, $reply_to_id, $text_quote, $business_conn_id
             );
         """
-
-        if message.content == "":
-            content = EMPTY_MESSAGE
 
         # Подготовка параметров с явным приведением типов
         params = {

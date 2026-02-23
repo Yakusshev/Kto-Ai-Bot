@@ -5,9 +5,9 @@ import random
 
 from aiogram import Router, F, Bot
 from aiogram.types import Message
+from aiogram_i18n import I18nContext
 
 from bot.domain.const.env_const import DEBUG_MODE
-from bot.resource.string.dynamic_strings import dynamic_string_sticker_emoji
 from bot.entrypoint.ChatService import ChatService
 from main import logger
 
@@ -18,13 +18,15 @@ business_router = Router()
 async def __handle_text(
     message: Message,
     bot: Bot,
-    chat_service: ChatService
+    chat_service: ChatService,
+    i18n: I18nContext
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
         text_content = message.text,
+        i18n = i18n
     )
 
 
@@ -32,30 +34,39 @@ async def __handle_text(
 async def __handle_sticker(
     message: Message,
     bot: Bot,
-    chat_service: ChatService
+    chat_service: ChatService,
+    i18n: I18nContext
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = dynamic_string_sticker_emoji(message.sticker.emoji),
+        text_content = i18n.get('sticker-not-loaded', emoji = message.sticker.emoji),
+        i18n = i18n
     )
+
 
 @business_router.business_message(F.photo)
 async def __handle_photo(
     message: Message,
     bot: Bot,
-    chat_service: ChatService
+    chat_service: ChatService,
+    i18n: I18nContext
 ):
     if message.photo:
-        message.photo.s
-    len(message.photo)
+        if len(message.photo) > 1:
+            text_content = i18n.get('photo-list-cannot-be-loaded', user = message.from_user.full_name)
+        else:
+            text_content = i18n.get('photo-cannot-be-loaded', user = message.from_user.full_name)
+    else:
+        text_content = ""
 
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = "",
+        text_content = text_content,
+        i18n = i18n
     )
 
 
@@ -65,8 +76,10 @@ async def __handle_message(
     bot: Bot,
     chat_service: ChatService,
     text_content: str,
+    i18n: I18nContext
 ):
-    logger.debug("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
+    logger.debug("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ",
+                 message)
 
     if not message.business_connection_id:
         return
@@ -78,6 +91,7 @@ async def __handle_message(
         response_text_coroutine = chat_service.handle_user_text_message(
             message = message,
             content = text_content,
+            i18n = i18n
         )
 
         if not DEBUG_MODE:
