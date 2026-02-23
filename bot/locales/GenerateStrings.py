@@ -1,13 +1,11 @@
 """
 FTL Stub Generator
 ==================
-Парсит .ftl файл локализации и генерирует Python-файл с типизированными методами.
+Парсит ru/strings.ftl и генерирует Strings.py с классом Strings,
+который оборачивает I18nContext и предоставляет типизированный доступ к ключам.
 
 Использование:
-    python generate_stubs.py <path_to.ftl> [output_stubs.py]
-
-Пример:
-    python generate_stubs.py strings.ftl stubs.py
+    python generate_stubs.py
 """
 
 from __future__ import annotations
@@ -66,7 +64,8 @@ def parse_ftl(path: Path) -> FtlBundle:
             continue
 
         key_name = key_match.group(1)
-        variables = tuple(dict.fromkeys(_VAR_PATTERN.findall(line)))  # сохраняем порядок, без дубликатов
+        # Сохраняем порядок появления переменных, без дубликатов
+        variables = tuple(dict.fromkeys(_VAR_PATTERN.findall(line)))
         bundle.keys.append(FtlKey(name=key_name, variables=variables))
 
     return bundle
@@ -80,52 +79,50 @@ _INDENT = "    "
 
 
 def _render_method(key: FtlKey, indent: str = _INDENT) -> str:
-    """Генерирует один метод класса для FtlKey."""
+    """Генерирует один метод класса Strings для FtlKey."""
+    i2 = indent + _INDENT
+
     if key.has_variables():
-        kwargs = ", ".join(f"{v}: object" for v in key.variables)
-        signature = f"def {key.method_name()}(self, *, {kwargs}) -> str:"
-        body_return = (
-            f"return self._get({key.name!r}, "
-            + ", ".join(f"{v}={v}" for v in key.variables)
-            + ")"
-        )
+        kwargs_sig = ", ".join(f"{v}: object" for v in key.variables)
+        kwargs_call = ", ".join(f"{v}={v}" for v in key.variables)
+        signature = f"def {key.method_name()}(self, *, {kwargs_sig}) -> str:"
+        body = f"return self._i18n.get({key.name!r}, {kwargs_call})"
     else:
         signature = f"def {key.method_name()}(self) -> str:"
-        body_return = f"return self._get({key.name!r})"
+        body = f"return self._i18n.get({key.name!r})"
 
-    lines = [
+    return "\n".join([
         f"{indent}{signature}",
-        f"{indent}{_INDENT}{body_return}",
+        f"{i2}{body}",
         "",
-    ]
-    return "\n".join(lines)
+    ])
 
 
 def generate_stubs(bundle: FtlBundle) -> str:
-    """Возвращает строку с готовым Python-кодом стабов."""
+    """Возвращает строку с готовым Python-кодом класса Strings."""
     source = bundle.source_path.name
-    lines: list[str] = [
-        '"""',
-        f"Auto-generated stubs for {source}",
-        'Do NOT edit manually — re-run generate_stubs.py to update.',
-        '"""',
-        "",
-        "from __future__ import annotations",
-        "",
-        "",
-        "class I18n:",
-        f'{_INDENT}"""Типизированный доступ к ключам локализации."""',
-        "",
-        f"{_INDENT}def __init__(self, get_fn) -> None:",
-        f"{_INDENT}{_INDENT}# get_fn(key, **kwargs) -> str  —  любой i18n-бэкенд",
-        f"{_INDENT}{_INDENT}self._get = get_fn",
-        "",
-    ]
 
-    for key in bundle.keys:
-        lines.append(_render_method(key))
+    header = (
+        '"""\n'
+        f"Auto-generated stubs for {source}\n"
+        "Do NOT edit manually — re-run generate_stubs.py to update.\n"
+        '"""\n'
+        "\n"
+        "from __future__ import annotations\n"
+        "\n"
+        "from aiogram_i18n import I18nContext\n"
+        "\n"
+        "\n"
+        "class Strings:\n"
+        '    """Типизированный доступ к ключам локализации через I18nContext."""\n'
+        "\n"
+        "    def __init__(self, i18n: I18nContext) -> None:\n"
+        "        self._i18n = i18n\n"
+        "\n"
+    )
 
-    return "\n".join(lines)
+    methods = "\n".join(_render_method(key) for key in bundle.keys)
+    return header + methods
 
 
 # ---------------------------------------------------------------------------
@@ -138,17 +135,16 @@ def write_stubs(code: str, output_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# CLI Entry Point
+# Entry Point
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-
     ftl_path = Path("ru/strings.ftl")
     if not ftl_path.exists():
         print(f"❌  File not found: {ftl_path}")
         sys.exit(1)
 
-    output_path = Path("strings.py")
+    output_path = Path("Strings.py")
 
     bundle = parse_ftl(ftl_path)
     code = generate_stubs(bundle)
