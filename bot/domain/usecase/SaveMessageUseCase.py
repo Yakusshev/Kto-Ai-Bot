@@ -1,4 +1,4 @@
-from bot.data.repository.SessionRepository import SessionRepository
+from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 
 
@@ -6,7 +6,7 @@ class SaveMessageUseCase:
 
     def __init__(
         self,
-        session_repository: SessionRepository,
+        session_repository: ChatHistoryRepositoryImpl,
     ):
         self.session_repository = session_repository
 

@@ -4,14 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.7.0 Правка билд скрипта">
-      <change afterPath="$PROJECT_DIR$/scratch/requirements-scratch" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/data/infrastructure/AnalyticsRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/data/repository/GeminiRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/data/infrastructure/AnalyticsRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/GeminiRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/requirements.lock" beforeDir="false" afterPath="$PROJECT_DIR$/release/requirements.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.7.1 Update requirements.txt">
+      <change afterPath="$PROJECT_DIR$/bot/domain/model/PendingChat.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bot/domain/repository/DebounceRepository.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scratch/claude_debounce.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/data/repository/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/data/repository/ChatHistoryRepositoryImpl.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/domain/repository/LLMRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/repository/LLMRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/domain/usecase/GenerateAiResponseUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -250,10 +254,10 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.sourceCode.Python",
     "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/bot/resource" />

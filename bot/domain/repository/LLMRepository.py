@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union, List, Dict
 
 class LLMRepository(ABC):
+
     @abstractmethod
     async def generate_response(
         self,

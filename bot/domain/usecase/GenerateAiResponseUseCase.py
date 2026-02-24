@@ -1,7 +1,7 @@
 from random import random
 from typing import List
 
-from bot.data.repository.SessionRepository import SessionRepository
+from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
 from bot.domain.model.UserMessageModel import UserMessageModel
 from bot.domain.repository.LLMRepository import LLMRepository
@@ -17,7 +17,7 @@ class GenerateAiResponseUseCase:
     def __init__(
         self,
         llm_repository: LLMRepository,
-        session_repository: SessionRepository,
+        session_repository: ChatHistoryRepositoryImpl,
     ):
         self.llm_repository = llm_repository
         self.session_repository = session_repository

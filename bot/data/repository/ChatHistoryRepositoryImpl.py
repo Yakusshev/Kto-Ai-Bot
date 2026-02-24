@@ -7,7 +7,7 @@ from bot.domain.model.SaveMessageModel import SaveMessageModel
 
 #TODO abstract
 #TODO data sources
-class SessionRepository:
+class ChatHistoryRepositoryImpl:
 
     def __init__(
         self,

@@ -19,7 +19,7 @@ async def __handle_text(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    i18n: I18nContext,
 ):
     await __handle_message(
         message = message,
@@ -35,13 +35,16 @@ async def __handle_sticker(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    i18n: I18nContext,
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = i18n.get('sticker-not-loaded', emoji = message.sticker.emoji),
+        text_content = i18n.get(
+            'sticker-not-loaded',
+            emoji = message.sticker.emoji,
+        ),
         strings = Strings(i18n = i18n),
     )
 
@@ -51,7 +54,7 @@ async def __handle_photo(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    i18n: I18nContext,
 ):
     strings = Strings(i18n = i18n)
 
@@ -92,7 +95,7 @@ async def __handle_voice_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    i18n: I18nContext,
 ):
     strings = Strings(i18n = i18n)
 
@@ -114,7 +117,7 @@ async def __handle_voice_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    i18n: I18nContext,
 ):
     strings = Strings(i18n = i18n)
 
@@ -138,12 +141,13 @@ async def __handle_message(
     text_content: str,
     strings: Strings,
 ):
-    print("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
+    print(
+        "handle_business_message text_content = ", text_content,
+        "message.text = ", message.text, "; ", message,
+    )
 
     if not message.business_connection_id:
         return
-
-    chat_id = message.chat.id
 
     if message.from_user.id == message.chat.id:
 
@@ -158,7 +162,7 @@ async def __handle_message(
 
         await bot.read_business_message(
             business_connection_id = message.business_connection_id,
-            chat_id = chat_id,
+            chat_id = message.chat.id,
             message_id = message.message_id,
         )
 
@@ -171,10 +175,10 @@ async def __handle_message(
         typing_task = asyncio.create_task(
             __typing_loop(
                 bot = bot,
-                chat_id = chat_id,
+                chat_id = message.chat.id,
                 business_connection_id = message.business_connection_id,
                 stop_event = stop_typing,
-            )
+            ),
         )
 
         try:
@@ -182,15 +186,20 @@ async def __handle_message(
 
             for ai_answer in ai_answer_list:
                 if not DEBUG_MODE:
-                    write_time = len(ai_answer) / random.uniform(3, 10)
+                    write_time = len(ai_answer) / random.uniform(
+                        3,
+                        10,
+                    )
                     await asyncio.sleep(write_time)
 
                 answer_message = await bot.send_message(
-                    chat_id = chat_id,
+                    chat_id = message.chat.id,
                     text = ai_answer,
                     business_connection_id = message.business_connection_id,
                 )
-                await chat_service.handle_self_message(message = answer_message, strings = strings)
+                await chat_service.handle_self_message(
+                    message = answer_message, strings = strings,
+                )
         finally:
             # --- останавливаем typing в любом случае (даже при ошибке) ---
             stop_typing.set()
@@ -201,8 +210,13 @@ async def __handle_message(
                 pass
 
     else:
-        print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
-        await chat_service.handle_self_message(message = message, strings = strings)
+        print(
+            f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]",
+        )
+        await chat_service.handle_self_message(
+            message = message,
+            strings = strings,
+        )
 
 
 # TODO убрать делеи, разобраться с message quee

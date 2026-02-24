@@ -20,7 +20,7 @@ from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 # Разделяем импорты роутеров для ясности
 from bot.entrypoint.business_message_handlers import business_router
 # Исправляем импорты на snake_case
-from bot.data.repository.SessionRepository import SessionRepository
+from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.entrypoint.ChatService import ChatService
 
 # Get the absolute path to the project root
@@ -31,7 +31,7 @@ async def main():
     driver = create_ydb_driver()
     ydb_session_pool = ydb.SessionPool(driver)
 
-    session_repository = SessionRepository(ydb_session_pool = ydb_session_pool)
+    session_repository = ChatHistoryRepositoryImpl(ydb_session_pool = ydb_session_pool)
 
     chat_service = ChatService(
         generate_ai_response_use_case = GenerateAiResponseUseCase(
