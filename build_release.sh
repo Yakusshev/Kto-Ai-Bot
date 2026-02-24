@@ -34,7 +34,7 @@ RELEASE_ENV_FILE="release/.env"
 
 # Используем sed для поиска и замены ВСЕХ строк, начинающихся с "DEBUG_MODE"
 # `g` в конце `s/.../.../g` означает "глобальная замена" на случай нескольких совпадений в одной строке (хотя здесь это маловероятно)
-sed -i '' 's/^DEBUG_MODE.*/DEBUG_MODE=False/' "$RELEASE_ENV_FILE"
+sed -i '' 's/^\(DEBUG_MODE[^=]*=\).*/\1False/' "$RELEASE_ENV_FILE"
 
 # Этот код заменит строки вида:
 # DEBUG_MODE=True -> DEBUG_MODE=False
