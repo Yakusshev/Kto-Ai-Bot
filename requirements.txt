@@ -1,10 +1,8 @@
-protobuf == 5.29.5
-aiogram == 3.22.0
-openai
-python-dotenv == 1.2.1
-google-generativeai
-firebase-admin == 7.1.0
-ydb == 3.25.0
-yandexcloud
-fluent.runtime
-aiogram_i18n
+protobuf==5.29.6
+aiogram==3.22.0
+openai==2.23.0
+python-dotenv==1.2.1
+ydb==3.26.5
+yandexcloud==0.379.0
+fluent-runtime==0.4.0
+aiogram-i18n==1.4

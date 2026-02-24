@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.4.6 Video, Voice">
-      <change afterPath="$PROJECT_DIR$/bot/domain/get_bot_token.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/domain/const/env_const.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/const/env_const.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.7.0 Правка билд скрипта">
+      <change afterPath="$PROJECT_DIR$/scratch/requirements-scratch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/data/infrastructure/AnalyticsRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/data/repository/GeminiRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/data/infrastructure/AnalyticsRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/GeminiRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/requirements.lock" beforeDir="false" afterPath="$PROJECT_DIR$/release/requirements.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
