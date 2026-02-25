@@ -1,6 +1,5 @@
 # bot/business_message_handlers.py
 import asyncio
-import logging
 import random
 
 from aiogram import Router, F, Bot
@@ -9,6 +8,8 @@ from aiogram_i18n import I18nContext
 
 from bot.domain.const.env_const import DEBUG_MODE
 from bot.entrypoint.ChatService import ChatService
+from bot.entrypoint.HumanWaitingBehavior import wait_to_see_message, \
+    wait_to_read_message, wait_to_write_message
 from bot.resource.Strings import Strings
 
 business_router = Router()
@@ -37,15 +38,14 @@ async def __handle_sticker(
     chat_service: ChatService,
     i18n: I18nContext,
 ):
+    strings = Strings(i18n = i18n)
+
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = i18n.get(
-            'sticker-not-loaded',
-            emoji = message.sticker.emoji,
-        ),
-        strings = Strings(i18n = i18n),
+        text_content = strings.sticker_not_loaded(emoji = message.sticker.emoji),
+        strings = strings,
     )
 
 
@@ -130,7 +130,7 @@ async def __handle_voice_message(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = Strings(i18n = i18n),
+        strings = strings,
     )
 
 
@@ -146,19 +146,9 @@ async def __handle_message(
         "message.text = ", message.text, "; ", message,
     )
 
-    if not message.business_connection_id:
-        return
+    if message.from_user.id == message.chat.id and message.business_connection_id:
 
-    if message.from_user.id == message.chat.id:
-
-        response_text_coroutine = chat_service.handle_user_text_message(
-            message = message,
-            content = text_content,
-            strings = strings,
-        )
-
-        if not DEBUG_MODE:
-            await asyncio.sleep(random.uniform(1, 4))
+        await wait_to_see_message()
 
         await bot.read_business_message(
             business_connection_id = message.business_connection_id,
@@ -166,11 +156,8 @@ async def __handle_message(
             message_id = message.message_id,
         )
 
-        if not DEBUG_MODE:
-            read_time = len(text_content.split()) / 2.5
-            await asyncio.sleep(read_time)
+        await wait_to_read_message(message = text_content)
 
-        # --- запускаем фоновый typing ---
         stop_typing = asyncio.Event()
         typing_task = asyncio.create_task(
             __typing_loop(
@@ -182,15 +169,14 @@ async def __handle_message(
         )
 
         try:
-            ai_answer_list = await response_text_coroutine
+            ai_answer_list = await chat_service.handle_user_text_message(
+                message = message,
+                content = text_content,
+                strings = strings,
+            )
 
             for ai_answer in ai_answer_list:
-                if not DEBUG_MODE:
-                    write_time = len(ai_answer) / random.uniform(
-                        3,
-                        10,
-                    )
-                    await asyncio.sleep(write_time)
+                await wait_to_write_message(ai_answer)
 
                 answer_message = await bot.send_message(
                     chat_id = message.chat.id,
@@ -198,7 +184,8 @@ async def __handle_message(
                     business_connection_id = message.business_connection_id,
                 )
                 await chat_service.handle_self_message(
-                    message = answer_message, strings = strings,
+                    message = answer_message,
+                    strings = strings,
                 )
         finally:
             # --- останавливаем typing в любом случае (даже при ошибке) ---
@@ -211,11 +198,9 @@ async def __handle_message(
 
     else:
         print(
-            f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]",
-        )
-        await chat_service.handle_self_message(
-            message = message,
-            strings = strings,
+            f"Сообщение не было обработано"
+            f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]"
+            f"message.business_connection_id = {message.business_connection_id}",
         )
 
 

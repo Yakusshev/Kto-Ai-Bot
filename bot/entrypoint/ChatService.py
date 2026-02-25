@@ -4,6 +4,7 @@ from random import random
 
 from aiogram.types import Message
 
+from bot.domain.const.env_const import DEBUG_MODE
 from bot.domain.model.UserMessageModel import UserMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
