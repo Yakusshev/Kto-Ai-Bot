@@ -4,7 +4,7 @@ from typing import List
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
 from bot.domain.model.MessageForAiModel import MessageForAiModel
-from bot.domain.repository.LLMRepository import LLMRepository
+from bot.domain.repository.AiRepository import AiRepository
 
 ROLE_TITLE = 'role'
 ROLE_ASSISTANT = 'assistant'
@@ -16,7 +16,7 @@ class GenerateAiResponseUseCase:
 
     def __init__(
         self,
-        llm_repository: LLMRepository,
+        llm_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
     ):
         self.llm_repository = llm_repository

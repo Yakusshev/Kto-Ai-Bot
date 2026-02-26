@@ -1,7 +1,7 @@
 import os
 
 from bot.data.repository.DeepseekRepository import DeepseekRepository
-from bot.domain.repository import LLMRepository
+from bot.domain.repository import AiRepository
 
 
 def get_llm_repository() -> LLMRepository:

@@ -5,7 +5,6 @@ from bot.domain.const.env_const import YDB_AUTH_KEY_FILE, YDB_ENDPOINT, YDB_PATH
 
 
 def create_ydb_driver():
-
     # Выбираем способ авторизации
     if YDB_AUTH_KEY_FILE and os.path.exists(YDB_AUTH_KEY_FILE):
         # Локальная разработка: используем файл ключа
@@ -17,16 +16,16 @@ def create_ydb_driver():
         credentials = ydb.iam.MetadataUrlCredentials()
 
     driver_config = ydb.DriverConfig(
-        endpoint=YDB_ENDPOINT,
-        database=YDB_PATH,
-        credentials=credentials,
+        endpoint = YDB_ENDPOINT,
+        database = YDB_PATH,
+        credentials = credentials,
     )
 
     driver = ydb.Driver(driver_config)
 
     # Ожидаем готовности драйвера (таймаут 5 секунд)
     try:
-        driver.wait(fail_fast=True, timeout=5)
+        driver.wait(fail_fast = True, timeout = 5)
         print("YDB: Драйвер успешно инициализирован")
     except TimeoutError:
         print("YDB: Ошибка инициализации драйвера (timeout)")

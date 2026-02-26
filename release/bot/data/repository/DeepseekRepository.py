@@ -3,12 +3,12 @@ from typing import List, Dict, Union, cast
 import openai
 from openai.types.chat import ChatCompletionMessageParam
 
-from bot.domain.repository.LLMRepository import LLMRepository
+from bot.domain.repository.AiRepository import AiRepository
 
 DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
-class DeepseekRepository(LLMRepository):
+class DeepseekRepository(AiRepository):
     def __init__(
         self,
         api_key: str,

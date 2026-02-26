@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union, List, Dict
 
-class LLMRepository(ABC):
+class AiRepository(ABC):
 
     @abstractmethod
     async def generate_response(
