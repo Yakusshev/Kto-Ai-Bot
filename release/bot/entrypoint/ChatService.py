@@ -4,7 +4,7 @@ from random import random
 
 from aiogram.types import Message
 
-from bot.domain.model.UserMessageModel import UserMessageModel
+from bot.domain.model.MessageForAiModel import MessageForAiModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
@@ -43,7 +43,7 @@ class ChatService:
         )
 
         ai_response = self.generate_ai_response_use_case.invoke(
-            user_message_model = UserMessageModel(
+            user_message_model = MessageForAiModel(
                 id = message.chat.id,
                 username = message.chat.username,
                 content = content,

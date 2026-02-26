@@ -3,7 +3,7 @@ from typing import List
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
-from bot.domain.model.UserMessageModel import UserMessageModel
+from bot.domain.model.MessageForAiModel import MessageForAiModel
 from bot.domain.repository.LLMRepository import LLMRepository
 
 ROLE_TITLE = 'role'
@@ -24,7 +24,7 @@ class GenerateAiResponseUseCase:
 
     async def invoke(
         self,
-        user_message_model: UserMessageModel,
+        user_message_model: MessageForAiModel,
     ) -> List[str]:
         messages_history = await self.session_repository.get_session_data(
             chat_id = user_message_model.id,

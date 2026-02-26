@@ -1,11 +1,10 @@
 import asyncio
 import re
-from random import random
 
 from aiogram.types import Message
 
-from bot.domain.const.env_const import DEBUG_MODE
-from bot.domain.model.UserMessageModel import UserMessageModel
+from bot.domain.model.MessageForAiModel import MessageForAiModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
@@ -28,26 +27,20 @@ class ChatService:
 
     async def handle_user_text_message(
         self,
-        message: Message,
-        content: str,
-        strings: Strings,
+        message: SaveMessageModel,
+        user_name: str,
     ) -> list[str]:
         asyncio.create_task(
             self.save_message_use_case.invoke(
-                save_message_model = to_save_message_model(
-                    message = message,
-                    content = content,
-                    role = ROLE_USER,
-                    empty_message = strings.empty_message(),
-                ),
+                save_message_model = message,
             )
         )
 
         ai_response = self.generate_ai_response_use_case.invoke(
-            user_message_model = UserMessageModel(
-                id = message.chat.id,
-                username = message.chat.username,
-                content = content,
+            user_message_model = MessageForAiModel(
+                id = message.chat_id,
+                username = user_name,
+                content = message.content,
             )
         )
 

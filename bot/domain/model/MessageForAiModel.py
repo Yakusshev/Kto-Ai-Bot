@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class UserMessageModel:
+class MessageForAiModel:
     id: int
     username: str
     content: str
