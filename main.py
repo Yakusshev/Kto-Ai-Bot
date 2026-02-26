@@ -40,8 +40,8 @@ async def main():
     ).setup(
         dispatcher = dispatcher
     )
-    dispatcher.message.middleware(StringsMiddleware())
-    dispatcher.message.middleware(
+    dispatcher.business_message.middleware(StringsMiddleware())
+    dispatcher.business_message.middleware(
         ChatServiceMiddleware(ydb_session_pool = ydb_session_pool)
     )
 

@@ -25,7 +25,10 @@ class TaskSchedulerRepositoryImpl:
         save_message_model: SaveMessageModel,
         coroutine: Coroutine,
     ):
-        message_list = self._message_queue_dict[key]
+        message_list = self._message_queue_dict[key] \
+            if key in self._message_queue_dict \
+            else []
+
         self._message_queue_dict[key] = message_list.__add__([save_message_model])
         await self.cancel(key)
 
