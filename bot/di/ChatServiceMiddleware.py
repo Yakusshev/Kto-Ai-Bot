@@ -35,11 +35,12 @@ class ChatServiceMiddleware(BaseMiddleware):
         data["chat_service"] = ChatService(
             generate_ai_response_use_case = GenerateAiResponseUseCase(
                 session_repository = session_repository,
-                llm_repository = get_llm_repository(),
+                ai_repository = get_llm_repository(),
             ),
             save_message_use_case = SaveMessageUseCase(
                 session_repository = session_repository,
             ),
+            strings = data["strings"],
         )
 
         return await handler(event, data)

@@ -10,7 +10,6 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
-from bot.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.di.StringsMiddleware import StringsMiddleware
 from bot.domain.get_bot_token import get_bot_token

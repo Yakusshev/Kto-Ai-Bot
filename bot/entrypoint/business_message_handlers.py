@@ -3,19 +3,15 @@ import asyncio
 import logging
 import random
 import traceback
-from venv import logger
 
 from aiogram import Router, F, Bot
 from aiogram.types import Message
 
 from bot.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.domain.model.SaveMessageModel import SaveMessageModel
-from bot.domain.usecase.GenerateAiResponseUseCase import ROLE_USER
 from bot.entrypoint.ChatService import ChatService
 from bot.entrypoint.HumanWaitingBehavior import wait_to_see_message, \
     wait_to_read_message, wait_to_write_message
-from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
 from bot.resource.Strings import Strings
 
 business_router = Router()
@@ -27,14 +23,12 @@ async def __handle_text(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    strings: Strings,
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
         text_content = message.text,
-        strings = strings,
     )
 
 
@@ -50,7 +44,6 @@ async def __handle_sticker(
         bot = bot,
         chat_service = chat_service,
         text_content = strings.sticker_not_loaded(emoji = message.sticker.emoji),
-        strings = strings,
     )
 
 
@@ -89,7 +82,6 @@ async def __handle_photo(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = strings,
     )
 
 
@@ -109,7 +101,6 @@ async def __handle_voice_message(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = strings,
     )
 
 
@@ -129,7 +120,6 @@ async def __handle_voice_message(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = strings,
     )
 
 
@@ -138,7 +128,6 @@ async def __handle_message(
     bot: Bot,
     chat_service: ChatService,
     text_content: str,
-    strings: Strings,
 ):
     print(
         "handle_business_message text_content = ", text_content,
@@ -168,15 +157,9 @@ async def __handle_message(
 
             await wait_to_read_message(message = text_content)
 
-            save_message_model = to_save_message_model(
-                message = message,
-                content = text_content,
-                role = ROLE_USER,
-                empty_message = strings.empty_message(),
-            )
-
             await chat_service.save_message_model(
-                message = save_message_model,
+                message = message,
+                text_content = text_content,
             )
 
             await scheduler.schedule_task(
@@ -184,7 +167,6 @@ async def __handle_message(
                 coroutine = __answer_message(
                     bot = bot,
                     chat_service = chat_service,
-                    strings = strings,
                     message_chat_id = message_chat_id,
                     user_name = message.from_user.username,
                     business_connection_id = message.business_connection_id,
@@ -205,7 +187,6 @@ async def __handle_message(
 async def __answer_message(
     bot: Bot,
     chat_service: ChatService,
-    strings: Strings,
     message_chat_id: int,
     user_name: str,
     business_connection_id: str,
@@ -246,11 +227,9 @@ async def __answer_message(
         logging.exception(e)
         raise
     finally:
-        await chat_service.handle_self_message(
-            message_list = answer_message_list,
-            strings = strings,
-        )
-        # --- останавливаем typing в любом случае (даже при ошибке) ---
+
+        await chat_service.handle_self_message(message_list = answer_message_list)
+
         stop_typing.set()
         typing_task.cancel()
         try:

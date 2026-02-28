@@ -1,5 +1,6 @@
 from random import random
 from typing import List
+from venv import logger
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.DefaultSystemInstuction import anya_system_instruction
@@ -10,15 +11,16 @@ from bot.domain.repository.AiRepository import AiRepository
 
 
 class GenerateAiResponseUseCase:
+    NEXT_MESSAGE_TAG = '[next]'
     DATE_FORMAT = "%d.%m"
     TIME_FORMAT = "%H:%M"
 
     def __init__(
         self,
-        llm_repository: AiRepository,
+        ai_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
     ):
-        self.llm_repository = llm_repository
+        self.llm_repository = ai_repository
         self.session_repository = session_repository
 
     async def invoke(
@@ -33,28 +35,10 @@ class GenerateAiResponseUseCase:
 
         for index, message in enumerate(history):
 
-            date_time = ''
-
-            date = message.created_at \
-                .strftime(format = GenerateAiResponseUseCase.DATE_FORMAT)
-            time = message.created_at \
-                .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
-
-            if index > 0:
-                previous_message = history[index - 1]
-                prev_date = previous_message.created_at.strftime("%d.%m")
-                prev_time = previous_message.created_at.strftime("%d.%m")
-
-                if prev_date != date:
-                    date_time += f'{date}'
-                if prev_time != time:
-                    date_time = f'{date_time} {time}'
-
-                if date_time:
-                    date_time = f'[{date_time}]'
-            else:
-                date_time = f'[{date} {time}]'
-
+            date_time = await self.get_date_time(
+                previous_message = history[index - 1] if index != 0 else None,
+                message = message,
+            )
             if ai_list and ai_list[-1].role == message.role:
 
                 previous_ai_message = ai_list[-1]
@@ -62,7 +46,7 @@ class GenerateAiResponseUseCase:
                 ai_list[-1] = MessageForAiModel(
                     role = message.role,
                     content = f'{previous_ai_message.content}'
-                              f'[next]'
+                              f'{GenerateAiResponseUseCase.NEXT_MESSAGE_TAG}'
                               f'{date_time}{message.content}',
                 )
             else:
@@ -77,10 +61,43 @@ class GenerateAiResponseUseCase:
             message_list = ai_list,
             system_prompt = anya_system_instruction(
                 user_nickname = user_message_model.username,
+                next_message_tag = GenerateAiResponseUseCase.NEXT_MESSAGE_TAG,
             ),
         )
 
         return self.split_messages(response = ai_response)
+
+    @staticmethod
+    async def get_date_time(
+        previous_message: SaveMessageModel | None,
+        message: SaveMessageModel,
+    ) -> str:
+        date_time = ''
+
+        date = message.created_at \
+            .strftime(format = GenerateAiResponseUseCase.DATE_FORMAT)
+        time = message.created_at \
+            .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
+
+        if previous_message is None:
+            date_time = f'[{date} {time}]'
+        else:
+            prev_date = previous_message \
+                .created_at \
+                .strftime(format = GenerateAiResponseUseCase.DATE_FORMAT)
+            prev_time = previous_message \
+                .created_at \
+                .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
+
+            if prev_date != date:
+                date_time += f'{date}'
+            if prev_time != time:
+                date_time = f'{date_time} {time}'
+
+            if date_time:
+                date_time = f'[{date_time}]'
+
+        return date_time
 
     @staticmethod
     def split_messages(
@@ -88,6 +105,13 @@ class GenerateAiResponseUseCase:
     ) -> List[str]:
 
         lines = response.split('\n')
+        if not lines:
+            logger.warning(
+                f'GenerateAiResponseUseCase.split_messages: empty lines; '
+                f'response = {response}',
+            )
+            return []
+
         result = []
         current = lines[0]
 

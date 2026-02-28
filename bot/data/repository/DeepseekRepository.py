@@ -12,9 +12,7 @@ DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
 ROLE_TITLE = 'role'
-ROLE_ASSISTANT = 'assistant'
 ROLE_MODEL = 'model'
-ROLE_USER = 'user'
 CONTENT = 'content'
 
 class DeepseekRepository(AiRepository):
