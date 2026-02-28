@@ -5,4 +5,3 @@ from dataclasses import dataclass
 class MessageForAiModel:
     id: int
     username: str
-    content: str

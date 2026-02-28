@@ -1,16 +1,14 @@
 # bot/business_message_handlers.py
 import asyncio
 import random
+import traceback
 from venv import logger
-from warnings import catch_warnings
 
 from aiogram import Router, F, Bot
 from aiogram.types import Message
-from aiogram_i18n import I18nContext
 
 from bot.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.domain.const.env_const import DEBUG_MODE
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import ROLE_USER
 from bot.entrypoint.ChatService import ChatService
@@ -27,14 +25,14 @@ async def __handle_text(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext,
+    strings: Strings,
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
         text_content = message.text,
-        strings = Strings(i18n = i18n),
+        strings = strings,
     )
 
 
@@ -43,10 +41,8 @@ async def __handle_sticker(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext,
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
     await __handle_message(
         message = message,
         bot = bot,
@@ -61,10 +57,8 @@ async def __handle_photo(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext,
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
     text_content: str
 
     if len(message.photo) > 1 and message.text is not None:
@@ -93,7 +87,7 @@ async def __handle_photo(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = Strings(i18n = i18n),
+        strings = strings,
     )
 
 
@@ -102,10 +96,8 @@ async def __handle_voice_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext,
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
     text_content = strings.voice_message_cannot_be_loaded(
         user = message.from_user.full_name,
     )
@@ -115,7 +107,7 @@ async def __handle_voice_message(
         bot = bot,
         chat_service = chat_service,
         text_content = text_content,
-        strings = Strings(i18n = i18n),
+        strings = strings,
     )
 
 
@@ -124,10 +116,8 @@ async def __handle_voice_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext,
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
     text_content = strings.video_message_cannot_be_loaded(
         user = message.from_user.full_name,
     )
@@ -148,44 +138,25 @@ async def __handle_message(
     text_content: str,
     strings: Strings,
 ):
-    save_message_model = to_save_message_model(
-        message = message,
-        content = text_content,
-        role = ROLE_USER,
-        empty_message = strings.empty_message(),
-    )
-    await TaskSchedulerRepositoryImpl().schedule_task(
-        key = str(message.chat.id),
-        save_message_model = save_message_model,
-        coroutine = __handle_message_lambda(
-            bot = bot,
-            chat_service = chat_service,
-            strings = strings,
-            #TODO нужно сюда передавать список сообщений
-            save_message_model = save_message_model,
-            message_from_user_id = message.from_user.id,
-            user_name = message.chat.username,
-        ),
-    )
-
-
-async def __handle_message_lambda(
-    bot: Bot,
-    chat_service: ChatService,
-    strings: Strings,
-    save_message_model: SaveMessageModel,
-    message_from_user_id: int,
-    user_name: str,
-):
     print(
-        "handle_business_message text_content = ", save_message_model.content,
-        "; ", save_message_model,
+        "handle_business_message text_content = ", message.content,
+        "; ", message,
     )
+
+    message_from_user_id = message.from_user.id
+    message_chat_id = message.chat.id
 
     if (
-        message_from_user_id == save_message_model.chat_id
-        and save_message_model.business_connection_id
+        message_from_user_id == message_chat_id
+        and message.business_connection_id
     ):
+        save_message_model = to_save_message_model(
+            message = message,
+            content = text_content,
+            role = ROLE_USER,
+            empty_message = strings.empty_message(),
+        )
+
         stop_typing = None
         typing_task = None
 
@@ -193,42 +164,49 @@ async def __handle_message_lambda(
             await wait_to_see_message()
 
             await bot.read_business_message(
-                business_connection_id = save_message_model.business_connection_id,
-                chat_id = save_message_model.chat_id,
-                message_id = save_message_model.message_id,
+                business_connection_id = message.business_connection_id,
+                chat_id = message_chat_id,
+                message_id = message.message_id,
             )
 
-            await wait_to_read_message(message = save_message_model.content)
+            await wait_to_read_message(message = message.content)
 
             stop_typing = asyncio.Event()
             typing_task = asyncio.create_task(
                 __typing_loop(
                     bot = bot,
-                    chat_id = save_message_model.chat_id,
-                    business_connection_id = save_message_model.business_connection_id,
+                    chat_id = message_chat_id,
+                    business_connection_id = message.business_connection_id,
                     stop_event = stop_typing,
                 ),
             )
 
-            ai_answer_list = await chat_service.handle_user_text_message(
+            await chat_service.save_message_model(
                 message = save_message_model,
-                user_name = user_name,
             )
 
-            for ai_answer in ai_answer_list:
-                await wait_to_write_message(ai_answer)
+            scheduler = TaskSchedulerRepositoryImpl()
+            key = str(message.chat.id)
 
-                answer_message = await bot.send_message(
-                    chat_id = save_message_model.chat_id,
-                    text = ai_answer,
-                    business_connection_id = save_message_model.business_connection_id,
-                )
-                await chat_service.handle_self_message(
-                    message = answer_message,
+            scheduler.save_message_model(
+                key = key,
+                save_message_model = save_message_model,
+            )
+
+            await TaskSchedulerRepositoryImpl().schedule_task(
+                key = key,
+                coroutine = __answer_message(
+                    bot = bot,
+                    chat_service = chat_service,
                     strings = strings,
-                )
+                    message_chat_id = message_chat_id,
+                    user_name = message.from_user.username,
+                    business_connection_id = message.business_connection_id,
+                ),
+            )
+
         except asyncio.CancelledError:
-            logger.info("AI запрос отменён — пришло новое сообщение")
+            traceback.print_exc()
             raise
         finally:
             # --- останавливаем typing в любом случае (даже при ошибке) ---
@@ -242,9 +220,40 @@ async def __handle_message_lambda(
     else:
         print(
             f"Сообщение не было обработано"
-            f"message.from_user.id[{message_from_user_id}] != message.chat.id[{save_message_model.chat_id}]"
-            f"message.business_connection_id = {save_message_model.business_connection_id}",
+            f"message.from_user.id[{message_from_user_id}] != message.chat.id[{message_chat_id}]"
+            f"message.business_connection_id = {message.business_connection_id}",
         )
+
+
+async def __answer_message(
+    bot: Bot,
+    chat_service: ChatService,
+    strings: Strings,
+    message_chat_id: int,
+    user_name: str,
+    business_connection_id: str,
+):
+    try:
+        ai_answer_list = await chat_service.generate_ai_response(
+            message_chat_id = message_chat_id,
+            user_name = user_name,
+        )
+
+        for ai_answer in ai_answer_list:
+            await wait_to_write_message(ai_answer)
+
+            answer_message = await bot.send_message(
+                chat_id = message_chat_id,
+                text = ai_answer,
+                business_connection_id = business_connection_id,
+            )
+            await chat_service.handle_self_message(
+                message = answer_message,
+                strings = strings,
+            )
+    except asyncio.CancelledError:
+        logger.info("AI запрос отменён — пришло новое сообщение")
+        raise
 
 
 # TODO убрать делеи, разобраться с message quee

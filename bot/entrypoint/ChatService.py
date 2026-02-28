@@ -25,22 +25,23 @@ class ChatService:
         self.generate_ai_response_use_case = generate_ai_response_use_case
         self.system_prompt = None  # Оставляем None, будет инициализирован при первом вызове
 
-    async def handle_user_text_message(
+    async def save_message_model(
         self,
         message: SaveMessageModel,
-        user_name: str,
-    ) -> list[str]:
-        asyncio.create_task(
-            self.save_message_use_case.invoke(
-                save_message_model = message,
-            )
+    ):
+        await self.save_message_use_case.invoke(
+            save_message_model = message,
         )
 
+    async def generate_ai_response(
+        self,
+        message_chat_id: int,
+        user_name: str,
+    ):
         ai_response = self.generate_ai_response_use_case.invoke(
             user_message_model = MessageForAiModel(
-                id = message.chat_id,
+                id = message_chat_id,
                 username = user_name,
-                content = message.content,
             )
         )
 
