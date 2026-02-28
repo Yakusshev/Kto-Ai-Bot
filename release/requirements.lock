@@ -34,7 +34,9 @@ attrs==25.4.0
     #   fluent-runtime
 babel==2.18.0
     # via fluent-runtime
-certifi==2026.1.4
+beartype==0.22.2
+    # via -r requirements.txt
+certifi==2026.2.25
     # via
     #   aiogram
     #   httpcore
@@ -64,7 +66,7 @@ frozenlist==1.8.0
     #   aiosignal
 googleapis-common-protos==1.72.0
     # via yandexcloud
-grpcio==1.78.1
+grpcio==1.78.0
     # via
     #   grpcio-tools
     #   yandexcloud

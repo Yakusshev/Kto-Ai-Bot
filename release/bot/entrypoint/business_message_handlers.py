@@ -1,32 +1,37 @@
-# bot/business_message_handlers.py
 import asyncio
 import logging
 import random
-
 from aiogram import Router, F, Bot
 from aiogram.types import Message
-from aiogram_i18n import I18nContext
 
-from bot.domain.const.env_const import DEBUG_MODE
+from bot.data.repository.TaskSchedulerRepositoryImpl import \
+    TaskSchedulerRepositoryImpl
 from bot.entrypoint.ChatService import ChatService
+from bot.entrypoint.HumanWaitingBehavior import (
+    wait_to_start_typing,
+    wait_to_write_message,
+)
 from bot.resource.Strings import Strings
 
+logger = logging.getLogger(__name__)
 business_router = Router()
 
+
+# ------------------------------------------------------------------ #
+#  Обработчики входящих сообщений                                      #
+# ------------------------------------------------------------------ #
 
 @business_router.business_message(F.text)
 async def __handle_text(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
         text_content = message.text,
-        strings = Strings(i18n = i18n),
     )
 
 
@@ -35,14 +40,13 @@ async def __handle_sticker(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    strings: Strings,
 ):
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = i18n.get('sticker-not-loaded', emoji = message.sticker.emoji),
-        strings = Strings(i18n = i18n),
+        text_content = strings.sticker_not_loaded(emoji = message.sticker.emoji),
     )
 
 
@@ -51,180 +55,219 @@ async def __handle_photo(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
+    has_many = len(message.photo) > 1
+    has_text = message.caption is not None
 
-    text_content: str
-
-    if len(message.photo) > 1 and message.text is not None:
+    if has_many and has_text:
         text_content = strings.photo_list_cannot_be_loaded_text(
             user = message.from_user.full_name,
             photo_number = len(message.photo),
-            text = message.text,
+            text = message.caption,
         )
-    elif len(message.photo) > 1:
+    elif has_many:
         text_content = strings.photo_list_cannot_be_loaded(
             user = message.from_user.full_name,
             photo_number = len(message.photo),
         )
-    elif message.text is not None:
+    elif has_text:
         text_content = strings.photo_cannot_be_loaded_text(
             user = message.from_user.full_name,
-            text = message.text,
+            text = message.caption,
         )
     else:
         text_content = strings.photo_cannot_be_loaded(
             user = message.from_user.full_name,
         )
 
-    await __handle_message(
-        message = message,
-        bot = bot,
-        chat_service = chat_service,
-        text_content = text_content,
-        strings = Strings(i18n = i18n),
-    )
+    await __handle_message(message, bot, chat_service, text_content)
 
 
 @business_router.business_message(F.voice)
-async def __handle_voice_message(
+async def __handle_voice(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
-    text_content = strings.voice_message_cannot_be_loaded(
-        user = message.from_user.full_name,
-    )
-
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = text_content,
-        strings = Strings(i18n = i18n),
+        text_content = strings.voice_message_cannot_be_loaded(
+            user = message.from_user.full_name,
+        ),
     )
 
 
 @business_router.business_message(F.video_note)
-async def __handle_voice_message(
+async def __handle_video_note(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
-    i18n: I18nContext
+    strings: Strings,
 ):
-    strings = Strings(i18n = i18n)
-
-    text_content = strings.video_message_cannot_be_loaded(
-        user = message.from_user.full_name,
-    )
-
     await __handle_message(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = text_content,
-        strings = Strings(i18n = i18n),
+        text_content = strings.video_message_cannot_be_loaded(
+            user = message.from_user.full_name,
+        ),
     )
 
+
+# ------------------------------------------------------------------ #
+#  Центральная логика                                                  #
+# ------------------------------------------------------------------ #
 
 async def __handle_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
     text_content: str,
-    strings: Strings,
-):
-    print("handle_business_message text_content = ", text_content, "message.text = ", message.text, "; ", message)
-
-    if not message.business_connection_id:
+) -> None:
+    """
+    Точка входа для любого типа сообщения.
+    Фильтрует только сообщения, отправленные пользователем самому себе
+    через business-соединение.
+    """
+    if (
+        message.from_user.id != message.chat.id
+        or not message.business_connection_id
+    ):
+        logger.debug(
+            "Сообщение пропущено: from_user.id=%s chat.id=%s bc_id=%s",
+            message.from_user.id,
+            message.chat.id,
+            message.business_connection_id,
+        )
         return
 
-    chat_id = message.chat.id
+    logger.info("Входящее сообщение: %s | chat_id=%s", text_content, message.chat.id)
 
-    if message.from_user.id == message.chat.id:
+    scheduler = TaskSchedulerRepositoryImpl()
+    task_key = str(message.chat.id)
 
-        response_text_coroutine = chat_service.handle_user_text_message(
-            message = message,
-            content = text_content,
-            strings = strings,
+    try:
+        await scheduler.on_message(
+            key = task_key,
+            # Сохранить в БД — выполнится немедленно внутри on_message
+            save_coro = chat_service.save_message_model(
+                message = message,
+                text_content = text_content,
+            ),
+            # Фабрика ответа — вызывается только когда пришло время отвечать
+            answer_factory = lambda: __answer_message(
+                bot = bot,
+                chat_service = chat_service,
+                text_content = text_content,
+                message_chat_id = message.chat.id,
+                user_name = message.from_user.username,
+                business_connection_id = message.business_connection_id,
+            ),
+            # Фабрика «прочитать сообщение» — вызывается перед ответом
+            read_message_factory = lambda: bot.read_business_message(
+                business_connection_id = message.business_connection_id,
+                chat_id = message.chat.id,
+                message_id = message.message_id,
+            ),
         )
-
-        if not DEBUG_MODE:
-            await asyncio.sleep(random.uniform(1, 4))
-
-        await bot.read_business_message(
-            business_connection_id = message.business_connection_id,
-            chat_id = chat_id,
-            message_id = message.message_id,
+    except asyncio.CancelledError:
+        logger.info(
+            "handle_message отменён: chat_id=%s text=%s", message.chat.id,
+            text_content,
         )
+        raise
 
-        if not DEBUG_MODE:
-            read_time = len(text_content.split()) / 2.5
-            await asyncio.sleep(read_time)
 
-        # --- запускаем фоновый typing ---
+async def __answer_message(
+    bot: Bot,
+    chat_service: ChatService,
+    text_content: str,
+    message_chat_id: int,
+    user_name: str,
+    business_connection_id: str,
+) -> None:
+    """
+    Генерирует и отправляет ответ нейросети.
+    Показывает typing-индикатор всё время генерации.
+    """
+    stop_typing = asyncio.Event()
+    typing_task = None
+    answer_message_list: list[Message] = []
+
+    try:
+        await wait_to_start_typing(message = text_content)
+
         stop_typing = asyncio.Event()
         typing_task = asyncio.create_task(
             __typing_loop(
                 bot = bot,
-                chat_id = chat_id,
-                business_connection_id = message.business_connection_id,
+                chat_id = message_chat_id,
+                business_connection_id = business_connection_id,
                 stop_event = stop_typing,
-            )
+            ),
         )
 
-        try:
-            ai_answer_list = await response_text_coroutine
+        ai_answer_list = await chat_service.generate_ai_response(
+            message_chat_id = message_chat_id,
+            user_name = user_name,
+        )
 
-            for ai_answer in ai_answer_list:
-                if not DEBUG_MODE:
-                    write_time = len(ai_answer) / random.uniform(3, 10)
-                    await asyncio.sleep(write_time)
+        for ai_answer in ai_answer_list:
+            await wait_to_write_message(ai_answer)
+            sent = await bot.send_message(
+                chat_id = message_chat_id,
+                text = ai_answer,
+                business_connection_id = business_connection_id,
+            )
+            answer_message_list.append(sent)
 
-                answer_message = await bot.send_message(
-                    chat_id = chat_id,
-                    text = ai_answer,
-                    business_connection_id = message.business_connection_id,
-                )
-                await chat_service.handle_self_message(message = answer_message, strings = strings)
-        finally:
-            # --- останавливаем typing в любом случае (даже при ошибке) ---
+    except asyncio.CancelledError:
+        logger.info("__answer_message отменён: chat_id=%s", message_chat_id)
+        raise
+
+    finally:
+        if stop_typing:
             stop_typing.set()
+        if typing_task:
             typing_task.cancel()
             try:
                 await typing_task
             except asyncio.CancelledError:
                 pass
+        # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
+        if answer_message_list:
+            asyncio.create_task(
+                chat_service.handle_self_message(message_list = answer_message_list),
+            )
 
-    else:
-        print(f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]")
-        await chat_service.handle_self_message(message = message, strings = strings)
 
-
-# TODO убрать делеи, разобраться с message quee
 async def __typing_loop(
     bot: Bot,
     chat_id: int,
     business_connection_id: str,
     stop_event: asyncio.Event,
-):
-    """Поддерживает typing indicator всё время, пока не выставлен stop_event.
-    Иногда делает паузу 1–3 сек (имитирует "задумался")."""
+) -> None:
+    """
+    Поддерживает статус «печатает...» пока не выставлен stop_event.
+    Иногда делает паузу 1-3 сек (имитирует «задумался»).
+    """
     while not stop_event.is_set():
-        await bot.send_chat_action(
-            chat_id = chat_id,
-            action = "typing",
-            business_connection_id = business_connection_id,
-        )
-        # typing живёт ~5 сек — обновляем каждые 4 сек,
-        # но иногда делаем случайную паузу (1–3 сек), из-за которой он ненадолго гаснет
-        base_interval = 4.0
+        try:
+            await bot.send_chat_action(
+                chat_id = chat_id,
+                action = "typing",
+                business_connection_id = business_connection_id,
+            )
+        except Exception as e:
+            logger.warning("typing_loop ошибка send_chat_action: %s", e)
+
+        # typing живёт ~5 сек — обновляем каждые 4 сек
+        # иногда пауза 1-3 сек (индикатор гаснет — имитация паузы в мышлении)
         if random.random() < 0.32:
-            pause = random.uniform(1.0, 3.0)
-            await asyncio.sleep(pause)
+            await asyncio.sleep(random.uniform(1.0, 3.0))
         else:
-            await asyncio.sleep(base_interval)
+            await asyncio.sleep(4.0)

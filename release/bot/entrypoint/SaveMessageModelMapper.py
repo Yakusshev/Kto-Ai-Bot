@@ -1,12 +1,12 @@
 from aiogram.types import Message
 
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 
 
 def to_save_message_model(
     message: Message,
     content: str,
-    role: str,
+    role: MessageRole,
     empty_message: str,
 ) -> SaveMessageModel:
     return SaveMessageModel(

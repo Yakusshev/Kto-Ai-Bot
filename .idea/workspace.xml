@@ -5,21 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.7.1 Update requirements.txt">
-      <change afterPath="$PROJECT_DIR$/bot/domain/model/PendingChat.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bot/domain/repository/DebounceRepository.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scratch/claude_debounce.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/data/repository/SessionRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/data/repository/ChatHistoryRepositoryImpl.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/domain/repository/LLMRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/repository/LLMRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/domain/usecase/GenerateAiResponseUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/entrypoint/business_message_handlers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/DeepseekRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/data/repository/DeepseekRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/SessionRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/data/ydb/CreateYdbDriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/data/ydb/CreateYdbDriver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/di/llm_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/di/llm_module.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/domain/DefaultSystemInstuction.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/DefaultSystemInstuction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/domain/model/SaveMessageModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/model/SaveMessageModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/domain/repository/LLMRepository.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/ChatService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/SaveMessageModelMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/SaveMessageModelMapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/business_message_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/resource/locales/ru/strings.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.txt" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/requirements.lock" beforeDir="false" afterPath="$PROJECT_DIR$/release/requirements.lock" afterDir="false" />
     </list>
-    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,141 +88,6 @@
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/table.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/tracing.py" root0="SKIP_INSPECTION" />
   </component>
-  <component name="LineStatusTrackerManager">
-    <file path="$PROJECT_DIR$/.idea/workspace.xml">
-      <ranges>
-        <range start1="6" end1="10" start2="6" end2="7" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="12" end1="12" start2="9" end2="10" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="13" end1="14" start2="11" end2="14" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="81" end1="214" start2="81" end2="81" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="226" end1="243" start2="93" end2="119" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="244" end1="245" start2="120" end2="121" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="247" end1="247" start2="123" end2="125" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="250" end1="250" start2="128" end2="129" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="254" end1="255" start2="133" end2="133" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="258" end1="258" start2="136" end2="158" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="356" end1="358" start2="256" end2="256" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="359" end1="359" start2="257" end2="260" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
-        <range start1="381" end1="382" start2="282" end2="283" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="383" end1="386" start2="284" end2="287" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="387" end1="388" start2="288" end2="289" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="389" end1="390" start2="290" end2="291" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="391" end1="394" start2="292" end2="295" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="395" end1="396" start2="296" end2="297" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="397" end1="398" start2="298" end2="299" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="399" end1="402" start2="300" end2="303" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="403" end1="404" start2="304" end2="305" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="405" end1="406" start2="306" end2="307" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="407" end1="410" start2="308" end2="311" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="411" end1="412" start2="312" end2="313" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="413" end1="414" start2="314" end2="315" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="415" end1="418" start2="316" end2="319" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="419" end1="420" start2="320" end2="321" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="421" end1="422" start2="322" end2="323" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="423" end1="426" start2="324" end2="327" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="427" end1="428" start2="328" end2="329" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="429" end1="430" start2="330" end2="331" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="431" end1="434" start2="332" end2="335" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="435" end1="436" start2="336" end2="337" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="437" end1="438" start2="338" end2="339" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="439" end1="442" start2="340" end2="343" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="443" end1="444" start2="344" end2="345" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="445" end1="446" start2="346" end2="347" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="447" end1="450" start2="348" end2="351" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="451" end1="452" start2="352" end2="353" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="453" end1="454" start2="354" end2="355" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="455" end1="458" start2="356" end2="359" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="459" end1="460" start2="360" end2="361" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="461" end1="462" start2="362" end2="363" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="463" end1="466" start2="364" end2="367" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="467" end1="468" start2="368" end2="369" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="469" end1="470" start2="370" end2="371" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="471" end1="474" start2="372" end2="375" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="475" end1="476" start2="376" end2="377" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="477" end1="478" start2="378" end2="379" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="479" end1="482" start2="380" end2="383" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="483" end1="484" start2="384" end2="385" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="485" end1="486" start2="386" end2="387" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="487" end1="490" start2="388" end2="391" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="491" end1="492" start2="392" end2="393" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="493" end1="494" start2="394" end2="395" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="495" end1="498" start2="396" end2="399" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="499" end1="500" start2="400" end2="401" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="501" end1="502" start2="402" end2="403" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="503" end1="506" start2="404" end2="407" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="507" end1="508" start2="408" end2="409" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="509" end1="510" start2="410" end2="411" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="511" end1="514" start2="412" end2="415" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="515" end1="516" start2="416" end2="417" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="517" end1="518" start2="418" end2="419" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="519" end1="522" start2="420" end2="423" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="523" end1="524" start2="424" end2="425" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="525" end1="526" start2="426" end2="427" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="527" end1="530" start2="428" end2="431" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="531" end1="532" start2="432" end2="433" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="533" end1="534" start2="434" end2="435" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="535" end1="538" start2="436" end2="439" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="539" end1="540" start2="440" end2="441" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="541" end1="542" start2="442" end2="443" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="543" end1="546" start2="444" end2="447" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="547" end1="548" start2="448" end2="449" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="549" end1="550" start2="450" end2="451" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="551" end1="554" start2="452" end2="455" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="555" end1="556" start2="456" end2="457" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="557" end1="558" start2="458" end2="459" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="559" end1="562" start2="460" end2="463" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="563" end1="564" start2="464" end2="465" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="565" end1="566" start2="466" end2="467" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="567" end1="570" start2="468" end2="471" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="571" end1="572" start2="472" end2="473" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="573" end1="574" start2="474" end2="475" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="575" end1="578" start2="476" end2="479" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="579" end1="580" start2="480" end2="481" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="581" end1="582" start2="482" end2="483" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="583" end1="586" start2="484" end2="487" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="587" end1="588" start2="488" end2="489" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="589" end1="590" start2="490" end2="491" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="591" end1="594" start2="492" end2="495" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="595" end1="596" start2="496" end2="497" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="597" end1="598" start2="498" end2="499" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="599" end1="602" start2="500" end2="503" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="603" end1="604" start2="504" end2="505" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="605" end1="606" start2="506" end2="507" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="607" end1="610" start2="508" end2="511" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="611" end1="612" start2="512" end2="513" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="613" end1="614" start2="514" end2="515" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="615" end1="618" start2="516" end2="519" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="619" end1="620" start2="520" end2="521" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="621" end1="622" start2="522" end2="523" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="623" end1="626" start2="524" end2="527" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="627" end1="628" start2="528" end2="529" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="629" end1="630" start2="530" end2="531" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="631" end1="634" start2="532" end2="535" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="635" end1="636" start2="536" end2="537" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="637" end1="638" start2="538" end2="539" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="639" end1="642" start2="540" end2="543" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="643" end1="644" start2="544" end2="545" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="645" end1="646" start2="546" end2="547" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="647" end1="650" start2="548" end2="551" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="651" end1="652" start2="552" end2="553" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="653" end1="654" start2="554" end2="555" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="655" end1="658" start2="556" end2="559" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="659" end1="660" start2="560" end2="561" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="661" end1="662" start2="562" end2="563" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="663" end1="666" start2="564" end2="567" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="667" end1="668" start2="568" end2="569" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="669" end1="670" start2="570" end2="571" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="671" end1="674" start2="572" end2="575" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="675" end1="676" start2="576" end2="577" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="677" end1="678" start2="578" end2="579" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="679" end1="682" start2="580" end2="583" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="683" end1="684" start2="584" end2="585" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="685" end1="686" start2="586" end2="675" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="715" end1="722" start2="704" end2="704" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-        <range start1="740" end1="741" start2="722" end2="730" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
-      </ranges>
-    </file>
-  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -230,34 +99,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.ChatService.executor": "Run",
-    "Python.GenerateStrings.executor": "Run",
-    "Python.business_message_handlers.executor": "Run",
-    "Python.data_cutter_script.executor": "Run",
-    "Python.handlers.executor": "Debug",
-    "Python.llm_service.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.system_prompt_scrypt.executor": "Run",
-    "Python.test_ai.executor": "Run",
-    "Python.validation-script.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHELLCHECK.PATH": "/Users/viktorakusev/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck",
-    "git-widget-placeholder": "sprint2",
-    "last_opened_file_path": "/Users/viktorakusev/PycharmProjects/PythonProject/bot/resource",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.Python",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.ChatService.executor&quot;: &quot;Run&quot;,
+    &quot;Python.GenerateStrings.executor&quot;: &quot;Run&quot;,
+    &quot;Python.business_message_handlers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_cutter_script.executor&quot;: &quot;Run&quot;,
+    &quot;Python.handlers.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.llm_service.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.system_prompt_scrypt.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_ai.executor&quot;: &quot;Run&quot;,
+    &quot;Python.validation-script.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;/Users/viktorakusev/Library/Application Support/JetBrains/PyCharm2025.2/plugins/Shell Script/shellcheck&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;sprint2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/viktorakusev/PycharmProjects/PythonProject/bot/resource&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Python&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/bot/resource" />
