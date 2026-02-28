@@ -116,7 +116,7 @@ async def __debounced_respond(
         # Передаём последнее сообщение как message (для метаданных),
         # но контент — объединённый
         last_message = collected[-1][0]
-        ai_answer_list = await chat_service.handle_user_text_message(
+        ai_answer_list = await chat_service.save_message_model(
             message = last_message,
             content = combined_content,
             strings = strings,
@@ -133,7 +133,7 @@ async def __debounced_respond(
                 business_connection_id = business_connection_id,
             )
             await chat_service.handle_self_message(
-                message = answer_message, strings = strings,
+                message_list = answer_message, strings = strings,
             )
 
     finally:
@@ -164,7 +164,7 @@ async def __handle_message(
             f"message.from_user.id[{message.from_user.id}] != message.chat.id[{message.chat.id}]",
         )
         await chat_service.handle_self_message(
-            message = message,
+            message_list = message,
             strings = strings,
         )
         return

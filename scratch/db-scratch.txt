@@ -13,7 +13,7 @@ CREATE TABLE chat_events_debug (
 
 DELETE FROM chat_events;
 
-DELETE FROM chat_events
+DELETE FROM chat_events_debug
 WHERE chat_id = 8123263696;
 
 {"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}], "response": "ну спасибо блин"}

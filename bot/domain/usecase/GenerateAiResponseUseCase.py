@@ -95,10 +95,12 @@ class GenerateAiResponseUseCase:
                 .created_at \
                 .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
 
-            if prev_date != date:
-                date_time += f'{date}'
-            if prev_time != time:
+            if prev_date != date and prev_time != time:
                 date_time = f'{date_time} {time}'
+            elif prev_date != date:
+                date_time += f'{date}'
+            elif prev_time != time:
+                date_time += f'{time}'
 
             if date_time:
                 date_time = f'[{date_time}]'
@@ -110,8 +112,14 @@ class GenerateAiResponseUseCase:
         response: str,
     ) -> List[str]:
 
-        lines = GenerateAiResponseUseCase.replace_brackets_except_next(response)\
-            .split(fr'\n|\n\n|{GenerateAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}')
+        pattern = fr'\n|\n\n|{GenerateAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}'
+
+        response_no_brackets = GenerateAiResponseUseCase\
+            .replace_brackets_except_next(response)
+
+        lines = re.split(pattern, response_no_brackets)
+
+        logger.info(f'GenerateAiResponseUseCase.split_messages lines = {lines}')
 
         if not lines:
             logger.warning(
@@ -124,7 +132,7 @@ class GenerateAiResponseUseCase:
         current = lines[0]
 
         for line in lines[1:]:
-            if random() < 0.3:
+            if random() < 0.4:
                 result.append(current)
                 current = line
             else:

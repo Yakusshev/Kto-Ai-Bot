@@ -97,6 +97,7 @@ class TaskSchedulerRepositoryImpl:
                 kind = "answering",
                 task = asyncio.create_task(asyncio.sleep(0)),  # placeholder
                 started_at = datetime.now(),
+                latest_read_coro = None,
             )
             self._states[key] = entry
             entry.task = asyncio.create_task(
