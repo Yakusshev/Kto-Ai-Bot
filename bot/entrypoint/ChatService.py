@@ -3,7 +3,7 @@ import re
 
 from aiogram.types import Message
 
-from bot.domain.model.MessageForAiModel import MessageForAiModel
+from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase, ROLE_USER, ROLE_ASSISTANT
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
@@ -39,7 +39,7 @@ class ChatService:
         user_name: str,
     ):
         ai_response = self.generate_ai_response_use_case.invoke(
-            user_message_model = MessageForAiModel(
+            user_message_model = UserInfoForAiModel(
                 id = message_chat_id,
                 username = user_name,
             )

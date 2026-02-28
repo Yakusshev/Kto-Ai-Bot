@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Union, List, Dict
+from typing import List
+
+from bot.domain.model.MessageForAiModel import MessageForAiModel
+
 
 class AiRepository(ABC):
 
     @abstractmethod
     async def generate_response(
         self,
-        messages: List[Dict[str, str]],
-        system_prompt: Union[str, None]
+        message_list: List[MessageForAiModel],
+        system_prompt: str,
     ) -> str:
         pass

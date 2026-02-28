@@ -4,11 +4,18 @@ from venv import logger
 import openai
 from openai.types.chat import ChatCompletionMessageParam
 
+from bot.domain.model.MessageForAiModel import MessageForAiModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel
 from bot.domain.repository.AiRepository import AiRepository
 
 DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
+ROLE_TITLE = 'role'
+ROLE_ASSISTANT = 'assistant'
+ROLE_MODEL = 'model'
+ROLE_USER = 'user'
+CONTENT = 'content'
 
 class DeepseekRepository(AiRepository):
 
@@ -25,15 +32,25 @@ class DeepseekRepository(AiRepository):
 
     async def generate_response(
         self,
-        messages: List[Dict[str, str]],
-        system_prompt: Union[str, None],
+        message_list: List[MessageForAiModel],
+        system_prompt: str,
     ) -> str:
         api_messages = []
         if system_prompt:
             api_messages.append({"role": "system", "content": system_prompt})
 
-        for msg in messages:
-            api_messages.append({"role": msg["role"], "content": msg["content"]})
+        request_messages = []
+
+        for message in message_list:
+            role = message.role
+
+            if request_messages and request_messages[-1][ROLE_TITLE] == role:
+                request_messages[-1][CONTENT] += "\n" + message.content
+            else:
+                request_messages.append({ROLE_TITLE: role, CONTENT: message.content})
+
+        for message in message_list:
+            api_messages.append({"role": message.role, "content": message.content})
 
         logger.info(f"DeepseekRepository.generate_response: requested")
 

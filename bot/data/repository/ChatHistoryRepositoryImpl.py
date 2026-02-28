@@ -38,11 +38,11 @@ class ChatHistoryRepositoryImpl:
             else ChatHistoryConst.TABLE_NAME_RELEASE
         self.driver = driver
 
-    async def get_session_data(self, chat_id: int) -> list[dict]:
+    async def get_session_data(self, chat_id: int) -> list[SaveMessageModel]:
         query = f"""
-            DECLARE {Column.CHAT_ID} AS Uint64;
+            DECLARE $chat_id AS Uint64;
             SELECT * FROM {self.table_name} 
-            WHERE {Column.CHAT_ID} = {Column.CHAT_ID} 
+            WHERE {Column.CHAT_ID} = $chat_id 
             ORDER BY {Column.CREATED_AT} ASC;
         """
 
@@ -50,10 +50,26 @@ class ChatHistoryRepositoryImpl:
             prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
                 query = prepared_query,
-                parameters = {f'${Column.CHAT_ID}': int(chat_id)},
+                parameters = {'$chat_id': int(chat_id)},
                 commit_tx = True,
             )
-            return [row for row in result_sets[0].rows]
+            rows = result_sets[0].rows
+            models = []
+            for row in rows:
+                model = SaveMessageModel(
+                    chat_id = row[Column.CHAT_ID],
+                    created_at = row[Column.CREATED_AT],
+                    message_id = row[Column.MESSAGE_ID],
+                    role = row[Column.ROLE],
+                    content = row[Column.CONTENT],
+                    event_type = row[Column.EVENT_TYPE],
+                    reply_to_id = row.get(Column.REPLY_TO_ID),  # None допускается
+                    text_quote = row.get(Column.TEXT_QUOTE),  # None допускается
+                    business_connection_id = row.get(Column.BUSINESS_CONN_ID)
+                    # маппинг с business_conn_id
+                )
+                models.append(model)
+            return models
 
         messages = await asyncio.to_thread(
             self.pool.retry_operation_sync,

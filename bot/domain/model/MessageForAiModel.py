@@ -3,5 +3,5 @@ from dataclasses import dataclass
 
 @dataclass(frozen = True)
 class MessageForAiModel:
-    id: int
-    username: str
+    role: str
+    content: str

@@ -2,17 +2,16 @@ from random import random
 from typing import List
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
-from bot.domain.DefaultSystemInstuction import anyaSystemInstruction
+from bot.domain.DefaultSystemInstuction import anya_system_instruction
 from bot.domain.model.MessageForAiModel import MessageForAiModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
 from bot.domain.repository.AiRepository import AiRepository
 
-ROLE_TITLE = 'role'
-ROLE_ASSISTANT = 'assistant'
-ROLE_MODEL = 'model'
-ROLE_USER = 'user'
-CONTENT = 'content'
 
 class GenerateAiResponseUseCase:
+    DATE_FORMAT = "%d.%m"
+    TIME_FORMAT = "%H:%M"
 
     def __init__(
         self,
@@ -24,27 +23,61 @@ class GenerateAiResponseUseCase:
 
     async def invoke(
         self,
-        user_message_model: MessageForAiModel,
+        user_message_model: UserInfoForAiModel,
     ) -> List[str]:
-        messages_history = await self.session_repository.get_session_data(
-            chat_id = user_message_model.id,
-        )
 
-        request_messages = []
+        history: List[SaveMessageModel] = await self.session_repository \
+            .get_session_data(chat_id = user_message_model.id)
 
-        for msg in messages_history:
-            role = ROLE_ASSISTANT if msg[ROLE_TITLE] == ROLE_MODEL else msg[ROLE_TITLE]
+        ai_list: List[MessageForAiModel] = []
 
-            if request_messages and request_messages[-1][ROLE_TITLE] == role:
-                request_messages[-1][CONTENT] += "\n" + msg[CONTENT]
+        for index, message in enumerate(history):
+
+            date_time = ''
+
+            date = message.created_at \
+                .strftime(format = GenerateAiResponseUseCase.DATE_FORMAT)
+            time = message.created_at \
+                .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
+
+            if index > 0:
+                previous_message = history[index - 1]
+                prev_date = previous_message.created_at.strftime("%d.%m")
+                prev_time = previous_message.created_at.strftime("%d.%m")
+
+                if prev_date != date:
+                    date_time += f'{date}'
+                if prev_time != time:
+                    date_time = f'{date_time} {time}'
+
+                if date_time:
+                    date_time = f'[{date_time}]'
             else:
-                request_messages.append({ROLE_TITLE: role, CONTENT: msg[CONTENT]})
+                date_time = f'[{date} {time}]'
+
+            if ai_list and ai_list[-1].role == message.role:
+
+                previous_ai_message = ai_list[-1]
+
+                ai_list[-1] = MessageForAiModel(
+                    role = message.role,
+                    content = f'{previous_ai_message.content}'
+                              f'[next]'
+                              f'{date_time}{message.content}',
+                )
+            else:
+                ai_list.append(
+                    MessageForAiModel(
+                        role = message.role,
+                        content = f'{date_time}{message.content}',
+                    ),
+                )
 
         ai_response = await self.llm_repository.generate_response(
-            messages = request_messages,
-            system_prompt = anyaSystemInstruction(
-                user_nickname = user_message_model.username
-            )
+            message_list = ai_list,
+            system_prompt = anya_system_instruction(
+                user_nickname = user_message_model.username,
+            ),
         )
 
         return self.split_messages(response = ai_response)
