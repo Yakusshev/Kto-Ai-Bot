@@ -21,7 +21,6 @@ from bot.entrypoint.business_message_handlers import business_router
 # Get the absolute path to the project root
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
 async def main():
 
     if not get_bot_token():

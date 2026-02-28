@@ -1,3 +1,4 @@
+import re
 from random import random
 from typing import List
 from venv import logger
@@ -12,6 +13,7 @@ from bot.domain.repository.AiRepository import AiRepository
 
 class GenerateAiResponseUseCase:
     NEXT_MESSAGE_TAG = '[next]'
+    NEXT_MESSAGE_TAG_REGEX = r'\[next\]'
     DATE_FORMAT = "%d.%m"
     TIME_FORMAT = "%H:%M"
 
@@ -108,7 +110,9 @@ class GenerateAiResponseUseCase:
         response: str,
     ) -> List[str]:
 
-        lines = response.split('\n')
+        lines = GenerateAiResponseUseCase.replace_brackets_except_next(response)\
+            .split(fr'\n|\n\n|{GenerateAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}')
+
         if not lines:
             logger.warning(
                 f'GenerateAiResponseUseCase.split_messages: empty lines; '
@@ -129,3 +133,23 @@ class GenerateAiResponseUseCase:
         result.append(current)
 
         return result
+
+    @staticmethod
+    def replace_brackets_except_next(text: str) -> str:
+        """
+        Заменяет все вхождения вида [что-то] на пробел,
+        за исключением точного тега [next], который сохраняется.
+        """
+        # Шаблон: открывающая скобка, затем любое количество символов, не содержащих ']',
+        # затем закрывающая скобка. Это покрывает большинство простых случаев без вложенности.
+        pattern = r'\[[^\]]*\]'
+
+        def replacer(match):
+            token = match.group(0)
+            # Если это точно тег [next], оставляем как есть
+            if token == '[next]':
+                return token
+            # Иначе заменяем на пробел
+            return ' '
+
+        return re.sub(pattern, replacer, text)

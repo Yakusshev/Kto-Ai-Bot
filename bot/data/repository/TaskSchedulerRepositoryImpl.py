@@ -1,13 +1,32 @@
 import asyncio
 import threading
-from typing import Coroutine
+from abc import ABC
+from asyncio import Task
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Coroutine, Union
 
+
+class TaskState(ABC):
+    task: Task
+
+@dataclass
+class Answering(TaskState):
+    task: Task
+
+@dataclass
+class PreparingForAnswer(TaskState):
+    task: Task
+
+# @dataclass
+# class Received:
+#     time: datetime
 
 class TaskSchedulerRepositoryImpl:
     __instance = None
     __lock = threading.Lock()
 
-    _tasks: dict[str, asyncio.Task] = {}
+    _tasks: dict[str, TaskState] = {}
 
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
@@ -16,27 +35,50 @@ class TaskSchedulerRepositoryImpl:
                     cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def has_task(
+    def get_state(
         self,
         key: str,
-    ) -> bool:
-        return self._tasks.get(key) is None
+    ) -> TaskState | None:
+        return self._tasks.get(key)
 
-    async def schedule_task(
+    # def has_task(
+    #     self,
+    #     key: str,
+    # ) -> bool:
+    #     return self._tasks.get(key) is not None
+
+    # async def set_received_state(
+    #     self,
+    #     key: str,
+    # ):
+    #     self._tasks[key] = Received(time = datetime.now())
+
+
+    async def schedule_preparing_for_answer_task(
         self,
         key: str,
         coroutine: Coroutine,
     ):
-        await self.__cancel(key)
+        await self.cancel_or_await(key)
 
-        async def _wrapper():
-            await coroutine
+        self._tasks[key] = PreparingForAnswer(task = asyncio.create_task(coroutine))
 
-        self._tasks[key] = asyncio.create_task(_wrapper())
+    async def schedule_answering_task(
+        self,
+        key: str,
+        coroutine: Coroutine,
+    ):
+        await self.cancel_or_await(key)
 
-    async def __cancel(self, key: str):
-        task = self._tasks.pop(key, None)
-        if task and not task.done():
+        self._tasks[key] = Answering(task = asyncio.create_task(coroutine))
+
+    async def cancel_or_await(self, key: str):
+
+        task = self._tasks.pop(key, None).task
+
+        if task and task is PreparingForAnswer:
+            await task
+        elif task and not task.done():
             task.cancel()
             try:
                 await task

@@ -65,6 +65,16 @@ class DeepseekRepository(AiRepository):
             )
             return "Ошибка обращения к AI"
 
-    def log_history(self, api_messages, response_text):
-        api_messages.append({"role": "assistant", "content": response_text})
-        logger.info(f"DeepseekRepository.generate_response: response {api_messages}")
+    @staticmethod
+    def log_history(
+        api_messages,
+        response_text,
+    ):
+        api_messages.append(
+            {
+                ROLE_TITLE: "assistant",
+                CONTENT: response_text,
+            }
+        )
+        logger.info(f"DeepseekRepository.generate_response: history {api_messages}")
+        logger.info(f"DeepseekRepository.generate_response: response {response_text}")

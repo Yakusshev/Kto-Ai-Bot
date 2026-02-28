@@ -3,15 +3,17 @@ import asyncio
 import logging
 import random
 import traceback
+from asyncio import Task
+from venv import logger
 
 from aiogram import Router, F, Bot
 from aiogram.types import Message
 
 from bot.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
+    TaskSchedulerRepositoryImpl, Answering, Received
 from bot.entrypoint.ChatService import ChatService
 from bot.entrypoint.HumanWaitingBehavior import wait_to_see_message, \
-    wait_to_read_message, wait_to_write_message
+    wait_to_start_typing, wait_to_write_message
 from bot.resource.Strings import Strings
 
 business_router = Router()
@@ -146,6 +148,19 @@ async def __handle_message(
             scheduler = TaskSchedulerRepositoryImpl()
             task_key = str(message.chat.id)
 
+            state = scheduler.get_state(key = task_key)
+
+            if state is Answering:
+                await __on_task_scheduled(
+                    message = message,
+                    bot = bot,
+                    chat_service = chat_service,
+                    text_content = text_content,
+                )
+            elif state is Received:
+
+
+
             if not scheduler.has_task(key = task_key):
                 await wait_to_see_message()
 
@@ -155,18 +170,17 @@ async def __handle_message(
                 message_id = message.message_id,
             )
 
-            await wait_to_read_message(message = text_content)
-
             await chat_service.save_message_model(
                 message = message,
                 text_content = text_content,
             )
 
-            await scheduler.schedule_task(
+            await scheduler.schedule_answering_task(
                 key = task_key,
                 coroutine = __answer_message(
                     bot = bot,
                     chat_service = chat_service,
+                    text_content = text_content,
                     message_chat_id = message_chat_id,
                     user_name = message.from_user.username,
                     business_connection_id = message.business_connection_id,
@@ -174,7 +188,7 @@ async def __handle_message(
             )
 
         except asyncio.CancelledError:
-            traceback.print_exc()
+            logger.info(f"handle_business_message {text_content} cancelled; message = {message}")
             raise
     else:
         print(
@@ -183,10 +197,84 @@ async def __handle_message(
             f"message.business_connection_id = {message.business_connection_id}",
         )
 
+async def __on_task_scheduled(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService,
+    text_content: str,
+):
+    message_chat_id = message.chat.id
+
+    scheduler = TaskSchedulerRepositoryImpl()
+    task_key = str(message.chat.id)
+
+    await scheduler.cancel_or_await(key = task_key)
+
+    await bot.read_business_message(
+        business_connection_id = message.business_connection_id,
+        chat_id = message_chat_id,
+        message_id = message.message_id,
+    )
+
+    await chat_service.save_message_model(
+        message = message,
+        text_content = text_content,
+    )
+
+    await scheduler.schedule_answering_task(
+        key = task_key,
+        coroutine = __answer_message(
+            bot = bot,
+            chat_service = chat_service,
+            text_content = text_content,
+            message_chat_id = message_chat_id,
+            user_name = message.from_user.username,
+            business_connection_id = message.business_connection_id,
+        ),
+    )
+
+
+async def __on_task_received(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService,
+    text_content: str,
+):
+    message_chat_id = message.chat.id
+
+    scheduler = TaskSchedulerRepositoryImpl()
+    task_key = str(message.chat.id)
+
+    await scheduler.cancel_or_await(key = task_key)
+
+    await bot.read_business_message(
+        business_connection_id = message.business_connection_id,
+        chat_id = message_chat_id,
+        message_id = message.message_id,
+    )
+
+    await chat_service.save_message_model(
+        message = message,
+        text_content = text_content,
+    )
+
+    await scheduler.schedule_answering_task(
+        key = task_key,
+        coroutine = __answer_message(
+            bot = bot,
+            chat_service = chat_service,
+            text_content = text_content,
+            message_chat_id = message_chat_id,
+            user_name = message.from_user.username,
+            business_connection_id = message.business_connection_id,
+        ),
+    )
+
 
 async def __answer_message(
     bot: Bot,
     chat_service: ChatService,
+    text_content: str,
     message_chat_id: int,
     user_name: str,
     business_connection_id: str,
@@ -197,6 +285,8 @@ async def __answer_message(
     answer_message_list: list[Message] = []
 
     try:
+        await wait_to_start_typing(message = text_content)
+
         stop_typing = asyncio.Event()
         typing_task = asyncio.create_task(
             __typing_loop(
@@ -224,7 +314,7 @@ async def __answer_message(
             answer_message_list.append(answer_message)
 
     except asyncio.CancelledError as e:
-        logging.exception(e)
+        logger.info(f"__answer_message {text_content} cancelled;")
         raise
     finally:
 
