@@ -4,14 +4,11 @@ import re
 from aiogram.types import Message
 
 from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
 from bot.resource.Strings import Strings
-
-ROLE_ASSISTANT = 'assistant'
-ROLE_USER = 'user'
 
 class ChatService:
 
@@ -33,7 +30,7 @@ class ChatService:
         save_message_model = to_save_message_model(
             message = message,
             content = text_content,
-            role = ROLE_USER,
+            role = MessageRole.USER,
             empty_message = self.strings.empty_message(),
         )
 
@@ -66,7 +63,7 @@ class ChatService:
                 to_save_message_model(
                     message = message,
                     content = message.text,
-                    role = ROLE_ASSISTANT,
+                    role = MessageRole.ASSISTANT,
                     empty_message = self.strings.empty_message(),
                 ),
             )

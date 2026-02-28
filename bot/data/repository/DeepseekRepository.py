@@ -15,6 +15,7 @@ ROLE_TITLE = 'role'
 ROLE_MODEL = 'model'
 CONTENT = 'content'
 
+
 class DeepseekRepository(AiRepository):
 
     def __init__(
@@ -35,20 +36,15 @@ class DeepseekRepository(AiRepository):
     ) -> str:
         api_messages = []
         if system_prompt:
-            api_messages.append({"role": "system", "content": system_prompt})
-
-        request_messages = []
+            api_messages.append({ROLE_TITLE: "system", CONTENT: system_prompt})
 
         for message in message_list:
-            role = message.role
-
-            if request_messages and request_messages[-1][ROLE_TITLE] == role:
-                request_messages[-1][CONTENT] += "\n" + message.content
-            else:
-                request_messages.append({ROLE_TITLE: role, CONTENT: message.content})
-
-        for message in message_list:
-            api_messages.append({"role": message.role, "content": message.content})
+            api_messages.append(
+                {
+                    ROLE_TITLE: message.role.value,
+                    CONTENT: message.content
+                },
+            )
 
         logger.info(f"DeepseekRepository.generate_response: requested")
 

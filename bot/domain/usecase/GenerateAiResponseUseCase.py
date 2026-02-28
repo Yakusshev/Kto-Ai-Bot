@@ -5,7 +5,7 @@ from venv import logger
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.domain.DefaultSystemInstuction import anya_system_instruction
 from bot.domain.model.MessageForAiModel import MessageForAiModel
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
 from bot.domain.repository.AiRepository import AiRepository
 
@@ -72,6 +72,10 @@ class GenerateAiResponseUseCase:
         previous_message: SaveMessageModel | None,
         message: SaveMessageModel,
     ) -> str:
+
+        if message.role == MessageRole.ASSISTANT:
+            return ''
+
         date_time = ''
 
         date = message.created_at \

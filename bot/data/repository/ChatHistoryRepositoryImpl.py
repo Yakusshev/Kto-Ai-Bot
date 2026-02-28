@@ -5,7 +5,7 @@ import ydb
 from ydb import Driver, SessionPool
 
 from bot.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 
 
 class ChatHistoryConst:
@@ -56,16 +56,24 @@ class ChatHistoryRepositoryImpl:
             rows = result_sets[0].rows
             models = []
             for row in rows:
+
+                timestamp_micros = row[Column.CREATED_AT]
+
                 model = SaveMessageModel(
                     chat_id = row[Column.CHAT_ID],
-                    created_at = row[Column.CREATED_AT],
+                    created_at = datetime.datetime.fromtimestamp(
+                        timestamp = timestamp_micros / 1_000_000,
+                        tz = datetime.timezone.utc,
+                    ),
                     message_id = row[Column.MESSAGE_ID],
-                    role = row[Column.ROLE],
+                    role = MessageRole.ASSISTANT \
+                        if row[Column.ROLE] == MessageRole.ASSISTANT.value \
+                        else MessageRole.USER,
                     content = row[Column.CONTENT],
                     event_type = row[Column.EVENT_TYPE],
                     reply_to_id = row.get(Column.REPLY_TO_ID),  # None допускается
                     text_quote = row.get(Column.TEXT_QUOTE),  # None допускается
-                    business_connection_id = row.get(Column.BUSINESS_CONN_ID)
+                    business_connection_id = row.get(Column.BUSINESS_CONN_ID),
                     # маппинг с business_conn_id
                 )
                 models.append(model)
