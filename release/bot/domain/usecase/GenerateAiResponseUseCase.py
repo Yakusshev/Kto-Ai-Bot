@@ -40,8 +40,6 @@ class GenerateAiResponseUseCase:
             else:
                 request_messages.append({ROLE_TITLE: role, CONTENT: msg[CONTENT]})
 
-        request_messages.append({ROLE_TITLE: ROLE_USER, CONTENT: user_message_model.content})
-
         ai_response = await self.llm_repository.generate_response(
             messages = request_messages,
             system_prompt = anyaSystemInstruction(

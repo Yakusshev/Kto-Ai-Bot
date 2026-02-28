@@ -8,6 +8,23 @@ from bot.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
 from bot.domain.model.SaveMessageModel import SaveMessageModel
 
 
+class ChatHistoryConst:
+    TABLE_NAME_DEBUG = "chat_events_debug"
+    TABLE_NAME_RELEASE = "chat_events_release"
+
+
+class Column:
+    CHAT_ID = "chat_id"
+    CREATED_AT = "created_at"
+    MESSAGE_ID = "message_id"
+    ROLE = "role"
+    CONTENT = "content"
+    EVENT_TYPE = "event_type"
+    REPLY_TO_ID = "reply_to_id"
+    TEXT_QUOTE = "text_quote"
+    BUSINESS_CONN_ID = "business_conn_id"
+
+
 class ChatHistoryRepositoryImpl:
 
     def __init__(
@@ -16,22 +33,24 @@ class ChatHistoryRepositoryImpl:
         driver: Driver,
     ):
         self.pool = ydb_session_pool
-        self.table_name = "chat_events_debug" if DEBUG_MODE_DATABASE else "chat_events_release"
+        self.table_name = ChatHistoryConst.TABLE_NAME_DEBUG \
+            if DEBUG_MODE_DATABASE \
+            else ChatHistoryConst.TABLE_NAME_RELEASE
         self.driver = driver
 
     async def get_session_data(self, chat_id: int) -> list[dict]:
         query = f"""
-            DECLARE $chat_id AS Uint64;
+            DECLARE {Column.CHAT_ID} AS Uint64;
             SELECT * FROM {self.table_name} 
-            WHERE chat_id = $chat_id 
-            ORDER BY created_at ASC;
+            WHERE {Column.CHAT_ID} = {Column.CHAT_ID} 
+            ORDER BY {Column.CREATED_AT} ASC;
         """
 
         def execute(session):
             prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
                 query = prepared_query,
-                parameters = {'$chat_id': int(chat_id)},
+                parameters = {f'${Column.CHAT_ID}': int(chat_id)},
                 commit_tx = True,
             )
             return [row for row in result_sets[0].rows]
@@ -53,44 +72,43 @@ class ChatHistoryRepositoryImpl:
         for msg in message_list:
             rows.append(
                 {
-                    'chat_id': int(msg.chat_id),
-                    'created_at': datetime.datetime.now(),
-                    'message_id': int(msg.message_id),
-                    'role': str(msg.role),
-                    'content': str(msg.content),
-                    'event_type': 'text',
-                    'reply_to_id': msg.reply_to_id,
-                    'text_quote': msg.text_quote,
-                    'business_conn_id': str(
+                    Column.CHAT_ID: int(msg.chat_id),
+                    Column.CREATED_AT: datetime.datetime.now(),
+                    Column.MESSAGE_ID: int(msg.message_id),
+                    Column.ROLE: str(msg.role),
+                    Column.CONTENT: str(msg.content),
+                    Column.EVENT_TYPE: 'text',
+                    Column.REPLY_TO_ID: msg.reply_to_id,
+                    Column.TEXT_QUOTE: msg.text_quote,
+                    Column.BUSINESS_CONN_ID: str(
                         msg.business_connection_id,
                     ) if msg.business_connection_id else None,
                 },
             )
 
         column_types = ydb.BulkUpsertColumns()
-        column_types.add_column('chat_id', ydb.PrimitiveType.Uint64)
-        column_types.add_column('created_at', ydb.PrimitiveType.Timestamp)
-        column_types.add_column('message_id', ydb.PrimitiveType.Uint64)
-        column_types.add_column('role', ydb.PrimitiveType.Utf8)
-        column_types.add_column('content', ydb.PrimitiveType.Utf8)
-        column_types.add_column('event_type', ydb.PrimitiveType.Utf8)
+        column_types.add_column(Column.CHAT_ID, ydb.PrimitiveType.Uint64)
+        column_types.add_column(Column.CREATED_AT, ydb.PrimitiveType.Timestamp)
+        column_types.add_column(Column.MESSAGE_ID, ydb.PrimitiveType.Uint64)
+        column_types.add_column(Column.ROLE, ydb.PrimitiveType.Utf8)
+        column_types.add_column(Column.CONTENT, ydb.PrimitiveType.Utf8)
+        column_types.add_column(Column.EVENT_TYPE, ydb.PrimitiveType.Utf8)
         column_types.add_column(
-            'reply_to_id', ydb.OptionalType(ydb.PrimitiveType.Uint64),
+            Column.REPLY_TO_ID, ydb.OptionalType(ydb.PrimitiveType.Uint64),
         )
         column_types.add_column(
-            'text_quote', ydb.OptionalType(ydb.PrimitiveType.Utf8),
+            Column.TEXT_QUOTE, ydb.OptionalType(ydb.PrimitiveType.Utf8),
         )
         column_types.add_column(
-            'business_conn_id', ydb.OptionalType(ydb.PrimitiveType.Utf8),
+            Column.BUSINESS_CONN_ID, ydb.OptionalType(ydb.PrimitiveType.Utf8),
         )
 
         def bulk():
-            # Simple retry loop (optional, but adds robustness)
             max_retries = 3
             for attempt in range(max_retries):
                 try:
                     self.driver.table_client.bulk_upsert(
-                        table_path = self.get_table_path(),  # <-- full path used here
+                        table_path = self.get_table_path(),
                         rows = rows,
                         column_types = column_types,
                     )
@@ -98,29 +116,9 @@ class ChatHistoryRepositoryImpl:
                 except Exception as e:
                     if attempt == max_retries - 1:
                         raise
-                    time.sleep(1 * (attempt + 1))  # linear backoff
+                    time.sleep(1 * (attempt + 1))
 
         await asyncio.to_thread(bulk)
-
-    async def clear_chat_history(self, chat_id: int):
-        query = f"""
-            DECLARE $chat_id AS Uint64;
-            DELETE FROM {self.table_name} WHERE chat_id = $chat_id;
-        """
-
-        def execute(session):
-            prepared_query = session.prepare(query)
-            session.transaction().execute(
-                query = prepared_query,
-                parameters = {'$chat_id': int(chat_id)},
-                commit_tx = True,
-            )
-
-        await asyncio.to_thread(
-            self.pool.retry_operation_sync,
-            callee = execute,
-        )
-        print(f"SUCCESS: Cleared history for chat {chat_id}")
 
     def get_table_path(self) -> str:
         return f"{YDB_PATH}/{self.table_name}"
