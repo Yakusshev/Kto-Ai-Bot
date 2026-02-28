@@ -21,14 +21,14 @@ class TaskSchedulerRepositoryImpl:
         key: str,
         coroutine: Coroutine,
     ):
-        await self.cancel(key)
+        await self.__cancel(key)
 
         async def _wrapper():
             await coroutine
 
         self._tasks[key] = asyncio.create_task(_wrapper())
 
-    async def cancel(self, key: str):
+    async def __cancel(self, key: str):
         task = self._tasks.pop(key, None)
         if task and not task.done():
             task.cancel()

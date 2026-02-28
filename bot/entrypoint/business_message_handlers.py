@@ -140,7 +140,7 @@ async def __handle_message(
     strings: Strings,
 ):
     print(
-        "handle_business_message text_content = ", message.content,
+        "handle_business_message text_content = ", text_content,
         "; ", message,
     )
 
@@ -167,7 +167,7 @@ async def __handle_message(
                 message_id = message.message_id,
             )
 
-            await wait_to_read_message(message = message.content)
+            await wait_to_read_message(message = text_content)
 
             await chat_service.save_message_model(
                 message = save_message_model,
@@ -176,12 +176,7 @@ async def __handle_message(
             scheduler = TaskSchedulerRepositoryImpl()
             key = str(message.chat.id)
 
-            scheduler.save_message_model(
-                key = key,
-                save_message_model = save_message_model,
-            )
-
-            await TaskSchedulerRepositoryImpl().schedule_task(
+            await scheduler.schedule_task(
                 key = key,
                 coroutine = __answer_message(
                     bot = bot,
@@ -215,6 +210,8 @@ async def __answer_message(
     stop_typing = None
     typing_task = None
 
+    answer_message_list: list[Message] = []
+
     try:
         stop_typing = asyncio.Event()
         typing_task = asyncio.create_task(
@@ -239,15 +236,17 @@ async def __answer_message(
                 text = ai_answer,
                 business_connection_id = business_connection_id,
             )
-            await chat_service.handle_self_message(
-                message = answer_message,
-                strings = strings,
-            )
+
+            answer_message_list.append(answer_message)
 
     except asyncio.CancelledError:
         traceback.print_exc()
         raise
     finally:
+        await chat_service.handle_self_message(
+            message_list = answer_message_list,
+            strings = strings,
+        )
         # --- останавливаем typing в любом случае (даже при ошибке) ---
         stop_typing.set()
         typing_task.cancel()

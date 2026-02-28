@@ -30,7 +30,7 @@ class ChatService:
         message: SaveMessageModel,
     ):
         await self.save_message_use_case.invoke(
-            save_message_model = message,
+            save_message_model_list = [message],
         )
 
     async def generate_ai_response(
@@ -50,17 +50,24 @@ class ChatService:
 
     async def handle_self_message(
         self,
-        message: Message,
+        message_list: list[Message],
         strings: Strings,
     ):
-        asyncio.create_task(
-            self.save_message_use_case.invoke(
-                save_message_model = to_save_message_model(
+        save_message_model_list: list[SaveMessageModel] = []
+
+        for message in message_list:
+            save_message_model_list.append(
+                to_save_message_model(
                     message = message,
                     content = message.text,
                     role = ROLE_ASSISTANT,
                     empty_message = strings.empty_message(),
-                ),
+                )
+            )
+
+        asyncio.create_task(
+            self.save_message_use_case.invoke(
+                save_message_model_list = save_message_model_list,
             )
         )
 

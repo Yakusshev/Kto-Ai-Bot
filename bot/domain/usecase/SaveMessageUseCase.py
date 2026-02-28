@@ -12,8 +12,8 @@ class SaveMessageUseCase:
 
     async def invoke(
         self,
-        save_message_model: SaveMessageModel,
+        save_message_model_list: list[SaveMessageModel],
     ):
-        await self.session_repository.add_text_message(
-            message=save_message_model,
+        await self.session_repository.add_text_message_list(
+            message_list = save_message_model_list,
         )

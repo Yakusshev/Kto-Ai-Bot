@@ -1,10 +1,11 @@
 import os
 import ydb
+from ydb import Driver
 
 from bot.domain.const.env_const import YDB_AUTH_KEY_FILE, YDB_ENDPOINT, YDB_PATH
 
 
-def create_ydb_driver():
+def create_ydb_driver() -> Driver:
     # Выбираем способ авторизации
     if YDB_AUTH_KEY_FILE and os.path.exists(YDB_AUTH_KEY_FILE):
         # Локальная разработка: используем файл ключа

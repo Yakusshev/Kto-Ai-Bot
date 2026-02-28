@@ -29,9 +29,6 @@ async def main():
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
 
-    driver = create_ydb_driver()
-    ydb_session_pool = ydb.SessionPool(driver)
-
     dispatcher = Dispatcher()
 
     I18nMiddleware(
@@ -42,7 +39,7 @@ async def main():
     )
     dispatcher.business_message.middleware(StringsMiddleware())
     dispatcher.business_message.middleware(
-        ChatServiceMiddleware(ydb_session_pool = ydb_session_pool)
+        ChatServiceMiddleware()
     )
 
     bot = Bot(

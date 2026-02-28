@@ -1,10 +1,12 @@
 from typing import Callable, Dict, Any, Awaitable
 
+import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 from ydb import SessionPool
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
+from bot.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.di.llm_module import get_llm_repository
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
@@ -14,9 +16,9 @@ class ChatServiceMiddleware(BaseMiddleware):
 
     def __init__(
         self,
-        ydb_session_pool: SessionPool,
     ):
-        self.ydb_session_pool = ydb_session_pool
+        self.driver = create_ydb_driver()
+        self.ydb_session_pool = ydb.SessionPool(self.driver)
 
     async def __call__(
         self,
@@ -27,6 +29,7 @@ class ChatServiceMiddleware(BaseMiddleware):
 
         session_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
+            driver = self.driver,
         )
 
         data["chat_service"] = ChatService(

@@ -1,4 +1,5 @@
 from typing import List, Dict, Union, cast
+from venv import logger
 
 import openai
 from openai.types.chat import ChatCompletionMessageParam
@@ -32,6 +33,8 @@ class DeepseekRepository(AiRepository):
         for msg in messages:
             api_messages.append({"role": msg["role"], "content": msg["content"]})
 
+        logger.info(f"DeepseekRepository.generate_response: {api_messages}")
+
         try:
             response = await self.async_client.chat.completions.create(
                 model = self.model,
@@ -41,5 +44,5 @@ class DeepseekRepository(AiRepository):
             return response.choices[0].message.content
         except Exception as e:
             print(
-                f"Ошибка при обращении к OpenAI-совместимому API (model: {model}, url: {self.async_client.base_url}): {e}")
+                f"Ошибка при обращении к OpenAI-совместимому API (model: url: {self.async_client.base_url}): {e}")
             return "Ошибка обращения к AI"
