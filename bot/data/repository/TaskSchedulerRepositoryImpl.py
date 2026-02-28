@@ -16,6 +16,12 @@ class TaskSchedulerRepositoryImpl:
                     cls.__instance = super().__new__(cls)
         return cls.__instance
 
+    def has_task(
+        self,
+        key: str,
+    ) -> bool:
+        return self._tasks.get(key) is None
+
     async def schedule_task(
         self,
         key: str,

@@ -1,5 +1,6 @@
 # bot/business_message_handlers.py
 import asyncio
+import logging
 import random
 import traceback
 from venv import logger
@@ -151,15 +152,13 @@ async def __handle_message(
         message_from_user_id == message_chat_id
         and message.business_connection_id
     ):
-        save_message_model = to_save_message_model(
-            message = message,
-            content = text_content,
-            role = ROLE_USER,
-            empty_message = strings.empty_message(),
-        )
 
         try:
-            await wait_to_see_message()
+            scheduler = TaskSchedulerRepositoryImpl()
+            task_key = str(message.chat.id)
+
+            if not scheduler.has_task(key = task_key):
+                await wait_to_see_message()
 
             await bot.read_business_message(
                 business_connection_id = message.business_connection_id,
@@ -169,15 +168,19 @@ async def __handle_message(
 
             await wait_to_read_message(message = text_content)
 
+            save_message_model = to_save_message_model(
+                message = message,
+                content = text_content,
+                role = ROLE_USER,
+                empty_message = strings.empty_message(),
+            )
+
             await chat_service.save_message_model(
                 message = save_message_model,
             )
 
-            scheduler = TaskSchedulerRepositoryImpl()
-            key = str(message.chat.id)
-
             await scheduler.schedule_task(
-                key = key,
+                key = task_key,
                 coroutine = __answer_message(
                     bot = bot,
                     chat_service = chat_service,
@@ -239,8 +242,8 @@ async def __answer_message(
 
             answer_message_list.append(answer_message)
 
-    except asyncio.CancelledError:
-        traceback.print_exc()
+    except asyncio.CancelledError as e:
+        logging.exception(e)
         raise
     finally:
         await chat_service.handle_self_message(

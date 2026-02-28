@@ -9,7 +9,9 @@ from bot.domain.repository.AiRepository import AiRepository
 DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
+
 class DeepseekRepository(AiRepository):
+
     def __init__(
         self,
         api_key: str,
@@ -33,16 +35,25 @@ class DeepseekRepository(AiRepository):
         for msg in messages:
             api_messages.append({"role": msg["role"], "content": msg["content"]})
 
-        logger.info(f"DeepseekRepository.generate_response: {api_messages}")
+        logger.info(f"DeepseekRepository.generate_response: requested")
 
         try:
             response = await self.async_client.chat.completions.create(
                 model = self.model,
                 messages = cast(List[ChatCompletionMessageParam], api_messages),
-                stream = False
+                stream = False,
             )
-            return response.choices[0].message.content
+            response_text = response.choices[0].message.content
+
+            self.log_history(api_messages, response_text)
+
+            return response_text
         except Exception as e:
             print(
-                f"Ошибка при обращении к OpenAI-совместимому API (model: url: {self.async_client.base_url}): {e}")
+                f"Ошибка при обращении к OpenAI-совместимому API (model: url: {self.async_client.base_url}): {e}",
+            )
             return "Ошибка обращения к AI"
+
+    def log_history(self, api_messages, response_text):
+        api_messages.append({"role": "assistant", "content": response_text})
+        logger.info(f"DeepseekRepository.generate_response: response {api_messages}")
