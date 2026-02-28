@@ -20,6 +20,7 @@ from bot.resource.Strings import Strings
 business_router = Router()
 
 
+# TODO фильтер на юзер id - чтобы бот работал только на моих аккаунтах
 @business_router.business_message(F.text)
 async def __handle_text(
     message: Message,
@@ -157,9 +158,6 @@ async def __handle_message(
             empty_message = strings.empty_message(),
         )
 
-        stop_typing = None
-        typing_task = None
-
         try:
             await wait_to_see_message()
 
@@ -170,16 +168,6 @@ async def __handle_message(
             )
 
             await wait_to_read_message(message = message.content)
-
-            stop_typing = asyncio.Event()
-            typing_task = asyncio.create_task(
-                __typing_loop(
-                    bot = bot,
-                    chat_id = message_chat_id,
-                    business_connection_id = message.business_connection_id,
-                    stop_event = stop_typing,
-                ),
-            )
 
             await chat_service.save_message_model(
                 message = save_message_model,
@@ -208,15 +196,6 @@ async def __handle_message(
         except asyncio.CancelledError:
             traceback.print_exc()
             raise
-        finally:
-            # --- останавливаем typing в любом случае (даже при ошибке) ---
-            stop_typing.set()
-            typing_task.cancel()
-            try:
-                await typing_task
-            except asyncio.CancelledError:
-                pass
-
     else:
         print(
             f"Сообщение не было обработано"
@@ -233,7 +212,20 @@ async def __answer_message(
     user_name: str,
     business_connection_id: str,
 ):
+    stop_typing = None
+    typing_task = None
+
     try:
+        stop_typing = asyncio.Event()
+        typing_task = asyncio.create_task(
+            __typing_loop(
+                bot = bot,
+                chat_id = message_chat_id,
+                business_connection_id = business_connection_id,
+                stop_event = stop_typing,
+            ),
+        )
+
         ai_answer_list = await chat_service.generate_ai_response(
             message_chat_id = message_chat_id,
             user_name = user_name,
@@ -251,9 +243,18 @@ async def __answer_message(
                 message = answer_message,
                 strings = strings,
             )
+
     except asyncio.CancelledError:
-        logger.info("AI запрос отменён — пришло новое сообщение")
+        traceback.print_exc()
         raise
+    finally:
+        # --- останавливаем typing в любом случае (даже при ошибке) ---
+        stop_typing.set()
+        typing_task.cancel()
+        try:
+            await typing_task
+        except asyncio.CancelledError:
+            pass
 
 
 # TODO убрать делеи, разобраться с message quee
