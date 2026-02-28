@@ -1,112 +1,159 @@
 import asyncio
 import threading
-from abc import ABC
-from asyncio import Task
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Coroutine, Union
+from typing import Callable, Awaitable
+from bot.entrypoint.HumanWaitingBehavior import wait_to_see_message
 
-from aiogram.fsm.state import StatesGroup
-
-
-@dataclass(frozen = True)
-class TaskModel(StatesGroup):
-    preparing_date_time: datetime
-    preparingTask: Task
-    answeringTask: Task | None
-
-
-class TaskState(ABC):
-    datetime: datetime
 
 @dataclass
-class PreparingForAnswer(TaskState):
-    datetime: datetime
+class _StateEntry:
+    """Внутренняя запись состояния для одного чата."""
+    kind: str  # "preparing" | "answering"
+    task: asyncio.Task
+    started_at: datetime
+    # Корутина для прочтения последнего сообщения обновляется при каждом новом сообщении
+    latest_read_coro: Callable[[], Awaitable] | None
 
-@dataclass
-class Answering(TaskState):
-    datetime: datetime
-
-# @dataclass
-# class Received:
-#     time: datetime
 
 class TaskSchedulerRepositoryImpl:
+    """
+    Конечный автомат (FSM) для управления ответами бота.
+
+    Состояния:
+        None          — нет активного диалога (холодный старт)
+        "preparing"   — ожидание 10-30 сек (имитация чтения), накапливаем сообщения
+        "answering"   — печатаем и генерируем ответ
+
+    Переходы:
+        None        + сообщение → "preparing" (сохранить, запустить таймер)
+        "preparing" + сообщение → "preparing" (только сохранить, таймер продолжается)
+        "answering" + сообщение → "answering" (отменить текущий ответ, ответить сразу)
+    """
+
     __instance = None
     __lock = threading.Lock()
+    _states: dict[str, _StateEntry] = {}
 
-    _tasks: dict[str, TaskModel] = {}
-
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls):
         if cls.__instance is None:
             with cls.__lock:
                 if cls.__instance is None:
                     cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def get_state(
+    def get_state(self, key: str) -> str | None:
+        entry = self._states.get(key)
+        return entry.kind if entry else None
+
+    async def on_message(
         self,
         key: str,
-    ) -> TaskState | None:
+        save_coro: Awaitable,
+        answer_factory: Callable[[], Awaitable],
+        read_message_factory: Callable[[], Awaitable],
+    ) -> None:
+        """
+        Вызывается при каждом входящем сообщении.
 
-        task_model = self._tasks.get(key)
+        Args:
+            key:                 Идентификатор чата
+            save_coro:           Сохранить сообщение в БД (выполняется немедленно)
+            answer_factory:      Фабрика корутины генерации ответа
+            read_message_factory: Фабрика корутины «прочитать сообщение» в Telegram
+        """
+        # 1. Сохраняем в БД ВСЕГДА и НЕМЕДЛЕННО, до любой логики
+        await save_coro
 
-        if task_model:
-            if task_model.answeringTask:
-                return Answering(task_model.preparing_date_time)
-            else:
-                return PreparingForAnswer(task_model.preparing_date_time)
-        else:
-            return None
+        state = self._states.get(key)
 
-    async def handle(
-        self,
-        key: str,
-        prepare: Coroutine,
-        answer: Coroutine,
-    ):
-        task_model = self._tasks.get(key)
-
-        if task_model:
-
-        else:
-            self._tasks[key] = TaskModel(
-                preparing_date_time = datetime.now(),
-                preparingTask = asyncio.create_task(prepare),
-                answeringTask = None,
+        if state is None:
+            # Холодный старт: запускаем фазу подготовки (ожидание 10-30 сек)
+            entry = _StateEntry(
+                kind = "preparing",
+                task = asyncio.create_task(asyncio.sleep(0)),  # placeholder
+                started_at = datetime.now(),
+                latest_read_coro = read_message_factory,
+            )
+            self._states[key] = entry
+            entry.task = asyncio.create_task(
+                self._preparing_flow(key, answer_factory),
             )
 
-        await self._tasks[key].preparingTask
+        elif state.kind == "preparing":
+            # Уже ждём — просто обновляем «последнее» read-действие.
+            # Таймер продолжается, все сообщения уже в БД.
+            state.latest_read_coro = read_message_factory
 
+        elif state.kind == "answering":
+            # Бот уже печатает — отменяем текущий ответ и отвечаем заново
+            # на все сообщения (включая только что пришедшее, которое уже в БД)
+            await self._cancel_task(state.task)
 
+            # Прочитать новое сообщение сразу
+            await read_message_factory()
 
-    async def schedule_preparing_for_answer_task(
+            entry = _StateEntry(
+                kind = "answering",
+                task = asyncio.create_task(asyncio.sleep(0)),  # placeholder
+                started_at = datetime.now(),
+            )
+            self._states[key] = entry
+            entry.task = asyncio.create_task(
+                self._answering_flow(key, answer_factory),
+            )
+
+    # ------------------------------------------------------------------ #
+    #  Внутренние методы FSM                                               #
+    # ------------------------------------------------------------------ #
+
+    async def _preparing_flow(
         self,
         key: str,
-        coroutine: Coroutine,
-    ):
-        await self.cancel_or_await(key)
+        answer_factory: Callable[[], Awaitable],
+    ) -> None:
+        """Ждём 10-30 сек (имитация чтения), затем переходим в answering."""
 
-        self._tasks[key] = PreparingForAnswer(task = asyncio.create_task(coroutine))
+        try:
+            await wait_to_see_message()  # 10-30 сек
 
-    async def schedule_answering_task(
+            # Помечаем последнее сообщение как прочитанное
+            state = self._states.get(key)
+            if state and state.latest_read_coro:
+                await state.latest_read_coro()
+
+            # Переход: preparing → answering
+            if key in self._states:
+                entry = self._states[key]
+                entry.kind = "answering"
+                entry.task = asyncio.create_task(
+                    self._answering_flow(key, answer_factory),
+                )
+                await entry.task
+
+        except asyncio.CancelledError:
+            self._states.pop(key, None)
+            raise
+
+    async def _answering_flow(
         self,
         key: str,
-        coroutine: Coroutine,
-    ):
-        await self.cancel_or_await(key)
+        answer_factory: Callable[[], Awaitable],
+    ) -> None:
+        """Генерируем и отправляем ответ, затем сбрасываем состояние."""
+        try:
+            await answer_factory()
+        except asyncio.CancelledError:
+            raise
+        finally:
+            self._states.pop(key, None)
 
-        self._tasks[key] = Answering(task = asyncio.create_task(coroutine))
-
-    async def cancel_or_await(self, key: str):
-
-        task = self._tasks.pop(key, None).task
-
-        if task and task is PreparingForAnswer:
-            await task
-        elif task and not task.done():
+    @staticmethod
+    async def _cancel_task(task: asyncio.Task) -> None:
+        """Аккуратно отменяет задачу и ждёт её завершения."""
+        if task and not task.done():
             task.cancel()
             try:
                 await task
-            except asyncio.CancelledError:
+            except (asyncio.CancelledError, Exception):
                 pass
