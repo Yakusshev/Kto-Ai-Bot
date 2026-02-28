@@ -6,17 +6,26 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Coroutine, Union
 
+from aiogram.fsm.state import StatesGroup
+
+
+@dataclass(frozen = True)
+class TaskModel(StatesGroup):
+    preparing_date_time: datetime
+    preparingTask: Task
+    answeringTask: Task | None
+
 
 class TaskState(ABC):
-    task: Task
-
-@dataclass
-class Answering(TaskState):
-    task: Task
+    datetime: datetime
 
 @dataclass
 class PreparingForAnswer(TaskState):
-    task: Task
+    datetime: datetime
+
+@dataclass
+class Answering(TaskState):
+    datetime: datetime
 
 # @dataclass
 # class Received:
@@ -26,7 +35,7 @@ class TaskSchedulerRepositoryImpl:
     __instance = None
     __lock = threading.Lock()
 
-    _tasks: dict[str, TaskState] = {}
+    _tasks: dict[str, TaskModel] = {}
 
     def __new__(cls, *args, **kwargs):
         if cls.__instance is None:
@@ -39,19 +48,36 @@ class TaskSchedulerRepositoryImpl:
         self,
         key: str,
     ) -> TaskState | None:
-        return self._tasks.get(key)
 
-    # def has_task(
-    #     self,
-    #     key: str,
-    # ) -> bool:
-    #     return self._tasks.get(key) is not None
+        task_model = self._tasks.get(key)
 
-    # async def set_received_state(
-    #     self,
-    #     key: str,
-    # ):
-    #     self._tasks[key] = Received(time = datetime.now())
+        if task_model:
+            if task_model.answeringTask:
+                return Answering(task_model.preparing_date_time)
+            else:
+                return PreparingForAnswer(task_model.preparing_date_time)
+        else:
+            return None
+
+    async def handle(
+        self,
+        key: str,
+        prepare: Coroutine,
+        answer: Coroutine,
+    ):
+        task_model = self._tasks.get(key)
+
+        if task_model:
+
+        else:
+            self._tasks[key] = TaskModel(
+                preparing_date_time = datetime.now(),
+                preparingTask = asyncio.create_task(prepare),
+                answeringTask = None,
+            )
+
+        await self._tasks[key].preparingTask
+
 
 
     async def schedule_preparing_for_answer_task(
