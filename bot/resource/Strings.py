@@ -20,23 +20,23 @@ class Strings:
     def empty_message(self) -> str:
         return self._i18n.get('empty-message')
 
-    def photo_cannot_be_loaded(self, *, user: object) -> str:
-        return self._i18n.get('photo-cannot-be-loaded', user=user)
+    def photo_cannot_be_loaded(self) -> str:
+        return self._i18n.get('photo-cannot-be-loaded')
 
-    def photo_cannot_be_loaded_text(self, *, user: object, text: object) -> str:
-        return self._i18n.get('photo-cannot-be-loaded-text', user=user, text=text)
+    def photo_cannot_be_loaded_text(self, *, text: object) -> str:
+        return self._i18n.get('photo-cannot-be-loaded-text', text=text)
 
-    def photo_list_cannot_be_loaded(self, *, user: object, photo_number: object) -> str:
-        return self._i18n.get('photo-list-cannot-be-loaded', user=user, photo_number=photo_number)
+    def photo_list_cannot_be_loaded(self, *, photo_number: object) -> str:
+        return self._i18n.get('photo-list-cannot-be-loaded', photo_number=photo_number)
 
-    def photo_list_cannot_be_loaded_text(self, *, user: object, photo_number: object, text: object) -> str:
-        return self._i18n.get('photo-list-cannot-be-loaded-text', user=user, photo_number=photo_number, text=text)
+    def photo_list_cannot_be_loaded_text(self, *, photo_number: object, text: object) -> str:
+        return self._i18n.get('photo-list-cannot-be-loaded-text', photo_number=photo_number, text=text)
 
-    def voice_message_cannot_be_loaded(self, *, user: object) -> str:
-        return self._i18n.get('voice-message-cannot-be-loaded', user=user)
+    def voice_message_cannot_be_loaded(self) -> str:
+        return self._i18n.get('voice-message-cannot-be-loaded')
 
-    def video_message_cannot_be_loaded(self, *, user: object) -> str:
-        return self._i18n.get('video-message-cannot-be-loaded', user=user)
+    def video_message_cannot_be_loaded(self) -> str:
+        return self._i18n.get('video-message-cannot-be-loaded')
 
     def next_text(self) -> str:
         return self._i18n.get('next-text')

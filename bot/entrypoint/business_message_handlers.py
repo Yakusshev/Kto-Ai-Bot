@@ -62,25 +62,19 @@ async def __handle_photo(
 
     if has_many and has_text:
         text_content = strings.photo_list_cannot_be_loaded_text(
-            user = message.from_user.full_name,
             photo_number = len(message.photo),
             text = message.caption,
         )
     elif has_many:
         text_content = strings.photo_list_cannot_be_loaded(
-            user = message.from_user.full_name,
             photo_number = len(message.photo),
         )
     elif has_text:
         text_content = strings.photo_cannot_be_loaded_text(
-            user = message.from_user.full_name,
             text = message.caption,
         )
     else:
-        text_content = strings.photo_cannot_be_loaded(
-            user = message.from_user.full_name,
-        )
-
+        text_content = strings.photo_cannot_be_loaded()
     await __handle_message(message, bot, chat_service, text_content)
 
 
@@ -95,9 +89,7 @@ async def __handle_voice(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = strings.voice_message_cannot_be_loaded(
-            user = message.from_user.full_name,
-        ),
+        text_content = strings.voice_message_cannot_be_loaded(),
     )
 
 
@@ -112,9 +104,7 @@ async def __handle_video_note(
         message = message,
         bot = bot,
         chat_service = chat_service,
-        text_content = strings.video_message_cannot_be_loaded(
-            user = message.from_user.full_name,
-        ),
+        text_content = strings.video_message_cannot_be_loaded(),
     )
 
 
@@ -133,19 +123,19 @@ async def __handle_message(
     Фильтрует только сообщения, отправленные пользователем самому себе
     через business-соединение.
     """
-    if (
-        message.from_user.id != message.chat.id
-        or not message.business_connection_id
-    ):
-        logger.debug(
-            "Сообщение пропущено: from_user.id=%s chat.id=%s bc_id=%s",
-            message.from_user.id,
-            message.chat.id,
-            message.business_connection_id,
-        )
-        return
 
-    logger.info("Входящее сообщение: %s | chat_id=%s", text_content, message.chat.id)
+    by_user = message.from_user.id != message.chat.id
+    if (
+        by_user or (not message.business_connection_id and not by_user)
+    ):
+        await chat_service.save_message_model(
+            message = message,
+            text_content = text_content,
+        )
+        logger.info("Входящее сообщение: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        return
+    else:
+        logger.info("Входящее сообщение: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
 
     scheduler = TaskSchedulerRepositoryImpl()
     task_key = str(message.chat.id)
