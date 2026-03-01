@@ -22,15 +22,16 @@ class ChatService:
         self.generate_ai_response_use_case = generate_ai_response_use_case
         self.strings = strings  # Оставляем None, будет инициализирован при первом вызове
 
-    async def save_message_model(
+    async def save_message(
         self,
         message: Message,
         text_content: str,
+        role: MessageRole,
     ):
         save_message_model = to_save_message_model(
             message = message,
             content = text_content,
-            role = MessageRole.USER,
+            role = role,
             empty_message = self.strings.empty_message(),
         )
 
@@ -52,7 +53,7 @@ class ChatService:
 
         return await ai_response
 
-    async def handle_self_message(
+    async def save_assistant_text_message_list(
         self,
         message_list: list[Message],
     ):

@@ -37,10 +37,14 @@ class GenerateAiResponseUseCase:
 
         for index, message in enumerate(history):
 
-            date_time = await self.get_date_time(
-                previous_message = history[index - 1] if index != 0 else None,
-                message = message,
-            )
+            date_time = ''
+            if message.role == MessageRole.USER:
+                date_time = self.get_date_time(
+                    index = index,
+                    history = history,
+                    message = message,
+                )
+
             if ai_list and ai_list[-1].role == message.role:
 
                 previous_ai_message = ai_list[-1]
@@ -70,13 +74,16 @@ class GenerateAiResponseUseCase:
         return self.split_messages(response = ai_response)
 
     @staticmethod
-    async def get_date_time(
-        previous_message: SaveMessageModel | None,
+    def get_date_time(
+        history: list[SaveMessageModel],
+        index: int,
         message: SaveMessageModel,
     ) -> str:
 
-        if message.role == MessageRole.ASSISTANT:
-            return ''
+        previous_message = GenerateAiResponseUseCase.find_prev_user_message(
+            history = history,
+            index = index,
+        )
 
         date_time = ''
 
@@ -96,9 +103,9 @@ class GenerateAiResponseUseCase:
                 .strftime(format = GenerateAiResponseUseCase.TIME_FORMAT)
 
             if prev_date != date and prev_time != time:
-                date_time = f'{date_time} {time}'
+                date_time = f'{date} {time}'
             elif prev_date != date:
-                date_time += f'{date}'
+                date_time += f'{date} {time}'
             elif prev_time != time:
                 date_time += f'{time}'
 
@@ -106,6 +113,26 @@ class GenerateAiResponseUseCase:
                 date_time = f'[{date_time}]'
 
         return date_time
+
+    @staticmethod
+    def find_prev_user_message(
+        history: list[SaveMessageModel],
+        index: int,
+    ) -> SaveMessageModel | None:
+        """
+        Находит последнее USER сообщение перед указанным индексом.
+        Оптимально по памяти (O(1)) и времени (O(n) в худшем случае).
+        """
+        # Защита от выхода за границы
+        if not history or index <= 0:
+            return None
+
+        start_idx = min(index - 1, len(history) - 1)
+        for i in range(start_idx, -1, -1):
+            if history[i].role == MessageRole.USER:
+                return history[i]
+
+        return None
 
     @staticmethod
     def split_messages(

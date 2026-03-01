@@ -12,6 +12,7 @@ from bot.entrypoint.HumanWaitingBehavior import (
     wait_to_write_message,
 )
 from bot.resource.Strings import Strings
+from bot.domain.model.SaveMessageModel import MessageRole
 
 logger = logging.getLogger(__name__)
 business_router = Router()
@@ -27,7 +28,7 @@ async def __handle_text(
     bot: Bot,
     chat_service: ChatService,
 ):
-    await __handle_message(
+    await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -42,7 +43,7 @@ async def __handle_sticker(
     chat_service: ChatService,
     strings: Strings,
 ):
-    await __handle_message(
+    await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -75,7 +76,7 @@ async def __handle_photo(
         )
     else:
         text_content = strings.photo_cannot_be_loaded()
-    await __handle_message(message, bot, chat_service, text_content)
+    await __check_message_role(message, bot, chat_service, text_content)
 
 
 @business_router.business_message(F.voice)
@@ -85,7 +86,7 @@ async def __handle_voice(
     chat_service: ChatService,
     strings: Strings,
 ):
-    await __handle_message(
+    await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -100,7 +101,7 @@ async def __handle_video_note(
     chat_service: ChatService,
     strings: Strings,
 ):
-    await __handle_message(
+    await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
@@ -112,7 +113,7 @@ async def __handle_video_note(
 #  Центральная логика                                                  #
 # ------------------------------------------------------------------ #
 
-async def __handle_message(
+async def __check_message_role(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
@@ -123,20 +124,33 @@ async def __handle_message(
     Фильтрует только сообщения, отправленные пользователем самому себе
     через business-соединение.
     """
-
-    by_user = message.from_user.id != message.chat.id
-    if (
-        by_user or (not message.business_connection_id and not by_user)
-    ):
-        await chat_service.save_message_model(
+    by_assistant = message.from_user.id != message.chat.id
+    if by_assistant:
+        logger.info("Входящее сообщение not_by_user: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        await chat_service.save_message(
             message = message,
             text_content = text_content,
+            role = MessageRole.ASSISTANT,
         )
-        logger.info("Входящее сообщение: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
-        return
+    elif not message.business_connection_id:
+        logger.info("Входящее сообщение not business_connection_id: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
     else:
         logger.info("Входящее сообщение: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        await __handle_user_message(
+            message = message,
+            bot = bot,
+            chat_service = chat_service,
+            text_content = text_content,
+        )
 
+
+
+async def __handle_user_message(
+    message: Message,
+    bot: Bot,
+    chat_service: ChatService,
+    text_content: str,
+):
     scheduler = TaskSchedulerRepositoryImpl()
     task_key = str(message.chat.id)
 
@@ -144,9 +158,10 @@ async def __handle_message(
         await scheduler.on_message(
             key = task_key,
             # Сохранить в БД — выполнится немедленно внутри on_message
-            save_coro = chat_service.save_message_model(
+            save_coro = chat_service.save_message(
                 message = message,
                 text_content = text_content,
+                role = MessageRole.USER,
             ),
             # Фабрика ответа — вызывается только когда пришло время отвечать
             answer_factory = lambda: __answer_message(
@@ -231,7 +246,7 @@ async def __answer_message(
         # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
         if answer_message_list:
             asyncio.create_task(
-                chat_service.handle_self_message(message_list = answer_message_list),
+                chat_service.save_assistant_text_message_list(message_list = answer_message_list),
             )
 
 
