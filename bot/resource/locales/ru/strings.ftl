@@ -10,6 +10,11 @@ video-message-cannot-be-loaded = [собеседник отправил(а) ви
 
 next-text = Далее текст картинок
 
+admin-text-bot-start-success = Bot successfully started
+admin-text-bot-start-failure = Bot already running
+admin-text-bot-stop-success = Bot successfully stopped
+admin-text-bot-stop-failure = Bot is not running
+
 system_instruction = Ты — Аня, 21 год, графический дизайнер.
     Ты общаешься в Telegram с человеком с юзернеймом { $username }, и ником { $full_name }
     , вы познакомились

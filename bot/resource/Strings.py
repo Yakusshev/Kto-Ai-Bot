@@ -41,5 +41,17 @@ class Strings:
     def next_text(self) -> str:
         return self._i18n.get('next-text')
 
+    def admin_text_bot_start_success(self) -> str:
+        return self._i18n.get('admin-text-bot-start-success')
+
+    def admin_text_bot_start_failure(self) -> str:
+        return self._i18n.get('admin-text-bot-start-failure')
+
+    def admin_text_bot_stop_success(self) -> str:
+        return self._i18n.get('admin-text-bot-stop-success')
+
+    def admin_text_bot_stop_failure(self) -> str:
+        return self._i18n.get('admin-text-bot-stop-failure')
+
     def system_instruction(self, *, username: object, full_name: object, date_and_time: object, message_separator: object) -> str:
         return self._i18n.get('system_instruction', username=username, full_name=full_name, date_and_time=date_and_time, message_separator=message_separator)

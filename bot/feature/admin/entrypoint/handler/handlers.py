@@ -6,6 +6,7 @@ from aiogram.types import Message
 
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
+from bot.resource.Strings import Strings
 
 logger = logging.getLogger("admin_handler")
 admin_router = Router()
@@ -15,6 +16,7 @@ admin_router = Router()
 async def __handle_stop(
     message: Message,
     bot: Bot,
+    strings: Strings,
 ):
     logger.info(f"Handling stop command: {message}")
 
@@ -22,14 +24,16 @@ async def __handle_stop(
 
     await bot.send_message(
         chat_id = message.chat.id,
-        text = f"Stop result is {result}",
+        text = strings.admin_text_bot_stop_success()
+        if result else strings.admin_text_bot_stop_failure(),
     )
 
 
-@admin_router.message(Command("start"), IsAdminUserFilter())
+@admin_router.message(Command("play"), IsAdminUserFilter())
 async def __handle_start(
     message: Message,
     bot: Bot,
+    strings: Strings,
 ):
     logger.info(f"Handling start command: {message}")
 
@@ -37,5 +41,6 @@ async def __handle_start(
 
     await bot.send_message(
         chat_id = message.chat.id,
-        text = f"Start result is {result}",
+        text = strings.admin_text_bot_start_success()
+        if result else strings.admin_text_bot_start_failure(),
     )

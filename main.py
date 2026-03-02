@@ -18,13 +18,6 @@ async def main():
 
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    I18nMiddleware(
-        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
-        default_locale = "ru",
-    ).setup(
-        dispatcher = user_bot_manager.dispatcher
-    )
-
     await start_user_dispatcher_polling_task()
     await start_admin_dispatcher_polling_task()
 
@@ -32,12 +25,19 @@ async def main():
 
 
 async def start_user_dispatcher_polling_task():
+    I18nMiddleware(
+        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
+        default_locale = "ru",
+    ).setup(
+        dispatcher = user_bot_manager.dispatcher
+    )
+    user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
+
     setup_business_router()
 
     await user_bot_manager.start()
 
 def setup_business_router():
-    user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
     user_bot_manager.dispatcher.business_message.middleware(ChatServiceMiddleware())
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
@@ -60,6 +60,14 @@ def setup_business_router():
     user_bot_manager.dispatcher.include_router(router = business_router)
 
 async def start_admin_dispatcher_polling_task():
+    I18nMiddleware(
+        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
+        default_locale = "ru",
+    ).setup(
+        dispatcher = admin_bot_manager.dispatcher
+    )
+    admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
+
     admin_bot_manager.dispatcher.include_router(router = admin_router)
 
     await admin_bot_manager.start()

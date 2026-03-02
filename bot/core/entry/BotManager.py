@@ -1,8 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
-from aiogram.filters import Command
-from aiogram.loggers import dispatcher
 
 
 class BotManager:
