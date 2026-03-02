@@ -1,5 +1,4 @@
 import os
-from multiprocessing.util import DEBUG
 
 # 1. Загружаем переменные окружения в самом начале
 from dotenv import load_dotenv
@@ -16,3 +15,6 @@ YDB_AUTH_KEY_FILE = os.getenv("YDB_AUTH_KEY_FILE")
 DEBUG_MODE = os.getenv("DEBUG_MODE") == "True"
 DEBUG_MODE_TOKEN = os.getenv("DEBUG_MODE_TOKEN") == "True"
 DEBUG_MODE_DATABASE = os.getenv("DEBUG_MODE_DATABASE") == "True"
+
+NEXT_MESSAGE_SEPARATOR = os.getenv("NEXT_MESSAGE_SEPARATOR") == "True"
+NEXT_MESSAGE_SEPARATOR_REGEX = os.getenv("NEXT_MESSAGE_SEPARATOR_REGEX") == "True"

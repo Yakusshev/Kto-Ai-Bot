@@ -1,5 +1,6 @@
 # main.py
 import asyncio
+import locale
 import logging
 import os
 import sys
@@ -26,6 +27,8 @@ async def main():
     if not get_bot_token():
         logging.critical("BOT_TOKEN not found. Exiting.")
         sys.exit(1)
+
+    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
     dispatcher = Dispatcher()
 

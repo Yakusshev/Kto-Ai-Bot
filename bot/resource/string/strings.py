@@ -1,7 +1,0 @@
-STRING_STICKER_START = "[Стикер не загрузился, эмодзи стикера: "
-SYSTEM_BRACKET_START = "["
-SYSTEM_BRACKET_END = "]"
-EMPTY_MESSAGE = "[]"
-PHOTO_CANNOT_BE_LOADED = " отправил фотографию, она не может быть загружена"
-PHOTO_LIST_CANNOT_BE_LOADED = " отправил несколько фотографий, они не могут быть загружены"
-NEXT_TEXT = "Далее текст картинок"

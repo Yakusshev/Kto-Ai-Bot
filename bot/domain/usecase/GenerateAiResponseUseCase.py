@@ -4,11 +4,12 @@ from typing import List
 from venv import logger
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
-from bot.domain.DefaultSystemInstuction import anya_system_instruction
 from bot.domain.model.MessageForAiModel import MessageForAiModel
 from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
-from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
+from bot.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
 from bot.domain.repository.AiRepository import AiRepository
+from bot.domain.usecase.GetSystemInstructionUseCase import \
+    GetSystemInstructionUseCase
 
 
 class GenerateAiResponseUseCase:
@@ -21,17 +22,19 @@ class GenerateAiResponseUseCase:
         self,
         ai_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
+        get_system_instruction_use_case: GetSystemInstructionUseCase,
     ):
         self.llm_repository = ai_repository
         self.session_repository = session_repository
+        self.get_system_instruction_use_case = get_system_instruction_use_case
 
     async def invoke(
         self,
-        user_message_model: UserInfoForAiModel,
+        user_for_ai_model: UserMessageInfoForAiModel,
     ) -> List[str]:
 
         history: List[SaveMessageModel] = await self.session_repository \
-            .get_session_data(chat_id = user_message_model.id)
+            .get_session_data(chat_id = user_for_ai_model.id)
 
         ai_list: List[MessageForAiModel] = []
 
@@ -65,9 +68,8 @@ class GenerateAiResponseUseCase:
 
         ai_response = await self.llm_repository.generate_response(
             message_list = ai_list,
-            system_prompt = anya_system_instruction(
-                user_nickname = user_message_model.username,
-                next_message_tag = GenerateAiResponseUseCase.NEXT_MESSAGE_TAG,
+            system_prompt = self.get_system_instruction_use_case.invoke(
+                info = user_for_ai_model,
             ),
         )
 

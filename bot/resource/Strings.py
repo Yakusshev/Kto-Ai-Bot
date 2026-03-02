@@ -40,3 +40,6 @@ class Strings:
 
     def next_text(self) -> str:
         return self._i18n.get('next-text')
+
+    def system_instruction(self, *, username: object, full_name: object, date_and_time: object, message_separator: object) -> str:
+        return self._i18n.get('system_instruction', username=username, full_name=full_name, date_and_time=date_and_time, message_separator=message_separator)

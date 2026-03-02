@@ -14,7 +14,7 @@ from bot.entrypoint.HumanWaitingBehavior import (
 from bot.resource.Strings import Strings
 from bot.domain.model.SaveMessageModel import MessageRole
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("business_handler")
 business_router = Router()
 
 
@@ -168,9 +168,7 @@ async def __handle_user_message(
                 bot = bot,
                 chat_service = chat_service,
                 text_content = text_content,
-                message_chat_id = message.chat.id,
-                user_name = message.from_user.username,
-                business_connection_id = message.business_connection_id,
+                message = message,
             ),
             # Фабрика «прочитать сообщение» — вызывается перед ответом
             read_message_factory = lambda: bot.read_business_message(
@@ -190,10 +188,8 @@ async def __handle_user_message(
 async def __answer_message(
     bot: Bot,
     chat_service: ChatService,
+    message: Message,
     text_content: str,
-    message_chat_id: int,
-    user_name: str,
-    business_connection_id: str,
 ) -> None:
     """
     Генерирует и отправляет ответ нейросети.
@@ -202,6 +198,9 @@ async def __answer_message(
     stop_typing = asyncio.Event()
     typing_task = None
     answer_message_list: list[Message] = []
+
+    message_chat_id = message.chat.id
+    business_connection_id = message.business_connection_id
 
     try:
         await wait_to_start_typing(message = text_content)
@@ -216,10 +215,7 @@ async def __answer_message(
             ),
         )
 
-        ai_answer_list = await chat_service.generate_ai_response(
-            message_chat_id = message_chat_id,
-            user_name = user_name,
-        )
+        ai_answer_list = await chat_service.generate_ai_response(message = message)
 
         for ai_answer in ai_answer_list:
             await wait_to_write_message(ai_answer)

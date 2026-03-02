@@ -4,6 +4,8 @@ FTL Stub Generator
 Парсит ru/strings.ftl и генерирует Strings.py с классом Strings,
 который оборачивает I18nContext и предоставляет типизированный доступ к ключам.
 
+Исправлено: поддержка многострочных значений (со строками с отступами).
+
 Использование:
     python generate_stubs.py
 """
@@ -50,22 +52,54 @@ _VAR_PATTERN = re.compile(r"\{\s*\$([a-zA-Z0-9_]+)\s*\}")
 
 
 def parse_ftl(path: Path) -> FtlBundle:
-    """Читает .ftl файл и возвращает FtlBundle со всеми ключами."""
+    """
+    Читает .ftl файл и возвращает FtlBundle со всеми ключами.
+    Поддерживает многострочные значения (строки, начинающиеся с пробела/табуляции,
+    считаются продолжением предыдущего ключа).
+    """
     bundle = FtlBundle(source_path=path)
-    text = path.read_text(encoding="utf-8")
+    lines = path.read_text(encoding="utf-8").splitlines()
 
-    for line in text.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
+    i = 0
+    n = len(lines)
+
+    while i < n:
+        line = lines[i].rstrip('\n')
+
+        # Пропускаем пустые строки и комментарии
+        if not line.strip() or line.strip().startswith('#'):
+            i += 1
             continue
 
+        # Ищем начало ключа
         key_match = _KEY_PATTERN.match(line)
         if not key_match:
+            i += 1
             continue
 
         key_name = key_match.group(1)
-        # Сохраняем порядок появления переменных, без дубликатов
-        variables = tuple(dict.fromkeys(_VAR_PATTERN.findall(line)))
+        # Значение начинается с остатка строки после "=" (может быть пустым)
+        value_parts = [line[key_match.end():].lstrip()]
+
+        # Переходим к следующей строке
+        i += 1
+
+        # Собираем все строки с отступом (пробел или табуляция в начале)
+        while i < n:
+            next_line = lines[i]
+            # Если строка пустая или начинается с пробела/табуляции — она принадлежит текущему ключу
+            if not next_line.strip() or next_line[0] in (' ', '\t'):
+                value_parts.append(next_line)
+                i += 1
+            else:
+                # Строка без отступа — начинается новый ключ или комментарий
+                break
+
+        # Объединяем все части значения (с сохранением переносов)
+        full_value = '\n'.join(value_parts)
+
+        # Извлекаем переменные из полного значения
+        variables = tuple(dict.fromkeys(_VAR_PATTERN.findall(full_value)))
         bundle.keys.append(FtlKey(name=key_name, variables=variables))
 
     return bundle

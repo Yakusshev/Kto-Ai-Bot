@@ -3,12 +3,13 @@ from typing import Callable, Dict, Any, Awaitable
 import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
-from ydb import SessionPool
 
 from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
 from bot.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.di.llm_module import get_llm_repository
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.domain.usecase.GetSystemInstructionUseCase import \
+    GetSystemInstructionUseCase
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.ChatService import ChatService
 
@@ -32,15 +33,20 @@ class ChatServiceMiddleware(BaseMiddleware):
             driver = self.driver,
         )
 
+        strings = data["strings"]
+
         data["chat_service"] = ChatService(
             generate_ai_response_use_case = GenerateAiResponseUseCase(
                 session_repository = session_repository,
                 ai_repository = get_llm_repository(),
+                get_system_instruction_use_case = GetSystemInstructionUseCase(
+                    strings = strings,
+                )
             ),
             save_message_use_case = SaveMessageUseCase(
                 session_repository = session_repository,
             ),
-            strings = data["strings"],
+            strings = strings,
         )
 
         return await handler(event, data)

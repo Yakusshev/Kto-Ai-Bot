@@ -13,6 +13,7 @@ DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
 
 ROLE_TITLE = 'role'
 ROLE_MODEL = 'model'
+ROLE_SYSTEM = 'system'
 CONTENT = 'content'
 
 
@@ -36,13 +37,18 @@ class DeepseekRepository(AiRepository):
     ) -> str:
         api_messages = []
         if system_prompt:
-            api_messages.append({ROLE_TITLE: "system", CONTENT: system_prompt})
+            api_messages.append(
+                {
+                    ROLE_TITLE: ROLE_SYSTEM,
+                    CONTENT: system_prompt,
+                },
+            )
 
         for message in message_list:
             api_messages.append(
                 {
                     ROLE_TITLE: message.role.value,
-                    CONTENT: message.content
+                    CONTENT: message.content,
                 },
             )
 
@@ -74,7 +80,9 @@ class DeepseekRepository(AiRepository):
             {
                 ROLE_TITLE: "assistant",
                 CONTENT: response_text,
-            }
+            },
         )
-        logger.info(f"DeepseekRepository.generate_response: history {api_messages}")
-        logger.info(f"DeepseekRepository.generate_response: response {response_text}")
+        logger.info(f"DeepseekRepository.generate_response: history = {api_messages}")
+        logger.info(
+            f"DeepseekRepository.generate_response: response {response_text}",
+        )

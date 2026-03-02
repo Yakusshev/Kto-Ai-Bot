@@ -1,14 +1,17 @@
 import asyncio
+import logging
 import re
 
 from aiogram.types import Message
 
-from bot.domain.model.UserInfoForAiModel import UserInfoForAiModel
+from bot.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
 from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
 from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
 from bot.resource.Strings import Strings
+
+_logger = logging.getLogger("ChatService")
 
 class ChatService:
 
@@ -20,7 +23,7 @@ class ChatService:
     ):
         self.save_message_use_case = save_message_use_case
         self.generate_ai_response_use_case = generate_ai_response_use_case
-        self.strings = strings  # Оставляем None, будет инициализирован при первом вызове
+        self.strings = strings
 
     async def save_message(
         self,
@@ -41,13 +44,14 @@ class ChatService:
 
     async def generate_ai_response(
         self,
-        message_chat_id: int,
-        user_name: str,
+        message: Message,
     ):
         ai_response = self.generate_ai_response_use_case.invoke(
-            user_message_model = UserInfoForAiModel(
-                id = message_chat_id,
-                username = user_name,
+            user_for_ai_model = UserMessageInfoForAiModel(
+                id = message.chat.id,
+                username = message.from_user.username,
+                full_name = message.from_user.full_name,
+                datetime = message.date,
             ),
         )
 
