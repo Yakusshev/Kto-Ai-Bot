@@ -4,11 +4,11 @@ import re
 
 from aiogram.types import Message
 
-from bot.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
-from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
-from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
-from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.entrypoint.SaveMessageModelMapper import to_save_message_model
+from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
+from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
+from bot.feature.business.entrypoint.SaveMessageModelMapper import to_save_message_model
 from bot.resource.Strings import Strings
 
 _logger = logging.getLogger("ChatService")

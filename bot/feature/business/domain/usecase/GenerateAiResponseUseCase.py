@@ -3,12 +3,12 @@ from random import random
 from typing import List
 from venv import logger
 
-from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
-from bot.domain.model.MessageForAiModel import MessageForAiModel
-from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
-from bot.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
-from bot.domain.repository.AiRepository import AiRepository
-from bot.domain.usecase.GetSystemInstructionUseCase import \
+from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
+from bot.feature.business.domain.model.MessageForAiModel import MessageForAiModel
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
+from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
+from bot.feature.business.domain.repository.AiRepository import AiRepository
+from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
     GetSystemInstructionUseCase
 
 

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from beartype import beartype
 
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel
 
 
 @beartype

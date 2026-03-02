@@ -5,17 +5,16 @@ import logging
 import os
 import sys
 
-import ydb
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
-from bot.di.ChatServiceMiddleware import ChatServiceMiddleware
-from bot.di.StringsMiddleware import StringsMiddleware
-from bot.domain.get_bot_token import get_bot_token
+from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
+from bot.feature.business.di.StringsMiddleware import StringsMiddleware
+from bot.feature.business.domain.get_bot_token import get_bot_token
 # Разделяем импорты роутеров для ясности
-from bot.entrypoint.business_message_handlers import business_router
+from bot.feature.business.entrypoint.business_message_handlers import business_router
 
 # Исправляем импорты на snake_case
 

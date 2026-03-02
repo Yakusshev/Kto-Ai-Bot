@@ -1,5 +1,5 @@
-from bot.domain.const.env_const import NEXT_MESSAGE_SEPARATOR
-from bot.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
+from bot.feature.business.domain.const.env_const import NEXT_MESSAGE_SEPARATOR
+from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
 from bot.resource.Strings import Strings
 from datetime import datetime
 

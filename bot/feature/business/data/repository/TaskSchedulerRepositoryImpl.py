@@ -1,9 +1,9 @@
 import asyncio
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Awaitable
-from bot.entrypoint.HumanWaitingBehavior import wait_to_see_message
+from bot.feature.business.entrypoint.HumanWaitingBehavior import wait_to_see_message
 
 
 @dataclass

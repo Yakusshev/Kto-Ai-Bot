@@ -1,12 +1,11 @@
-from typing import List, Dict, Union, cast
+from typing import List, cast
 from venv import logger
 
 import openai
 from openai.types.chat import ChatCompletionMessageParam
 
-from bot.domain.model.MessageForAiModel import MessageForAiModel
-from bot.domain.model.SaveMessageModel import SaveMessageModel
-from bot.domain.repository.AiRepository import AiRepository
+from bot.feature.business.domain.model.MessageForAiModel import MessageForAiModel
+from bot.feature.business.domain.repository.AiRepository import AiRepository
 
 DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'

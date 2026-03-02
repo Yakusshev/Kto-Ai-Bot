@@ -4,14 +4,14 @@ import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
-from bot.data.ydb.CreateYdbDriver import create_ydb_driver
-from bot.di.llm_module import get_llm_repository
-from bot.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
-from bot.domain.usecase.GetSystemInstructionUseCase import \
+from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
+from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
+from bot.feature.business.di.llm_module import get_llm_repository
+from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
     GetSystemInstructionUseCase
-from bot.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.entrypoint.ChatService import ChatService
+from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
+from bot.feature.business.entrypoint.ChatService import ChatService
 
 class ChatServiceMiddleware(BaseMiddleware):
 

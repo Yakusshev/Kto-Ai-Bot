@@ -4,15 +4,15 @@ import random
 from aiogram import Router, F, Bot
 from aiogram.types import Message
 
-from bot.data.repository.TaskSchedulerRepositoryImpl import \
+from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.entrypoint.ChatService import ChatService
-from bot.entrypoint.HumanWaitingBehavior import (
+from bot.feature.business.entrypoint.ChatService import ChatService
+from bot.feature.business.entrypoint.HumanWaitingBehavior import (
     wait_to_start_typing,
     wait_to_write_message,
 )
 from bot.resource.Strings import Strings
-from bot.domain.model.SaveMessageModel import MessageRole
+from bot.feature.business.domain.model.SaveMessageModel import MessageRole
 
 logger = logging.getLogger("business_handler")
 business_router = Router()

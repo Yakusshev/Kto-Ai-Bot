@@ -4,8 +4,8 @@ import time
 import ydb
 from ydb import Driver, SessionPool
 
-from bot.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
-from bot.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
+from bot.feature.business.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 
 
 class ChatHistoryConst:

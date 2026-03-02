@@ -1,5 +1,5 @@
-from bot.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
-from bot.domain.model.SaveMessageModel import SaveMessageModel
+from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel
 
 
 class SaveMessageUseCase:
