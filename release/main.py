@@ -1,52 +1,47 @@
 # main.py
 import asyncio
+import locale
 import logging
-import os
-import sys
 
-import ydb
-from aiogram import Bot, Dispatcher, types
-from aiogram.client.default import DefaultBotProperties
+from aiogram import Dispatcher, types
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
-from bot.di.ChatServiceMiddleware import ChatServiceMiddleware
-from bot.di.StringsMiddleware import StringsMiddleware
-from bot.domain.get_bot_token import get_bot_token
-# Разделяем импорты роутеров для ясности
-from bot.entrypoint.business_message_handlers import business_router
-
-# Исправляем импорты на snake_case
-
-# Get the absolute path to the project root
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+from bot.feature.admin import admin_bot_manager
+from bot.feature.admin.entrypoint.handler.handlers import admin_router
+from bot.feature.business import user_bot_manager
+from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
+from bot.feature.business.di.StringsMiddleware import StringsMiddleware
+from bot.feature.business.entrypoint.business_message_handlers import business_router
 
 async def main():
 
-    if not get_bot_token():
-        logging.critical("BOT_TOKEN not found. Exiting.")
-        sys.exit(1)
+    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    dispatcher = Dispatcher()
+    await start_user_dispatcher_polling_task()
+    await start_admin_dispatcher_polling_task()
 
+    await asyncio.Future()
+
+
+async def start_user_dispatcher_polling_task():
     I18nMiddleware(
         core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
         default_locale = "ru",
     ).setup(
-        dispatcher = dispatcher
+        dispatcher = user_bot_manager.dispatcher
     )
-    dispatcher.business_message.middleware(StringsMiddleware())
-    dispatcher.business_message.middleware(
-        ChatServiceMiddleware()
-    )
+    user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
 
-    bot = Bot(
-        token = get_bot_token(),
-        default = DefaultBotProperties(parse_mode = "HTML"),
-    )
+    setup_business_router()
+
+    await user_bot_manager.start()
+
+def setup_business_router():
+    user_bot_manager.dispatcher.business_message.middleware(ChatServiceMiddleware())
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
-    @dispatcher.business_connection()
+    @user_bot_manager.dispatcher.business_connection()
     async def on_business_connection(connection: types.BusinessConnection):
         """Логирует факт подключения или отключения."""
         conn_id = connection.id
@@ -62,10 +57,20 @@ async def main():
                 f"User {user_id} DISABLED business account. Connection ID: {conn_id}",
             )
 
-    dispatcher.include_router(router = business_router)
+    user_bot_manager.dispatcher.include_router(router = business_router)
 
-    logging.info("Starting bot...")
-    await dispatcher.start_polling(bot)
+async def start_admin_dispatcher_polling_task():
+    I18nMiddleware(
+        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
+        default_locale = "ru",
+    ).setup(
+        dispatcher = admin_bot_manager.dispatcher
+    )
+    admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
+
+    admin_bot_manager.dispatcher.include_router(router = admin_router)
+
+    await admin_bot_manager.start()
 
 
 if __name__ == '__main__':
