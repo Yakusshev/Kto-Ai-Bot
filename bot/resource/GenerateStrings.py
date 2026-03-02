@@ -22,7 +22,7 @@ from pathlib import Path
 # Domain
 # ---------------------------------------------------------------------------
 
-@dataclass(frozen=True)
+@dataclass(frozen = True)
 class FtlKey:
     """Один ключ локализации с его переменными-аргументами."""
     name: str
@@ -40,7 +40,7 @@ class FtlKey:
 class FtlBundle:
     """Набор всех ключей из одного .ftl файла."""
     source_path: Path
-    keys: list[FtlKey] = field(default_factory=list)
+    keys: list[FtlKey] = field(default_factory = list)
 
 
 # ---------------------------------------------------------------------------
@@ -57,8 +57,8 @@ def parse_ftl(path: Path) -> FtlBundle:
     Поддерживает многострочные значения (строки, начинающиеся с пробела/табуляции,
     считаются продолжением предыдущего ключа).
     """
-    bundle = FtlBundle(source_path=path)
-    lines = path.read_text(encoding="utf-8").splitlines()
+    bundle = FtlBundle(source_path = path)
+    lines = path.read_text(encoding = "utf-8").splitlines()
 
     i = 0
     n = len(lines)
@@ -100,7 +100,7 @@ def parse_ftl(path: Path) -> FtlBundle:
 
         # Извлекаем переменные из полного значения
         variables = tuple(dict.fromkeys(_VAR_PATTERN.findall(full_value)))
-        bundle.keys.append(FtlKey(name=key_name, variables=variables))
+        bundle.keys.append(FtlKey(name = key_name, variables = variables))
 
     return bundle
 
@@ -125,11 +125,13 @@ def _render_method(key: FtlKey, indent: str = _INDENT) -> str:
         signature = f"def {key.method_name()}(self) -> str:"
         body = f"return self._i18n.get({key.name!r})"
 
-    return "\n".join([
-        f"{indent}{signature}",
-        f"{i2}{body}",
-        "",
-    ])
+    return "\n".join(
+        [
+            f"{indent}{signature}",
+            f"{i2}{body}",
+            "",
+        ],
+    )
 
 
 def generate_stubs(bundle: FtlBundle) -> str:
@@ -164,7 +166,7 @@ def generate_stubs(bundle: FtlBundle) -> str:
 # ---------------------------------------------------------------------------
 
 def write_stubs(code: str, output_path: Path) -> None:
-    output_path.write_text(code, encoding="utf-8")
+    output_path.write_text(code, encoding = "utf-8")
     print(f"✅  Stubs written → {output_path}")
 
 
@@ -184,10 +186,12 @@ def main() -> None:
 
     bundle = parse_ftl(ftl_path)
     code = generate_stubs(bundle)
-    write_stubs(code, output_path=output_path)
+    write_stubs(code, output_path = output_path)
 
     print(f"   Found {len(bundle.keys)} keys.")
 
 
+# важно, чтобы в многострочном тексте не было строк, начинающихся с "[" - это ломает
+# ftl
 if __name__ == "__main__":
     main()
