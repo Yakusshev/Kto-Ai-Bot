@@ -1,4 +1,4 @@
-from bot.feature.business.domain.const.env_const import TELEGRAM_BOT_TOKEN_DEBUG, TELEGRAM_BOT_TOKEN_RELEASE, DEBUG_MODE_TOKEN
+from bot.core.domain.const.env_const import TELEGRAM_BOT_TOKEN_DEBUG, TELEGRAM_BOT_TOKEN_RELEASE, DEBUG_MODE_TOKEN
 
 
 def get_bot_token() -> str:

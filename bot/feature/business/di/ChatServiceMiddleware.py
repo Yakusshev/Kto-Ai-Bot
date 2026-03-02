@@ -33,6 +33,8 @@ class ChatServiceMiddleware(BaseMiddleware):
             driver = self.driver,
         )
 
+        session_repository.ydb_session_pool(self.ydb_session_pool)
+
         strings = data["strings"]
 
         data["chat_service"] = ChatService(

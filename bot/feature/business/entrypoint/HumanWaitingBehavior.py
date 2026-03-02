@@ -1,7 +1,7 @@
 import asyncio
 import random
 
-from bot.feature.business.domain.const.env_const import DEBUG_MODE
+from bot.core.domain.const.env_const import DEBUG_MODE
 
 
 async def wait_to_see_message():

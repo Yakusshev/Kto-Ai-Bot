@@ -7,9 +7,11 @@ import sys
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
+from aiogram.handlers import MessageHandler
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
+from bot.feature.admin.entrypoint.handler.handlers import admin_router
 from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.domain.get_bot_token import get_bot_token
@@ -29,6 +31,11 @@ async def main():
 
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
+    bot = Bot(
+        token = get_bot_token(),
+        default = DefaultBotProperties(parse_mode = "HTML"),
+    )
+
     dispatcher = Dispatcher()
 
     I18nMiddleware(
@@ -37,15 +44,18 @@ async def main():
     ).setup(
         dispatcher = dispatcher
     )
-    dispatcher.business_message.middleware(StringsMiddleware())
-    dispatcher.business_message.middleware(
-        ChatServiceMiddleware()
-    )
 
-    bot = Bot(
-        token = get_bot_token(),
-        default = DefaultBotProperties(parse_mode = "HTML"),
-    )
+    setup_business_dispatcher(dispatcher = dispatcher)
+    setup_admin_router(dispatcher = dispatcher)
+
+    logging.info("Starting bot...")
+    await dispatcher.start_polling(bot)
+
+def setup_business_dispatcher(
+    dispatcher: Dispatcher,
+):
+    dispatcher.business_message.middleware(StringsMiddleware())
+    dispatcher.business_message.middleware(ChatServiceMiddleware())
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
     @dispatcher.business_connection()
@@ -66,8 +76,10 @@ async def main():
 
     dispatcher.include_router(router = business_router)
 
-    logging.info("Starting bot...")
-    await dispatcher.start_polling(bot)
+def setup_admin_router(
+    dispatcher: Dispatcher,
+):
+    dispatcher.include_router(router = admin_router)
 
 
 if __name__ == '__main__':

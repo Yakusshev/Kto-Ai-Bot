@@ -4,7 +4,7 @@ import time
 import ydb
 from ydb import Driver, SessionPool
 
-from bot.feature.business.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
+from bot.core.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
 from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
 
 
@@ -32,7 +32,7 @@ class ChatHistoryRepositoryImpl:
         ydb_session_pool: SessionPool,
         driver: Driver,
     ):
-        self.pool = ydb_session_pool
+        self.ydb_session_pool = ydb_session_pool
         self.table_name = ChatHistoryConst.TABLE_NAME_DEBUG \
             if DEBUG_MODE_DATABASE \
             else ChatHistoryConst.TABLE_NAME_RELEASE
@@ -80,7 +80,7 @@ class ChatHistoryRepositoryImpl:
             return models
 
         messages = await asyncio.to_thread(
-            self.pool.retry_operation_sync,
+            self.ydb_session_pool.retry_operation_sync,
             callee = execute,
         )
         return messages
