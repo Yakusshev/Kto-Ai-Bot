@@ -146,7 +146,7 @@ class GenerateAiResponseUseCase:
         response_no_brackets = GenerateAiResponseUseCase\
             .replace_brackets_except_next(response)
 
-        lines = re.split(pattern, response_no_brackets)
+        lines: list[str] = re.split(pattern, response_no_brackets)
 
         logger.info(f'GenerateAiResponseUseCase.split_messages lines = {lines}')
 
@@ -161,7 +161,7 @@ class GenerateAiResponseUseCase:
         current = lines[0]
 
         for line in lines[1:]:
-            if random() < 0.4:
+            if random() < 0.75:
                 result.append(current)
                 current = line
             else:
