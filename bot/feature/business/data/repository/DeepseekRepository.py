@@ -68,7 +68,8 @@ class DeepseekRepository(AiRepository):
             print(
                 f"Ошибка при обращении к OpenAI-совместимому API (model: url: {self.async_client.base_url}): {e}",
             )
-            return "Ошибка обращения к AI"
+            #TODO протестить
+            raise e
 
     @staticmethod
     def log_history(

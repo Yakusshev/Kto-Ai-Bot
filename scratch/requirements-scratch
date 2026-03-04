@@ -1,9 +1,0 @@
-
-protobuf == 5.29.5
-aiogram == 3.22.0
-openai == 2.22.0
-python-dotenv == 1.2.1
-ydb == 3.25.0
-yandexcloud==0.379.0
-fluent-runtime==0.4.0
-aiogram-i18n==1.4
