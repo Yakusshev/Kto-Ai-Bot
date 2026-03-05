@@ -1,17 +1,21 @@
+from datetime import datetime
 from typing import Callable, Dict, Any, Awaitable
 
 import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import ChatHistoryRepositoryImpl
+from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
+    ChatHistoryRepositoryImpl
 from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
-from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import \
+    GenerateAiResponseUseCase
 from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
     GetSystemInstructionUseCase
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.feature.business.entrypoint.ChatService import ChatService
+
 
 class ChatServiceMiddleware(BaseMiddleware):
 
@@ -25,9 +29,8 @@ class ChatServiceMiddleware(BaseMiddleware):
         self,
         handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
         event: TelegramObject,
-        data: Dict[str, Any]
+        data: Dict[str, Any],
     ) -> Any:
-
         session_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
             driver = self.driver,
@@ -41,7 +44,7 @@ class ChatServiceMiddleware(BaseMiddleware):
                 ai_repository = get_llm_repository(),
                 get_system_instruction_use_case = GetSystemInstructionUseCase(
                     strings = strings,
-                )
+                ),
             ),
             save_message_use_case = SaveMessageUseCase(
                 session_repository = session_repository,
@@ -50,3 +53,4 @@ class ChatServiceMiddleware(BaseMiddleware):
         )
 
         return await handler(event, data)
+

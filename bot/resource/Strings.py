@@ -53,5 +53,11 @@ class Strings:
     def admin_text_bot_stop_failure(self) -> str:
         return self._i18n.get('admin-text-bot-stop-failure')
 
-    def system_instruction(self, *, username: object, full_name: object, date_and_time: object, message_separator: object) -> str:
-        return self._i18n.get('system_instruction', username=username, full_name=full_name, date_and_time=date_and_time, message_separator=message_separator)
+    def system_instruction(self, *, username: object, full_name: object, date_and_time: object) -> str:
+        return self._i18n.get('system_instruction', username=username, full_name=full_name, date_and_time=date_and_time)
+
+    def system_instruction_part_2(self, *, message_separator: object) -> str:
+        return self._i18n.get('system_instruction_part_2', message_separator=message_separator)
+
+    def system_instruction_part_3(self, *, message_separator: object) -> str:
+        return self._i18n.get('system_instruction_part_3', message_separator=message_separator)

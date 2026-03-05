@@ -17,13 +17,21 @@ class GetSystemInstructionUseCase:
         self,
         info: UserMessageInfoForAiModel,
     ) -> str:
-        return self.strings.system_instruction(
+        part1 = self.strings.system_instruction(
             username = info.username,
             full_name = info.full_name,
             date_and_time = GetSystemInstructionUseCase \
                 .format_time(message_datetime = info.datetime),
+        )
+
+        part2 = self.strings.system_instruction_part_2(
             message_separator = NEXT_MESSAGE_SEPARATOR,
         )
+
+        part3 = self.strings.system_instruction_part_3(
+            message_separator = NEXT_MESSAGE_SEPARATOR,
+        )
+        return f"{part1}\n{part2}\n{part3}"
 
     @staticmethod
     def format_time(

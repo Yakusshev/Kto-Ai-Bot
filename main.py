@@ -14,8 +14,8 @@ from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.entrypoint.business_message_handlers import business_router
 
-async def main():
 
+async def main():
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
     await start_user_dispatcher_polling_task()
@@ -29,13 +29,14 @@ async def start_user_dispatcher_polling_task():
         core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
         default_locale = "ru",
     ).setup(
-        dispatcher = user_bot_manager.dispatcher
+        dispatcher = user_bot_manager.dispatcher,
     )
     user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
 
     setup_business_router()
 
     await user_bot_manager.start()
+
 
 def setup_business_router():
     user_bot_manager.dispatcher.business_message.middleware(ChatServiceMiddleware())
@@ -59,12 +60,13 @@ def setup_business_router():
 
     user_bot_manager.dispatcher.include_router(router = business_router)
 
+
 async def start_admin_dispatcher_polling_task():
     I18nMiddleware(
         core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
         default_locale = "ru",
     ).setup(
-        dispatcher = admin_bot_manager.dispatcher
+        dispatcher = admin_bot_manager.dispatcher,
     )
     admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
 
