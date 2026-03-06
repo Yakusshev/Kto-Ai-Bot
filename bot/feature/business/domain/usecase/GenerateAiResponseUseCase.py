@@ -146,7 +146,15 @@ class GenerateAiResponseUseCase:
         response_no_brackets = GenerateAiResponseUseCase\
             .replace_brackets_except_next(response)
 
-        lines: list[str] = re.split(pattern, response_no_brackets)
+        response_no_zero_no_tire = re\
+            .sub(r'\b0\b', '', response_no_brackets)\
+            .replace('—', '-')\
+            .replace('–', '-')
+        response_no_space = re\
+            .sub(r' +', ' ', response_no_zero_no_tire)\
+            .strip()
+
+        lines: list[str] = re.split(pattern, response_no_space)
 
         logger.info(f'GenerateAiResponseUseCase.split_messages lines = {lines}')
 
