@@ -48,9 +48,9 @@ class ChatServiceMiddleware(BaseMiddleware):
                 send_ai_request_use_case = SendAiRequestUseCase(
                     session_repository = session_repository,
                     ai_repository = get_llm_repository(),
-                    get_system_instruction_use_case = GetSystemInstructionUseCase(
-                        strings = strings,
-                    ),
+                ),
+                get_system_instruction_use_case = GetSystemInstructionUseCase(
+                    strings = strings,
                 ),
             ),
             save_message_use_case = SaveMessageUseCase(

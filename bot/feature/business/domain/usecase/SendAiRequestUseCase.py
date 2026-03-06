@@ -21,15 +21,14 @@ class SendAiRequestUseCase:
         self,
         ai_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
-        get_system_instruction_use_case: GetSystemInstructionUseCase,
     ):
         self.llm_repository = ai_repository
         self.session_repository = session_repository
-        self.get_system_instruction_use_case = get_system_instruction_use_case
 
     async def invoke(
         self,
         user_for_ai_model: UserMessageInfoForAiModel,
+        system_prompt: str,
     ) -> str:
 
         history: List[SaveMessageModel] = await self.session_repository \
@@ -67,9 +66,7 @@ class SendAiRequestUseCase:
 
         ai_response = await self.llm_repository.generate_response(
             message_list = ai_list,
-            system_prompt = self.get_system_instruction_use_case.invoke(
-                info = user_for_ai_model,
-            ),
+            system_prompt = system_prompt,
         )
 
         return ai_response
