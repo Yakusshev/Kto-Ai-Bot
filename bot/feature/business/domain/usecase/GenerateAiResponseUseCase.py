@@ -151,8 +151,7 @@ class GenerateAiResponseUseCase:
             .replace('—', '-')\
             .replace('–', '-')
         response_no_space = re\
-            .sub(r' +', ' ', response_no_zero_no_tire)\
-            .strip()
+            .sub(r' +', ' ', response_no_zero_no_tire)
 
         lines: list[str] = re.split(pattern, response_no_space)
 
@@ -175,7 +174,7 @@ class GenerateAiResponseUseCase:
             else:
                 current += '\n' + line
 
-        result.append(current)
+        result.append(current.strip())
 
         return result
 
