@@ -9,8 +9,12 @@ from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
 from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
-from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import \
-    GenerateAiResponseUseCase
+from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
+    GenerateAiResponseScenario
+from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
+    HandleAiResponseUseCase
+from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
+    SendAiRequestUseCase
 from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
     GetSystemInstructionUseCase
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
@@ -39,11 +43,14 @@ class ChatServiceMiddleware(BaseMiddleware):
         strings = data["strings"]
 
         data["chat_service"] = ChatService(
-            generate_ai_response_use_case = GenerateAiResponseUseCase(
-                session_repository = session_repository,
-                ai_repository = get_llm_repository(),
-                get_system_instruction_use_case = GetSystemInstructionUseCase(
-                    strings = strings,
+            generate_ai_response_scenario = GenerateAiResponseScenario(
+                handle_ai_response_use_case = HandleAiResponseUseCase(),
+                send_ai_request_use_case = SendAiRequestUseCase(
+                    session_repository = session_repository,
+                    ai_repository = get_llm_repository(),
+                    get_system_instruction_use_case = GetSystemInstructionUseCase(
+                        strings = strings,
+                    ),
                 ),
             ),
             save_message_use_case = SaveMessageUseCase(
@@ -53,4 +60,3 @@ class ChatServiceMiddleware(BaseMiddleware):
         )
 
         return await handler(event, data)
-

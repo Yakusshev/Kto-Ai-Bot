@@ -4,11 +4,15 @@ import re
 
 from aiogram.types import Message
 
-from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
-from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
-from bot.feature.business.domain.usecase.GenerateAiResponseUseCase import GenerateAiResponseUseCase
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
+    MessageRole
+from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
+    UserMessageInfoForAiModel
+from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
+    GenerateAiResponseScenario
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.feature.business.entrypoint.SaveMessageModelMapper import to_save_message_model
+from bot.feature.business.entrypoint.SaveMessageModelMapper import \
+    to_save_message_model
 from bot.resource.Strings import Strings
 
 _logger = logging.getLogger("ChatService")
@@ -17,12 +21,12 @@ class ChatService:
 
     def __init__(
         self,
-        generate_ai_response_use_case: GenerateAiResponseUseCase,
+        generate_ai_response_scenario: GenerateAiResponseScenario,
         save_message_use_case: SaveMessageUseCase,
         strings: Strings,
     ):
         self.save_message_use_case = save_message_use_case
-        self.generate_ai_response_use_case = generate_ai_response_use_case
+        self.generate_ai_response_scenario = generate_ai_response_scenario
         self.strings = strings
 
     async def save_message(
@@ -46,7 +50,7 @@ class ChatService:
         self,
         message: Message,
     ):
-        ai_response = self.generate_ai_response_use_case.invoke(
+        ai_response = self.generate_ai_response_scenario.invoke(
             user_for_ai_model = UserMessageInfoForAiModel(
                 id = message.chat.id,
                 username = message.from_user.username,
