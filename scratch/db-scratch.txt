@@ -1,3 +1,11 @@
+
+
+
+ALTER TABLE chat_events_debug
+    ADD COLUMN IF NOT EXISTS forward_origin_type Utf8,
+    ADD COLUMN IF NOT EXISTS forward_origin_date Timestamp,
+    ADD COLUMN IF NOT EXISTS FORWARD_ORIGIN_JSON Json;
+
 CREATE TABLE chat_events_debug (
     chat_id Uint64,
     created_at Timestamp,

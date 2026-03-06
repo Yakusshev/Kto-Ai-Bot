@@ -1,6 +1,12 @@
-from aiogram.types import Message
+from aiogram.types import Message, MessageOriginHiddenUser, MessageOriginChat, \
+    MessageOriginChannel, MessageOriginUnion
 
-from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, MessageRole
+from bot.feature.business.domain.model.ForwardOriginState import ForwardOriginState, \
+    ForwardOriginUserModel, ForwardOriginHiddenUserModel, ForwardOriginChatModel, \
+    ForwardOriginChannelModel
+from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
+    MessageRole
+from aiogram.types import MessageOriginUser
 
 
 def to_save_message_model(
@@ -16,10 +22,52 @@ def to_save_message_model(
         role = role,
         content = empty_message if not content else content,
         event_type = 'text',
-        reply_to_id = int(message.reply_to_message.message_id) if message.reply_to_message else None,
+        reply_to_id = int(
+            message.reply_to_message.message_id,
+        ) if message.reply_to_message else None,
         text_quote = __get_quote(message = message),
-        business_connection_id = str(message.business_connection_id) if message.business_connection_id else None,
+        business_connection_id = str(
+            message.business_connection_id,
+        ) if message.business_connection_id else None,
+        forward_origin = get_forward_origin(origin = message.forward_origin),
     )
+
+def get_forward_origin(
+    origin: MessageOriginUnion | None,
+) -> ForwardOriginState | None:
+
+    if origin is None:
+        return None
+
+    if origin is MessageOriginUser:
+        return ForwardOriginUserModel(
+            date = origin.date,
+            id = origin.sender_user.id,
+            bot = origin.sender_user.is_bot,
+            username = origin.sender_user.username,
+            full_name = origin.sender_user.full_name,
+        )
+    elif origin is MessageOriginHiddenUser:
+        return ForwardOriginHiddenUserModel(
+            date = origin.date,
+            username = origin.sender_user.full_name,
+        )
+    elif origin is MessageOriginChat:
+        return ForwardOriginChatModel(
+            date = origin.date,
+        )
+    elif origin is MessageOriginChannel:
+        return ForwardOriginChannelModel(
+            date = origin.date,
+            id = origin.sender_user.id,
+            username = origin.chat.username,
+            title = origin.chat.title,
+            message_id = origin.message_id,
+        )
+    elif origin is None:
+        return None
+    return None
+
 
 def __get_quote(message: Message) -> str | None:
     if message.reply_to_message is not None and message.quote is not None:

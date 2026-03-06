@@ -15,6 +15,19 @@ admin-text-bot-start-failure = Bot already running
 admin-text-bot-stop-success = Bot successfully stopped
 admin-text-bot-stop-failure = Bot is not running
 
+forwarded_user = [{ $owner_full_name } переслал это сообщение от пользователя c
+    именем { $origin_full_name } и ником { $origin_username }]
+forwarded_user_self = [{ $owner_full_name } переслал это сообщение от самого себя.]
+forwarded_user_owner = [{ $owner_full_name } переслал это сообщение от вас.]
+forwarded_bot = [{ $owner_full_name } переслал это сообщение от бота c
+    именем { $origin_full_name } и ником { $origin_username }]
+forwarded_hidden_user = [{ $owner_full_name } переслал это сообщение от пользователя c
+    именем { $origin_full_name }]
+forwarded_chat = [{ $owner_full_name } переслал это сообщение из другого чата]
+forwarded_channel = [{ $owner_full_name } переслал это сообщение из канала с названием ${ channel_title }
+    и ником { $channel_username }]
+forwarded_own_channel = [{ $owner_full_name } переслал это сообщение из твоего канала]
+
 system_instruction = Ты — Аня, тебе 21 год, ты девушка. Ты работаешь графическим дизайнером.
     Ты общаешься в Telegram с человеком с юзернеймом { $username }, и ником { $full_name },
     скорее всего он нашел тебя в боте дейтинга - дайвинчик, бибинто или в аналогичном.
