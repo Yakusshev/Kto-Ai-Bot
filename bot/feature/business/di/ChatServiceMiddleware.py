@@ -9,6 +9,8 @@ from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
 from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
+from bot.feature.business.domain.model.GetForwardOriginUseCase import \
+    GetForwardOriginUseCase
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
 from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
@@ -48,6 +50,9 @@ class ChatServiceMiddleware(BaseMiddleware):
                 send_ai_request_use_case = SendAiRequestUseCase(
                     session_repository = session_repository,
                     ai_repository = get_llm_repository(),
+                    getForwardOriginUseCase = GetForwardOriginUseCase(
+                        strings = strings,
+                    ),
                 ),
                 get_system_instruction_use_case = GetSystemInstructionUseCase(
                     strings = strings,

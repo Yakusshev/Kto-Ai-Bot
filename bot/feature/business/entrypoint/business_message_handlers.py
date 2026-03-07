@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import random
+from asyncio import Event, Task
+
 from aiogram import Router, F, Bot
 from aiogram.types import Message
 
@@ -126,23 +128,31 @@ async def __check_message_role(
     """
     by_assistant = message.from_user.id != message.chat.id
     if by_assistant:
-        logger.info("Входящее сообщение not_by_user: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        logger.info(
+            "Входящее сообщение not_by_user: %s | chat_id=%s | message=%s",
+            text_content, message.chat.id, message,
+        )
         await chat_service.save_message(
             message = message,
             text_content = text_content,
             role = MessageRole.ASSISTANT,
         )
     elif not message.business_connection_id:
-        logger.info("Входящее сообщение not business_connection_id: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        logger.info(
+            "Входящее сообщение not business_connection_id: %s | chat_id=%s | message=%s",
+            text_content, message.chat.id, message,
+        )
     else:
-        logger.info("Входящее сообщение: %s | chat_id=%s | message=%s", text_content, message.chat.id, message)
+        logger.info(
+            "Входящее сообщение: %s | chat_id=%s | message=%s", text_content,
+            message.chat.id, message,
+        )
         await __handle_user_message(
             message = message,
             bot = bot,
             chat_service = chat_service,
             text_content = text_content,
         )
-
 
 
 async def __handle_user_message(
@@ -153,6 +163,16 @@ async def __handle_user_message(
 ):
     scheduler = TaskSchedulerRepositoryImpl()
     task_key = str(message.chat.id)
+
+    connection_id = message.business_connection_id
+
+    # Запрашиваем полный объект подключения через API
+    connection = await bot.get_business_connection(connection_id)
+
+    logger.info(f'__handle_user_message: connection = {connection}')
+
+    # Теперь у нас есть владелец
+    business_owner_id = connection.user.id
 
     try:
         await scheduler.on_message(
@@ -219,31 +239,66 @@ async def __answer_message(
 
         for ai_answer in ai_answer_list:
             await wait_to_write_message(ai_answer)
-            sent = await bot.send_message(
-                chat_id = message_chat_id,
-                text = ai_answer,
-                business_connection_id = business_connection_id,
-            )
-            answer_message_list.append(sent)
+
+            try:
+                if ai_answer:
+                    sent = await bot.send_message(
+                        chat_id = message_chat_id,
+                        text = ai_answer,
+                        business_connection_id = business_connection_id,
+                    )
+                    answer_message_list.append(sent)
+            except Exception as e:
+                logger.error(
+                    f"send_message EXCEPTION\n"
+                    f"message.message_id = {message.message_id}\n"
+                    f"username = {message.from_user.username}\n"
+                    f"fullname = {message.from_user.first_name} {message.from_user.last_name}",
+                )
+                logger.error(e)
+            except asyncio.CancelledError as canceled_error:
+                raise canceled_error
 
     except asyncio.CancelledError:
+        await complete_answer(
+            answer_message_list = answer_message_list,
+            chat_service = chat_service,
+            stop_typing = stop_typing,
+            typing_task = typing_task,
+        )
         logger.info("__answer_message отменён: chat_id=%s", message_chat_id)
         raise
 
     finally:
-        if stop_typing:
-            stop_typing.set()
-        if typing_task:
-            typing_task.cancel()
-            try:
-                await typing_task
-            except asyncio.CancelledError:
-                pass
-        # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
-        if answer_message_list:
-            asyncio.create_task(
-                chat_service.save_assistant_text_message_list(message_list = answer_message_list),
-            )
+        await complete_answer(
+            answer_message_list = answer_message_list,
+            chat_service = chat_service,
+            stop_typing = stop_typing,
+            typing_task = typing_task,
+        )
+
+
+async def complete_answer(
+    answer_message_list: list[Message],
+    chat_service: ChatService,
+    stop_typing: Event,
+    typing_task: Task[None] | None,
+):
+    if stop_typing:
+        stop_typing.set()
+    if typing_task:
+        typing_task.cancel()
+        try:
+            await typing_task
+        except asyncio.CancelledError:
+            pass
+    # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
+    if answer_message_list:
+        asyncio.create_task(
+            chat_service.save_assistant_text_message_list(
+                message_list = answer_message_list,
+            ),
+        )
 
 
 async def __typing_loop(

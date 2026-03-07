@@ -41,7 +41,7 @@ class Column:
     # ForwardOrigin columns
     FORWARD_ORIGIN_TYPE = "forward_origin_type"
     FORWARD_ORIGIN_DATE = "forward_origin_date"
-    FORWARD_ORIGIN_JSON = "forward_origin_json"
+    FORWARD_ORIGIN_JSON = "FORWARD_ORIGIN_JSON"
 
 
 
@@ -223,7 +223,7 @@ class ChatHistoryRepositoryImpl:
 
         rows = []
         for msg in message_list:
-            origin_type, origin_date, origin_json = _serialize_forward_origin(
+            serialized_model = _serialize_forward_origin(
                 msg.forward_origin,
             )
 
@@ -240,9 +240,9 @@ class ChatHistoryRepositoryImpl:
                     Column.BUSINESS_CONN_ID: str(
                         msg.business_connection_id,
                     ) if msg.business_connection_id else None,
-                    Column.FORWARD_ORIGIN_TYPE: origin_type,
-                    Column.FORWARD_ORIGIN_DATE: origin_date,
-                    Column.FORWARD_ORIGIN_JSON: origin_json,
+                    Column.FORWARD_ORIGIN_TYPE: serialized_model.state,
+                    Column.FORWARD_ORIGIN_DATE: serialized_model.datetime,
+                    Column.FORWARD_ORIGIN_JSON: serialized_model.json,
                 },
             )
 

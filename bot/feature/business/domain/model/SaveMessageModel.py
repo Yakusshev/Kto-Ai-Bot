@@ -13,6 +13,13 @@ class MessageRole(StrEnum):
     ASSISTANT = 'assistant'
     USER = 'user'
 
+@dataclass(frozen = True)
+class OwnerUser:
+    id: str
+    username: str
+    full_name: str
+
+
 @beartype
 @dataclass(frozen = True)
 class SaveMessageModel:
@@ -25,4 +32,6 @@ class SaveMessageModel:
     reply_to_id: int | None
     text_quote: Optional[str]
     business_connection_id: str
-    forward_origin: ForwardOriginState
+    forward_origin: ForwardOriginState | None
+
+

@@ -52,7 +52,7 @@ class ChatService:
     ):
         ai_response = self.generate_ai_response_scenario.invoke(
             user_for_ai_model = UserMessageInfoForAiModel(
-                id = message.chat.id,
+                chat_id = message.chat.id,
                 username = message.from_user.username,
                 full_name = message.from_user.full_name,
                 datetime = message.date,
