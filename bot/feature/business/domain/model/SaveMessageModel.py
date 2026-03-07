@@ -14,8 +14,8 @@ class MessageRole(StrEnum):
     USER = 'user'
 
 @dataclass(frozen = True)
-class OwnerUser:
-    id: str
+class OwnerModel:
+    id: int
     username: str
     full_name: str
 

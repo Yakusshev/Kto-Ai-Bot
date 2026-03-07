@@ -2,10 +2,10 @@ import asyncio
 import logging
 import re
 
-from aiogram.types import Message
+from aiogram.types import Message, BusinessConnection
 
 from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
-    MessageRole
+    MessageRole, OwnerModel
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
     UserMessageInfoForAiModel
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
@@ -49,6 +49,7 @@ class ChatService:
     async def generate_ai_response(
         self,
         message: Message,
+        business_connection: BusinessConnection,
     ):
         ai_response = self.generate_ai_response_scenario.invoke(
             user_for_ai_model = UserMessageInfoForAiModel(
@@ -56,6 +57,11 @@ class ChatService:
                 username = message.from_user.username,
                 full_name = message.from_user.full_name,
                 datetime = message.date,
+            ),
+            owner_model = OwnerModel(
+                id = business_connection.user.id,
+                username = business_connection.user.username,
+                full_name = business_connection.user.full_name,
             ),
         )
 

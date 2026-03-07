@@ -39,7 +39,7 @@ def get_forward_origin(
     if origin is None:
         return None
 
-    if origin is MessageOriginUser:
+    if isinstance(origin, ForwardOriginUserModel):
         return ForwardOriginUserModel(
             date = origin.date,
             id = origin.sender_user.id,
@@ -47,26 +47,26 @@ def get_forward_origin(
             username = origin.sender_user.username,
             full_name = origin.sender_user.full_name,
         )
-    elif origin is MessageOriginHiddenUser:
+    elif isinstance(origin, MessageOriginHiddenUser):
         return ForwardOriginHiddenUserModel(
             date = origin.date,
-            username = origin.sender_user.full_name,
+            full_name = origin.sender_user_name,
         )
-    elif origin is MessageOriginChat:
+    elif isinstance(origin, MessageOriginChat):
         return ForwardOriginChatModel(
             date = origin.date,
         )
-    elif origin is MessageOriginChannel:
+    elif isinstance(origin, MessageOriginChannel):
+        username = origin.chat.username if origin.chat.username else ""
         return ForwardOriginChannelModel(
             date = origin.date,
-            id = origin.sender_user.id,
-            username = origin.chat.username,
+            id = origin.chat.id,
+            username = username,
             title = origin.chat.title,
             message_id = origin.message_id,
         )
-    elif origin is None:
+    else:
         return None
-    return None
 
 
 def __get_quote(message: Message) -> str | None:

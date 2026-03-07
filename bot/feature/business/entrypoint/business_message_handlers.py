@@ -235,7 +235,12 @@ async def __answer_message(
             ),
         )
 
-        ai_answer_list = await chat_service.generate_ai_response(message = message)
+        ai_answer_list = await chat_service.generate_ai_response(
+            message = message,
+            business_connection = await bot.get_business_connection(
+                business_connection_id = business_connection_id,
+            ),
+        )
 
         for ai_answer in ai_answer_list:
             await wait_to_write_message(ai_answer)

@@ -3,11 +3,11 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class ForwardOriginSerializationModel:
+class ForwardOriginRequest:
     state: str | None
     datetime: datetime | None
     json: str | None
 
     @staticmethod
     def empty():
-        return ForwardOriginSerializationModel(None, None, None)
+        return ForwardOriginRequest(None, None, None)

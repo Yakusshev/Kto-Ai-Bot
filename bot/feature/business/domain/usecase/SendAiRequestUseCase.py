@@ -3,17 +3,17 @@ from typing import List
 
 from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
-from bot.feature.business.domain.model.GetForwardOriginUseCase import \
-    GetForwardOriginUseCase
 from bot.feature.business.domain.model.MessageForAiModel import MessageForAiModel
 from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
-    MessageRole
+    MessageRole, OwnerModel
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
     UserMessageInfoForAiModel
 from bot.feature.business.domain.repository.AiRepository import AiRepository
-
+from bot.feature.business.domain.usecase.GetForwardOriginUseCase import \
+    GetForwardOriginUseCase
 
 _logger = logging.getLogger("SendAiRequestUseCase")
+
 
 class SendAiRequestUseCase:
     NEXT_MESSAGE_TAG = '[next]'
@@ -33,28 +33,23 @@ class SendAiRequestUseCase:
     async def invoke(
         self,
         user_for_ai_model: UserMessageInfoForAiModel,
+        owner_model: OwnerModel,
         system_prompt: str,
     ) -> str:
 
-        history: List[SaveMessageModel] = await self.session_repository \
+        history: tuple[SaveMessageModel, ...] = await self.session_repository \
             .get_session_data(chat_id = user_for_ai_model.chat_id)
 
         ai_list: list[MessageForAiModel] = []
 
         for index, message in enumerate(history):
-            await self.add_date(ai_list, history, index, message)
-
-                # if message.forward_origin:
-                #     message_for_ai_model = ai_list[index]
-                #     self.getForwardOriginUseCase.invoke(
-                #         owner_info = ,
-                #         message_for_ai_model
-                #         message_for_ai_model, system_prompt)
-                #
-                #     )
-                #     ai_list.insert(index, message)
-                #     ai_list[index] = ""
-
+            await self.add_message(
+                ai_list = ai_list,
+                history = history,
+                index = index,
+                message = message,
+                owner_model = owner_model,
+            )
 
         _logger.info(f"invoke: history = {history}")
         _logger.info(f"invoke: ai_list = {ai_list}")
@@ -66,12 +61,13 @@ class SendAiRequestUseCase:
 
         return ai_response
 
-    async def add_date(
+    async def add_message(
         self,
         ai_list: list[MessageForAiModel],
-        history: list[SaveMessageModel],
+        history: tuple[SaveMessageModel, ...],
         index: int,
         message: SaveMessageModel,
+        owner_model: OwnerModel,
     ):
         date_time = ''
         if message.role == MessageRole.USER:
@@ -81,6 +77,13 @@ class SendAiRequestUseCase:
                 message = message,
             )
 
+        origin = self.getForwardOriginUseCase.invoke(
+            owner_info = owner_model,
+            origin = message.forward_origin,
+        )
+
+        current_message_content = f"{date_time}{origin}{message.content}"
+
         if ai_list and ai_list[-1].role == message.role:
 
             previous_ai_message = ai_list[-1]
@@ -89,19 +92,19 @@ class SendAiRequestUseCase:
                 role = message.role,
                 content = f'{previous_ai_message.content}'
                           f'{SendAiRequestUseCase.NEXT_MESSAGE_TAG}'
-                          f'{date_time}{message.content}',
+                          f'{current_message_content}',
             )
         else:
             ai_list.append(
                 MessageForAiModel(
                     role = message.role,
-                    content = f'{date_time}{message.content}',
+                    content = current_message_content,
                 ),
             )
 
     @staticmethod
     def get_date_time(
-        history: list[SaveMessageModel],
+        history: tuple[SaveMessageModel, ...],
         index: int,
         message: SaveMessageModel,
     ) -> str:
@@ -142,7 +145,7 @@ class SendAiRequestUseCase:
 
     @staticmethod
     def find_prev_user_message(
-        history: list[SaveMessageModel],
+        history: tuple[SaveMessageModel, ...],
         index: int,
     ) -> SaveMessageModel | None:
         """

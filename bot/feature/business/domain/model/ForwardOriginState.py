@@ -24,7 +24,7 @@ class ForwardOriginUserModel:
 @dataclass(frozen = True)
 class ForwardOriginHiddenUserModel:
     date: datetime
-    username: str
+    full_name: str
 
 @beartype
 @dataclass(frozen = True)
@@ -39,6 +39,7 @@ class ForwardOriginChannelModel:
     id: int
     title: str
     username: str
+    # username может быть пустым
     message_id: int
 
 
