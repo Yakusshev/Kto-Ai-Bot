@@ -11,8 +11,8 @@ from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
-from bot.feature.business.domain.usecase.GetForwardOriginUseCase import \
-    GetForwardOriginUseCase
+from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
+    GetForwardOriginTextForAiUseCase
 from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
     HandleAiResponseUseCase
 from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
@@ -50,7 +50,7 @@ class ChatServiceMiddleware(BaseMiddleware):
                 send_ai_request_use_case = SendAiRequestUseCase(
                     session_repository = session_repository,
                     ai_repository = get_llm_repository(),
-                    getForwardOriginUseCase = GetForwardOriginUseCase(
+                    getForwardOriginUseCase = GetForwardOriginTextForAiUseCase(
                         strings = strings,
                     ),
                 ),

@@ -68,8 +68,11 @@ class Strings:
     def forwarded_hidden_user(self, *, user_full_name: object) -> str:
         return self._i18n.get('forwarded_hidden_user', user_full_name=user_full_name)
 
-    def forwarded_chat(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_chat', user_full_name=user_full_name)
+    def forwarded_chat(self, *, user_full_name: object, title: object, username: object) -> str:
+        return self._i18n.get('forwarded_chat', user_full_name=user_full_name, title=title, username=username)
+
+    def forwarded_own_chat(self, *, user_full_name: object) -> str:
+        return self._i18n.get('forwarded_own_chat', user_full_name=user_full_name)
 
     def forwarded_channel(self, *, user_full_name: object, channel_title: object, channel_username: object) -> str:
         return self._i18n.get('forwarded_channel', user_full_name=user_full_name, channel_title=channel_title, channel_username=channel_username)

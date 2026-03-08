@@ -23,3 +23,5 @@ NEXT_MESSAGE_SEPARATOR = os.getenv("NEXT_MESSAGE_SEPARATOR") == "True"
 NEXT_MESSAGE_SEPARATOR_REGEX = os.getenv("NEXT_MESSAGE_SEPARATOR_REGEX") == "True"
 
 ADMIN_ID_LIST = list(map(int, os.getenv("ADMIN_ID_LIST", "").split(",")))
+OWN_CHANNEL_ID = int(os.getenv("OWN_CHANNEL_ID"))
+OWN_CHAT_ID = int(os.getenv("OWN_CHAT_ID"))

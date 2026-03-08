@@ -9,8 +9,8 @@ from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel,
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
     UserMessageInfoForAiModel
 from bot.feature.business.domain.repository.AiRepository import AiRepository
-from bot.feature.business.domain.usecase.GetForwardOriginUseCase import \
-    GetForwardOriginUseCase
+from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
+    GetForwardOriginTextForAiUseCase
 
 _logger = logging.getLogger("SendAiRequestUseCase")
 
@@ -24,7 +24,7 @@ class SendAiRequestUseCase:
         self,
         ai_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
-        getForwardOriginUseCase: GetForwardOriginUseCase,
+        getForwardOriginUseCase: GetForwardOriginTextForAiUseCase,
     ):
         self.llm_repository = ai_repository
         self.session_repository = session_repository

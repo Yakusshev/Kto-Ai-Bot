@@ -1,5 +1,6 @@
 import logging
 
+from bot.core.domain.const.env_const import OWN_CHAT_ID, OWN_CHANNEL_ID
 from bot.feature.business.domain.model.ForwardOriginState import ForwardOriginState, \
     ForwardOriginUserModel, ForwardOriginHiddenUserModel, ForwardOriginChatModel, \
     ForwardOriginChannelModel
@@ -9,7 +10,7 @@ from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
 from bot.resource.Strings import Strings
 
 
-class GetForwardOriginUseCase:
+class GetForwardOriginTextForAiUseCase:
 
     def __init__(
         self,
@@ -35,7 +36,7 @@ class GetForwardOriginUseCase:
                     user_full_name = user_info.full_name,
                 )
             elif user_info.chat_id == origin.id:
-                #TODO не работает
+                # TODO не работает
                 return self.strings.forwarded_user_self(
                     user_full_name = user_info.full_name,
                 )
@@ -50,14 +51,27 @@ class GetForwardOriginUseCase:
                 user_full_name = user_info.full_name,
             )
         elif isinstance(origin, ForwardOriginChatModel):
-            return self.strings.forwarded_chat(
-                user_full_name = user_info.full_name,
-            )
+
+            if origin.id == OWN_CHAT_ID:
+                return self.strings \
+                    .forwarded_own_chat(user_full_name = user_info.full_name)
+            else:
+                return self.strings.forwarded_chat(
+                    user_full_name = user_info.full_name,
+                    title = origin.title,
+                    username = origin.username,
+                )
 
         elif isinstance(origin, ForwardOriginChannelModel):
-            return self.strings.forwarded_channel(
-                user_full_name = user_info.full_name,
-                channel_username = origin.full_name,
-                channel_title = origin.title,
-            )
-        return ""
+
+            if origin.id == OWN_CHANNEL_ID:
+                return self.strings \
+                    .forwarded_own_channel(user_full_name = user_info.full_name)
+            else:
+                return self.strings.forwarded_channel(
+                    user_full_name = user_info.full_name,
+                    channel_username = origin.full_name,
+                    channel_title = origin.title,
+                )
+        else:
+            return ""

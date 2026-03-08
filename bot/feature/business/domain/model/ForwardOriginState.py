@@ -29,6 +29,9 @@ class ForwardOriginHiddenUserModel:
 @beartype
 @dataclass(frozen = True)
 class ForwardOriginChatModel:
+    id: int
+    title: str
+    username: str
     date: datetime
     pass
 
