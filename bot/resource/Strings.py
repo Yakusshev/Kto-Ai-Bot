@@ -53,32 +53,35 @@ class Strings:
     def admin_text_bot_stop_failure(self) -> str:
         return self._i18n.get('admin-text-bot-stop-failure')
 
-    def forwarded_user(self, *, user_full_name: object, origin_full_name: object, origin_username: object) -> str:
-        return self._i18n.get('forwarded_user', user_full_name=user_full_name, origin_full_name=origin_full_name, origin_username=origin_username)
+    def you(self) -> str:
+        return self._i18n.get('you')
 
-    def forwarded_user_self(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_user_self', user_full_name=user_full_name)
+    def forwarded_user(self, *, author_name: object, origin_full_name: object, origin_username: object) -> str:
+        return self._i18n.get('forwarded_user', author_name=author_name, origin_full_name=origin_full_name, origin_username=origin_username)
 
-    def forwarded_user_owner(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_user_owner', user_full_name=user_full_name)
+    def forwarded_user_self(self, *, author_name: object) -> str:
+        return self._i18n.get('forwarded_user_self', author_name=author_name)
 
-    def forwarded_bot(self, *, user_full_name: object, origin_full_name: object, origin_username: object) -> str:
-        return self._i18n.get('forwarded_bot', user_full_name=user_full_name, origin_full_name=origin_full_name, origin_username=origin_username)
+    def forwarded_user_owner(self, *, author_name: object) -> str:
+        return self._i18n.get('forwarded_user_owner', author_name=author_name)
 
-    def forwarded_hidden_user(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_hidden_user', user_full_name=user_full_name)
+    def forwarded_bot(self, *, author_name: object, origin_full_name: object, origin_username: object) -> str:
+        return self._i18n.get('forwarded_bot', author_name=author_name, origin_full_name=origin_full_name, origin_username=origin_username)
 
-    def forwarded_chat(self, *, user_full_name: object, title: object, username: object) -> str:
-        return self._i18n.get('forwarded_chat', user_full_name=user_full_name, title=title, username=username)
+    def forwarded_hidden_user(self, *, author_name: object, origin_full_name: object) -> str:
+        return self._i18n.get('forwarded_hidden_user', author_name=author_name, origin_full_name=origin_full_name)
 
-    def forwarded_own_chat(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_own_chat', user_full_name=user_full_name)
+    def forwarded_chat(self, *, author_name: object, title: object, username: object) -> str:
+        return self._i18n.get('forwarded_chat', author_name=author_name, title=title, username=username)
 
-    def forwarded_channel(self, *, user_full_name: object, channel_title: object, channel_username: object) -> str:
-        return self._i18n.get('forwarded_channel', user_full_name=user_full_name, channel_title=channel_title, channel_username=channel_username)
+    def forwarded_own_chat(self, *, author_name: object) -> str:
+        return self._i18n.get('forwarded_own_chat', author_name=author_name)
 
-    def forwarded_own_channel(self, *, user_full_name: object) -> str:
-        return self._i18n.get('forwarded_own_channel', user_full_name=user_full_name)
+    def forwarded_channel(self, *, author_name: object, channel_title: object, channel_username: object) -> str:
+        return self._i18n.get('forwarded_channel', author_name=author_name, channel_title=channel_title, channel_username=channel_username)
+
+    def forwarded_own_channel(self, *, author_name: object) -> str:
+        return self._i18n.get('forwarded_own_channel', author_name=author_name)
 
     def system_instruction(self, *, username: object, full_name: object, date_and_time: object) -> str:
         return self._i18n.get('system_instruction', username=username, full_name=full_name, date_and_time=date_and_time)

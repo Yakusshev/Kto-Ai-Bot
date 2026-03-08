@@ -80,6 +80,7 @@ class SendAiRequestUseCase:
             )
 
         origin = self.getForwardOriginUseCase.invoke(
+            role = message.role,
             owner_info = owner_model,
             user_info = user_for_ai_model,
             origin = message.forward_origin,
