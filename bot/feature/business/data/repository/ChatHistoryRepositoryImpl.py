@@ -25,6 +25,9 @@ from bot.feature.business.domain.model.ForwardOriginState import (
 )
 
 
+# TODO декомпозировать на датасорсы
+
+
 class ChatHistoryConst:
     TABLE_NAME_DEBUG = "chat_events_debug"
     TABLE_NAME_RELEASE = "chat_events_release"
@@ -45,10 +48,12 @@ class Column:
     FORWARD_ORIGIN_DATE = "forward_origin_date"
     FORWARD_ORIGIN_JSON = "FORWARD_ORIGIN_JSON"
 
+
 _logger = logging.getLogger("ChatHistoryRepositoryImpl")
 
+
 def _serialize_forward_origin(
-    origin: ForwardOriginState | None
+    origin: ForwardOriginState | None,
 ) -> ForwardOriginRequest:
     """
     Сериализует ForwardOriginState в три колонки:
@@ -87,7 +92,13 @@ def _serialize_forward_origin(
         return ForwardOriginRequest(
             state = MessageOriginType.CHAT,
             datetime = origin_date,
-            json = json.dumps({}),
+            json = json.dumps(
+                {
+                    "id": origin.id,
+                    "title": origin.title,
+                    "username": origin.username,
+                },
+            ),
         )
     elif isinstance(origin, ForwardOriginChannelModel):
         origin = cast(ForwardOriginChannelModel, origin)
@@ -113,6 +124,8 @@ def _deserialize_forward_origin(
     origin_date_micros: int | None,
     origin_json: str | None,
 ) -> ForwardOriginState | None:
+    _logger.info(f"_deserialize_forward_origin: origin_type = {origin_type}; origin_date_micros = ${origin_date_micros}; origin_json = {origin_json}")
+
     """
     Десериализует три колонки обратно в ForwardOriginState.
     """
@@ -125,30 +138,40 @@ def _deserialize_forward_origin(
     )
     data: dict = json.loads(origin_json or "{}")
 
-    if origin_type == MessageOriginType.USER:
-        return ForwardOriginUserModel(
-            date = date,
-            id = data["id"],
-            bot = data["bot"],
-            username = data["username"],
-            full_name = data["full_name"],
-        )
-    elif origin_type == MessageOriginType.HIDDEN_USER:
-        return ForwardOriginHiddenUserModel(
-            date = date,
-            full_name = data["username"],
-        )
-    elif origin_type == MessageOriginType.CHAT:
-        return ForwardOriginChatModel(date = date)
-    elif origin_type == MessageOriginType.CHANNEL:
-        return ForwardOriginChannelModel(
-            date = date,
-            id = data["id"],
-            title = data["title"],
-            username = data["username"],
-            message_id = data["message_id"],
-        )
-    return None
+    try:
+        if origin_type == MessageOriginType.USER:
+            return ForwardOriginUserModel(
+                date = date,
+                id = data["id"],
+                bot = data["bot"],
+                username = data["username"],
+                full_name = data["full_name"],
+            )
+        elif origin_type == MessageOriginType.HIDDEN_USER:
+            return ForwardOriginHiddenUserModel(
+                date = date,
+                full_name = data["username"],
+            )
+        elif origin_type == MessageOriginType.CHAT:
+            return ForwardOriginChatModel(
+                date = date,
+                id = data["id"],
+                title = data["title"],
+                username = data["username"],
+            )
+        elif origin_type == MessageOriginType.CHANNEL:
+            return ForwardOriginChannelModel(
+                date = date,
+                id = data["id"],
+                title = data["title"],
+                username = data["username"],
+                message_id = data["message_id"],
+            )
+        else:
+            return None
+    except Exception as e:
+        _logger.error(f"_deserialize_forward_origin: exception {e}")
+        return None
 
 
 class ChatHistoryRepositoryImpl:
@@ -190,6 +213,8 @@ class ChatHistoryRepositoryImpl:
                     origin_json = row.get(Column.FORWARD_ORIGIN_JSON),
                 )
 
+                _logger.info(f"get_session_data: message = {row[Column.CONTENT]}, forward_origin = {forward_origin}")
+
                 model = SaveMessageModel(
                     chat_id = row[Column.CHAT_ID],
                     created_at = datetime.datetime.fromtimestamp(
@@ -225,7 +250,6 @@ class ChatHistoryRepositoryImpl:
 
         rows = []
         for msg in message_list:
-
             _logger.info(f'add_text_message_list: msg = {msg}')
 
             origin_request = _serialize_forward_origin(

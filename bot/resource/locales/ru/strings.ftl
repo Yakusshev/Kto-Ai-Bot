@@ -15,14 +15,14 @@ admin-text-bot-start-failure = Bot already running
 admin-text-bot-stop-success = Bot successfully stopped
 admin-text-bot-stop-failure = Bot is not running
 
-forwarded_user = [{ $user_full_name } переслал(a) это сообщение от пользователя c именем { $origin_full_name } и ником { $origin_username }]
+forwarded_user = [{ $user_full_name } переслал(a) это сообщение от пользователя c именем { $origin_full_name } и юзернеймом { $origin_username }]
 forwarded_user_self = [{ $user_full_name } переслал(a) это сообщение от самого себя]
 forwarded_user_owner = [{ $user_full_name } переслал(a) это сообщение от тебя]
-forwarded_bot = [{ $user_full_name } переслал(a) это сообщение от бота c именем { $origin_full_name } и ником { $origin_username }]
-forwarded_hidden_user = [{ $user_full_name } переслал(a) это сообщение от пользователя c именем { $user_full_name }]
+forwarded_bot = [{ $user_full_name } переслал(a) это сообщение от бота c именем { $origin_full_name } и юзернеймом { $origin_username }]
+forwarded_hidden_user = [{ $user_full_name } переслал(a) это сообщение от пользователя c юзернеймом { $user_full_name }]
 forwarded_chat = [{ $user_full_name } переслал(a) это сообщение из чата с названием { $title } и юзернеймом { $username }]
 forwarded_own_chat = [{ $user_full_name } переслал(a) это сообщение из твоего собственного чата канала, соодержание сообщения написала ты]
-forwarded_channel = [{ $user_full_name } переслал(a) это сообщение из канала с названием { $channel_title } и ником { $channel_username }]
+forwarded_channel = [{ $user_full_name } переслал(a) это сообщение из канала с названием { $channel_title } и юзернеймом { $channel_username }]
 forwarded_own_channel = [{ $user_full_name } переслал(a) это сообщение из твоего собственного канала]
 
 system_instruction = Ты — Аня, тебе 21 год, ты девушка. Ты работаешь графическим дизайнером.

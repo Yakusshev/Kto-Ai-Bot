@@ -1,54 +1,35 @@
-from abc import ABCMeta, ABC
+from abc import ABC
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Union
 
-from beartype import beartype
+class ForwardOriginState(ABC):
+    date: datetime
 
-USER = "user"
-HIDDEN_USER = "hidden_user"
-CHAT = "chat"
-CHANNEL = "channel"
-
-
-@beartype
 @dataclass(frozen = True)
-class ForwardOriginUserModel:
+class ForwardOriginUserModel(ForwardOriginState):
     date: datetime
     id: int
     bot: bool
     username: str
     full_name: str
 
-@beartype
 @dataclass(frozen = True)
-class ForwardOriginHiddenUserModel:
+class ForwardOriginHiddenUserModel(ForwardOriginState):
     date: datetime
     full_name: str
 
-@beartype
 @dataclass(frozen = True)
-class ForwardOriginChatModel:
+class ForwardOriginChatModel(ForwardOriginState):
+    date: datetime
     id: int
     title: str
     username: str
-    date: datetime
-    pass
 
-@beartype
 @dataclass(frozen = True)
-class ForwardOriginChannelModel:
+class ForwardOriginChannelModel(ForwardOriginState):
     date: datetime
     id: int
     title: str
     username: str
     # username может быть пустым
     message_id: int
-
-
-ForwardOriginState = Union[
-    ForwardOriginUserModel,
-    ForwardOriginHiddenUserModel,
-    ForwardOriginChatModel,
-    ForwardOriginChannelModel,
-]
