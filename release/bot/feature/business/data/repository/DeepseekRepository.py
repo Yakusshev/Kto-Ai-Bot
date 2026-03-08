@@ -76,6 +76,16 @@ class DeepseekRepository(AiRepository):
         api_messages,
         response_text,
     ):
+        length = len(api_messages)
+        request = api_messages[length - 1]
+
+        logger.info(
+            f'''DeepseekRepository.generate_response:
+                request: {request}
+                response: {response_text}
+            ''',
+        )
+
         api_messages.append(
             {
                 ROLE_TITLE: "assistant",
@@ -83,6 +93,3 @@ class DeepseekRepository(AiRepository):
             },
         )
         logger.info(f"DeepseekRepository.generate_response: history = {api_messages}")
-        logger.info(
-            f"DeepseekRepository.generate_response: response {response_text}",
-        )

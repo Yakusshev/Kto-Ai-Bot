@@ -1,0 +1,4 @@
+class DiQualifier:
+    STRINGS = "strings"
+    I18N = "i18n"
+    GET_SYSTEM_INSTRUCTION_USE_CASE = "GET_SYSTEM_INSTRUCTION_USE_CASE"
