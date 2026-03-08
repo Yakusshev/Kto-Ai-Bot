@@ -36,10 +36,7 @@ def get_forward_origin(
     origin: MessageOriginUnion | None,
 ) -> ForwardOriginState | None:
 
-    if origin is None:
-        return None
-
-    if isinstance(origin, ForwardOriginUserModel):
+    if isinstance(origin, MessageOriginUser):
         return ForwardOriginUserModel(
             date = origin.date,
             id = origin.sender_user.id,

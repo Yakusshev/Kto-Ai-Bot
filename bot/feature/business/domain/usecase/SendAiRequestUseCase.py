@@ -49,6 +49,7 @@ class SendAiRequestUseCase:
                 index = index,
                 message = message,
                 owner_model = owner_model,
+                user_for_ai_model = user_for_ai_model,
             )
 
         _logger.info(f"invoke: history = {history}")
@@ -66,6 +67,7 @@ class SendAiRequestUseCase:
         ai_list: list[MessageForAiModel],
         history: tuple[SaveMessageModel, ...],
         index: int,
+        user_for_ai_model: UserMessageInfoForAiModel,
         message: SaveMessageModel,
         owner_model: OwnerModel,
     ):
@@ -79,6 +81,7 @@ class SendAiRequestUseCase:
 
         origin = self.getForwardOriginUseCase.invoke(
             owner_info = owner_model,
+            user_info = user_for_ai_model,
             origin = message.forward_origin,
         )
 
