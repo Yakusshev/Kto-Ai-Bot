@@ -124,8 +124,6 @@ def _deserialize_forward_origin(
     origin_date_micros: int | None,
     origin_json: str | None,
 ) -> ForwardOriginState | None:
-    _logger.info(f"_deserialize_forward_origin: origin_type = {origin_type}; origin_date_micros = ${origin_date_micros}; origin_json = {origin_json}")
-
     """
     Десериализует три колонки обратно в ForwardOriginState.
     """
@@ -213,8 +211,6 @@ class ChatHistoryRepositoryImpl:
                     origin_json = row.get(Column.FORWARD_ORIGIN_JSON),
                 )
 
-                _logger.info(f"get_session_data: message = {row[Column.CONTENT]}, forward_origin = {forward_origin}")
-
                 model = SaveMessageModel(
                     chat_id = row[Column.CHAT_ID],
                     created_at = datetime.datetime.fromtimestamp(
@@ -250,13 +246,9 @@ class ChatHistoryRepositoryImpl:
 
         rows = []
         for msg in message_list:
-            _logger.info(f'add_text_message_list: msg = {msg}')
-
             origin_request = _serialize_forward_origin(
                 msg.forward_origin,
             )
-
-            _logger.info(f'add_text_message_list: origin_request = {origin_request}')
 
             rows.append(
                 {

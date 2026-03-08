@@ -27,10 +27,6 @@ class GetForwardOriginTextForAiUseCase:
         origin: ForwardOriginState | None,
     ) -> str:
 
-        logging.info(f"owner_info = {owner_info}")
-        logging.info(f"user_info = {user_info}")
-        logging.info(f"origin = {origin}")
-
         author = user_info.full_name \
             if role == MessageRole.USER \
             else self.strings.you()

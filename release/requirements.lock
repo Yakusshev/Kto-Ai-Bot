@@ -44,7 +44,7 @@ certifi==2026.2.25
     #   requests
 cffi==2.0.0
     # via cryptography
-charset-normalizer==3.4.4
+charset-normalizer==3.4.5
     # via requests
 click==8.1.8
     # via aiogram-i18n
@@ -64,7 +64,7 @@ frozenlist==1.8.0
     # via
     #   aiohttp
     #   aiosignal
-googleapis-common-protos==1.72.0
+googleapis-common-protos==1.73.0
     # via yandexcloud
 grpcio==1.78.0
     # via
@@ -149,7 +149,7 @@ typing-inspection==0.4.2
     # via pydantic
 urllib3==2.6.3
     # via requests
-wrapt==2.1.1
+wrapt==2.1.2
     # via deprecated
 yandexcloud==0.379.0
     # via -r requirements.txt
