@@ -15,7 +15,8 @@ YANDEX_API_KEY = os.getenv("YANDEX_API_KEY")
 YDB_ENDPOINT = os.getenv("YDB_ENDPOINT")
 YDB_PATH = os.getenv("YDB_PATH")
 YDB_AUTH_KEY_FILE = os.getenv("YDB_AUTH_KEY_FILE")
-DEBUG_MODE = os.getenv("DEBUG_MODE") == "True"
+DEBUG_MODE_TYPING = os.getenv("DEBUG_MODE_TYPING") == "True"
+DEBUG_MODE_LOGGING = os.getenv("DEBUG_MODE_LOGGING") == "True"
 DEBUG_MODE_TOKEN = os.getenv("DEBUG_MODE_TOKEN") == "True"
 DEBUG_MODE_DATABASE = os.getenv("DEBUG_MODE_DATABASE") == "True"
 

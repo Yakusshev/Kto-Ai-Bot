@@ -20,13 +20,19 @@ import logging.config
 async def main():
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    i18n = I18nMiddleware(
-        core = FluentRuntimeCore(path = "bot/resource/locales/{locale}"),
-        default_locale = "ru",
-    )
+    I18nMiddleware(
+        core=FluentRuntimeCore(
+            path="bot/resource/locales/{locale}",
+        ),
+        default_locale="ru",
+    ).setup(dispatcher = user_bot_manager.dispatcher)
 
-    i18n.setup(dispatcher = user_bot_manager.dispatcher)
-    i18n.setup(dispatcher = admin_bot_manager.dispatcher)
+    I18nMiddleware(
+        core = FluentRuntimeCore(
+            path = "bot/resource/locales/{locale}",
+        ),
+        default_locale = "ru",
+    ).setup(dispatcher = admin_bot_manager.dispatcher)
 
     await start_user_dispatcher_polling_task()
     await start_admin_dispatcher_polling_task()

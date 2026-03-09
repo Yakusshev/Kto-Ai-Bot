@@ -1,6 +1,6 @@
 import logging
 
-from bot.core.domain.const.env_const import DEBUG_MODE
+from bot.core.domain.const.env_const import DEBUG_MODE_TYPING, DEBUG_MODE_LOGGING
 
 CLASS_NAME = 'class_name'
 
@@ -17,7 +17,7 @@ def get_logger(
 
 
 def get_logging_config():
-    logging_level = logging.DEBUG if DEBUG_MODE else logging.INFO
+    logging_level = logging.DEBUG if DEBUG_MODE_LOGGING else logging.INFO
 
     return {
         'version': 1,

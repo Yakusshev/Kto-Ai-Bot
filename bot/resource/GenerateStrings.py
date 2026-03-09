@@ -118,12 +118,12 @@ def _render_method(key: FtlKey, indent: str = _INDENT) -> str:
 
     if key.has_variables():
         kwargs_sig = ", ".join(f"{v}: object" for v in key.variables)
-        kwargs_call = ", ".join(f"{v}={v}" for v in key.variables)
-        signature = f"def {key.method_name()}(self, *, {kwargs_sig}) -> str:"
-        body = f"return self._i18n.get({key.name!r}, {kwargs_call})"
+        kwargs_call = ", ".join(f"{v} = {v}" for v in key.variables)
+        signature = f"def {key.method_name()}(self, {kwargs_sig}) -> str:"
+        body = f"return self._i18n.get({key.name!r}, locale = self.locale, {kwargs_call})"
     else:
         signature = f"def {key.method_name()}(self) -> str:"
-        body = f"return self._i18n.get({key.name!r})"
+        body = f"return self._i18n.get({key.name!r}, locale = self.locale)"
 
     return "\n".join(
         [
@@ -154,6 +154,7 @@ def generate_stubs(bundle: FtlBundle) -> str:
         "\n"
         "    def __init__(self, i18n: I18nContext) -> None:\n"
         "        self._i18n = i18n\n"
+        "        self.locale = i18n.locale\n"
         "\n"
     )
 
