@@ -15,8 +15,9 @@ from bot.feature.business.entrypoint.HumanWaitingBehavior import (
 )
 from bot.resource.Strings import Strings
 from bot.feature.business.domain.model.SaveMessageModel import MessageRole
+from bot.util.log_util import get_logger
 
-logger = logging.getLogger("business_handler")
+logger = get_logger("business_handler")
 business_router = Router()
 
 
@@ -127,9 +128,11 @@ async def __check_message_role(
     через business-соединение.
     """
     by_assistant = message.from_user.id != message.chat.id
+
     if by_assistant:
-        logger.info(
-            "Входящее сообщение not_by_user: %s | chat_id=%s | message=%s",
+        # отправлено в ручную
+        logger.warning(
+            "MESSAGE NOT_BY_USER: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
         )
         await chat_service.save_message(
@@ -138,13 +141,13 @@ async def __check_message_role(
             role = MessageRole.ASSISTANT,
         )
     elif not message.business_connection_id:
-        logger.info(
-            "Входящее сообщение not business_connection_id: %s | chat_id=%s | message=%s",
+        logger.warning(
+            "MESSAGE NOT business_connection_id: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
         )
     else:
         logger.info(
-            "Входящее сообщение: %s | chat_id=%s | message=%s", text_content,
+            "message: %s | chat_id=%s | message=%s", text_content,
             message.chat.id, message,
         )
         await __handle_user_message(
@@ -165,14 +168,10 @@ async def __handle_user_message(
     task_key = str(message.chat.id)
 
     connection_id = message.business_connection_id
-
-    # Запрашиваем полный объект подключения через API
     connection = await bot.get_business_connection(connection_id)
 
-    logger.info(f'__handle_user_message: connection = {connection}')
+    logger.debug(f'__handle_user_message: connection = {connection}')
 
-    # Теперь у нас есть владелец
-    business_owner_id = connection.user.id
 
     try:
         await scheduler.on_message(
@@ -258,9 +257,9 @@ async def __answer_message(
                     f"send_message EXCEPTION\n"
                     f"message.message_id = {message.message_id}\n"
                     f"username = {message.from_user.username}\n"
-                    f"fullname = {message.from_user.first_name} {message.from_user.last_name}",
+                    f"fullname = {message.from_user.first_name} {message.from_user.last_name}\n"
+                    f"e = {e}",
                 )
-                logger.error(e)
             except asyncio.CancelledError as canceled_error:
                 raise canceled_error
 

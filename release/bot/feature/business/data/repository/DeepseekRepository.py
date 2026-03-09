@@ -1,11 +1,12 @@
+import logging
 from typing import List, cast
-from venv import logger
 
 import openai
 from openai.types.chat import ChatCompletionMessageParam
 
 from bot.feature.business.domain.model.MessageForAiModel import MessageForAiModel
 from bot.feature.business.domain.repository.AiRepository import AiRepository
+from bot.util.log_util import get_logger
 
 DEEPSEEK_CHAT_MODEL = 'deepseek-chat'
 DEEPSEEK_SUMMARIZE_MODEL = 'deepseek-chat'
@@ -51,8 +52,6 @@ class DeepseekRepository(AiRepository):
                 },
             )
 
-        logger.info(f"DeepseekRepository.generate_response: requested")
-
         try:
             response = await self.async_client.chat.completions.create(
                 model = self.model,
@@ -65,10 +64,10 @@ class DeepseekRepository(AiRepository):
 
             return response_text
         except Exception as e:
-            print(
-                f"Ошибка при обращении к OpenAI-совместимому API (model: url: {self.async_client.base_url}): {e}",
+            logger.error(
+                f"Ошибка при обращении к OpenAI-совместимому API (model: "
+                f"url: {self.async_client.base_url}): {e}",
             )
-            #TODO протестить
             raise e
 
     @staticmethod
@@ -80,7 +79,7 @@ class DeepseekRepository(AiRepository):
         request = api_messages[length - 1]
 
         logger.info(
-            f'''DeepseekRepository.generate_response:
+            f'''generate_response:
                 request: {request}
                 response: {response_text}
             ''',
@@ -92,4 +91,7 @@ class DeepseekRepository(AiRepository):
                 CONTENT: response_text,
             },
         )
-        logger.info(f"DeepseekRepository.generate_response: history = {api_messages}")
+        logger.debug(f"generate_response: history = {api_messages}")
+
+
+logger = get_logger(DeepseekRepository.__name__)

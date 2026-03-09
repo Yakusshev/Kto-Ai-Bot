@@ -11,8 +11,7 @@ from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
 from bot.feature.business.domain.repository.AiRepository import AiRepository
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
     GetForwardOriginTextForAiUseCase
-
-_logger = logging.getLogger("SendAiRequestUseCase")
+from bot.util.log_util import get_logger
 
 
 class SendAiRequestUseCase:
@@ -51,9 +50,6 @@ class SendAiRequestUseCase:
                 owner_model = owner_model,
                 user_for_ai_model = user_for_ai_model,
             )
-
-        _logger.info(f"invoke: history = {history}")
-        _logger.info(f"invoke: ai_list = {ai_list}")
 
         ai_response = await self.llm_repository.generate_response(
             message_list = ai_list,
@@ -166,3 +162,6 @@ class SendAiRequestUseCase:
                 return history[i]
 
         return None
+
+
+_logger = get_logger(SendAiRequestUseCase.__name__)

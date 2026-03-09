@@ -1,7 +1,7 @@
 """
 FTL Stub Generator
 ==================
-Парсит ru/strings.ftl и генерирует Strings.py с классом Strings,
+Парсит ru/messages.ftl и генерирует Strings.py с классом Strings,
 который оборачивает I18nContext и предоставляет типизированный доступ к ключам.
 
 Исправлено: поддержка многострочных значений (со строками с отступами).
@@ -118,12 +118,12 @@ def _render_method(key: FtlKey, indent: str = _INDENT) -> str:
 
     if key.has_variables():
         kwargs_sig = ", ".join(f"{v}: object" for v in key.variables)
-        kwargs_call = ", ".join(f"{v}={v}" for v in key.variables)
-        signature = f"def {key.method_name()}(self, *, {kwargs_sig}) -> str:"
-        body = f"return self._i18n.get({key.name!r}, {kwargs_call})"
+        kwargs_call = ", ".join(f"{v} = {v}" for v in key.variables)
+        signature = f"def {key.method_name()}(self, {kwargs_sig}) -> str:"
+        body = f"return self._i18n.get({key.name!r}, locale = self.locale, {kwargs_call})"
     else:
         signature = f"def {key.method_name()}(self) -> str:"
-        body = f"return self._i18n.get({key.name!r})"
+        body = f"return self._i18n.get({key.name!r}, locale = self.locale)"
 
     return "\n".join(
         [
@@ -154,6 +154,7 @@ def generate_stubs(bundle: FtlBundle) -> str:
         "\n"
         "    def __init__(self, i18n: I18nContext) -> None:\n"
         "        self._i18n = i18n\n"
+        "        self.locale = i18n.locale\n"
         "\n"
     )
 
@@ -176,7 +177,7 @@ def write_stubs(code: str, output_path: Path) -> None:
 
 def main() -> None:
     base_dir = Path(__file__).parent  # bot/resource/
-    ftl_path = base_dir / "locales/ru/strings.ftl"
+    ftl_path = base_dir / "locales/ru/messages.ftl"
 
     if not ftl_path.exists():
         print(f"❌  File not found: {ftl_path}")

@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
+from bot.util.log_util import get_logger
 
 class BotManager:
 
@@ -30,9 +31,10 @@ class BotManager:
     async def start(self) -> bool:
         if self._task is None or self._task.done():
             self._task = asyncio.create_task(self._run())
-            print(f"{self.name}: started")
+            _logger.info(f"{self.name}: started")
             return True
         else:
+            _logger.info(f"{self.name}: start request failed")
             return False
 
     async def stop(self):
@@ -43,3 +45,6 @@ class BotManager:
             return False
             # self._task.cancel()
             # await self._task
+
+
+_logger = get_logger(BotManager.__name__)

@@ -14,8 +14,8 @@ from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUs
 from bot.feature.business.entrypoint.SaveMessageModelMapper import \
     to_save_message_model
 from bot.resource.Strings import Strings
+from bot.util.log_util import get_logger
 
-_logger = logging.getLogger("ChatService")
 
 class ChatService:
 
@@ -106,3 +106,6 @@ def truncate_ai_refusal(text: str) -> str:
         cleaned_text = text[:match.start()].strip()
         return cleaned_text
     return text.strip()
+
+
+_logger = get_logger(ChatService.__name__)
