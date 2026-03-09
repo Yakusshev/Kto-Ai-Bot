@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import logging
 import random
 from asyncio import Event, Task
@@ -315,7 +316,18 @@ async def __typing_loop(
     Поддерживает статус «печатает...» пока не выставлен stop_event.
     Иногда делает паузу 1-3 сек (имитирует «задумался»).
     """
+
+    default_pause = 7
+
+    start_typing_time = datetime.datetime.now()
+
     while not stop_event.is_set():
+
+        delta = datetime.datetime.now() - start_typing_time
+
+        if delta.seconds > random.uniform(15, 20):
+            break
+
         try:
             await bot.send_chat_action(
                 chat_id = chat_id,
@@ -325,9 +337,4 @@ async def __typing_loop(
         except Exception as e:
             logger.warning("typing_loop ошибка send_chat_action: %s", e)
 
-        # typing живёт ~5 сек — обновляем каждые 4 сек
-        # иногда пауза 1-3 сек (индикатор гаснет — имитация паузы в мышлении)
-        if random.random() < 0.32:
-            await asyncio.sleep(random.uniform(1.0, 3.0))
-        else:
-            await asyncio.sleep(4.0)
+        await asyncio.sleep(default_pause + random.uniform(1, 5))
