@@ -14,10 +14,9 @@
       <change beforePath="$PROJECT_DIR$/bot/feature/business/domain/usecase/SendAiRequestUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/domain/usecase/SendAiRequestUseCase.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/feature/business/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/entrypoint/ChatService.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/feature/business/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/entrypoint/business_message_handlers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/locales/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/locales/ru/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/util/logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/resource/GenerateStrings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/GenerateStrings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/resource/Strings.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/Strings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/resource/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/bot/resource/locales/ru/messages.ftl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
@@ -377,7 +376,7 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="GenerateStrings" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="GenerateStrings (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PythonProject" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -498,6 +497,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.GenerateStrings (1)" />
+        <item itemvalue="Python.script" />
         <item itemvalue="Python.GenerateStrings" />
         <item itemvalue="Python.business_message_handlers" />
         <item itemvalue="Python.data_cutter_script" />

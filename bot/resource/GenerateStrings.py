@@ -1,7 +1,7 @@
 """
 FTL Stub Generator
 ==================
-Парсит ru/strings.ftl и генерирует Strings.py с классом Strings,
+Парсит ru/messages.ftl и генерирует Strings.py с классом Strings,
 который оборачивает I18nContext и предоставляет типизированный доступ к ключам.
 
 Исправлено: поддержка многострочных значений (со строками с отступами).
@@ -176,7 +176,7 @@ def write_stubs(code: str, output_path: Path) -> None:
 
 def main() -> None:
     base_dir = Path(__file__).parent  # bot/resource/
-    ftl_path = base_dir / "locales/ru/strings.ftl"
+    ftl_path = base_dir / "locales/ru/messages.ftl"
 
     if not ftl_path.exists():
         print(f"❌  File not found: {ftl_path}")

@@ -26,7 +26,7 @@ class StringsMiddleware(BaseMiddleware):
             )
 
         # Создаём экземпляр Strings и кладём его в data
-        data["strings"] = Strings(i18n)
+        data["strings"] = Strings(i18n = i18n)
 
         # Передаём управление дальше
         return await handler(event, data)

@@ -1,5 +1,5 @@
 """
-Auto-generated stubs for strings.ftl
+Auto-generated stubs for messages.ftl
 Do NOT edit manually — re-run generate_stubs.py to update.
 """
 

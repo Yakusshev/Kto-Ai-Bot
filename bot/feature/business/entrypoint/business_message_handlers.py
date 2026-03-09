@@ -128,7 +128,9 @@ async def __check_message_role(
     через business-соединение.
     """
     by_assistant = message.from_user.id != message.chat.id
+
     if by_assistant:
+        # отправлено в ручную
         logger.warning(
             "MESSAGE NOT_BY_USER: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
