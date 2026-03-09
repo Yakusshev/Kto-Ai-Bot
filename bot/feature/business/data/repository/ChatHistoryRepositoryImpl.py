@@ -23,6 +23,7 @@ from bot.feature.business.domain.model.ForwardOriginState import (
     ForwardOriginChatModel,
     ForwardOriginChannelModel,
 )
+from bot.util.log_util import get_logger
 
 
 # TODO декомпозировать на датасорсы
@@ -48,8 +49,6 @@ class Column:
     FORWARD_ORIGIN_DATE = "forward_origin_date"
     FORWARD_ORIGIN_JSON = "FORWARD_ORIGIN_JSON"
 
-
-_logger = logging.getLogger("ChatHistoryRepositoryImpl")
 
 
 def _serialize_forward_origin(
@@ -315,3 +314,6 @@ class ChatHistoryRepositoryImpl:
 
     def get_table_path(self) -> str:
         return f"{YDB_PATH}/{self.table_name}"
+
+
+_logger = get_logger(ChatHistoryRepositoryImpl.__name__)

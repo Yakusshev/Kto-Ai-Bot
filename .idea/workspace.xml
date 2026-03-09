@@ -4,26 +4,75 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="11.7.1 Update requirements.txt">
-      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/DeepseekRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/data/repository/DeepseekRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/data/repository/SessionRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/data/ydb/CreateYdbDriver.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/data/ydb/CreateYdbDriver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/di/llm_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/di/llm_module.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/domain/DefaultSystemInstuction.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/DefaultSystemInstuction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/domain/model/SaveMessageModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/model/SaveMessageModel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/domain/repository/LLMRepository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/GenerateAiResponseUseCase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/domain/usecase/SaveMessageUseCase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/ChatService.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/SaveMessageModelMapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/SaveMessageModelMapper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/entrypoint/business_message_handlers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/resource/locales/ru/strings.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/resource/locales/ru/strings.ftl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.txt" beforeDir="false" afterPath="$PROJECT_DIR$/release/bot/resource/string/default_system_instruction.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/release/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/release/requirements.lock" beforeDir="false" afterPath="$PROJECT_DIR$/release/requirements.lock" afterDir="false" />
+    <list default="true" id="180bce08-c746-4ca7-8c55-f6bb5c81abc1" name="Changes" comment="Release 4.0.2 Стринги">
+      <change afterPath="$PROJECT_DIR$/bot/util/log_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/admin/entrypoint/handler/handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/admin/entrypoint/handler/handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/data/repository/ChatHistoryRepositoryImpl.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/data/repository/ChatHistoryRepositoryImpl.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/data/repository/DeepseekRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/data/repository/DeepseekRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/domain/usecase/GetSystemInstructionUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/domain/usecase/GetSystemInstructionUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/domain/usecase/SendAiRequestUseCase.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/domain/usecase/SendAiRequestUseCase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/entrypoint/ChatService.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/entrypoint/ChatService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/feature/business/entrypoint/business_message_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/feature/business/entrypoint/business_message_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/ru/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/locales/ru/strings.ftl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/util/logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
-    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="" />
+    <list id="54f3de6d-592d-4c91-9016-593a00de6a41" name="ignore" comment="">
+      <change afterPath="$PROJECT_DIR$/scratch/VitekMessage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scratch/history.py" beforeDir="false" afterPath="$PROJECT_DIR$/scratch/history.py" afterDir="false" />
+    </list>
+    <list id="2dd42a57-3939-4261-b136-40d1bf89d475" name="Release" comment="Release 4.0">
+      <change beforePath="$PROJECT_DIR$/release/bot/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/core/domain/const/env_const.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/core/entry/BotManager.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/domain/GetAdminBotTokenUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/domain/HandleStopCommandUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/entrypoint/AdminService.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/entrypoint/filter/IsAdminUserFilter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/admin/entrypoint/handler/handlers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/data/ForwardOriginRequest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/data/repository/ChatHistoryRepositoryImpl.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/data/repository/DeepseekRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/data/repository/TaskSchedulerRepositoryImpl.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/data/ydb/CreateYdbDriver.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/di/ChatServiceMiddleware.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/di/DiQualifier.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/di/StringsMiddleware.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/di/llm_module.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/get_bot_token.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/model/ForwardOriginState.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/model/MessageForAiModel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/model/PendingChat.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/model/SaveMessageModel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/model/UserMessageInfoForAiModel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/repository/AiRepository.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/scenario/GenerateAiReponseScenario.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/usecase/GetForwardOriginTextForAiUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/usecase/GetSystemInstructionUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/usecase/HandleAiResponseUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/usecase/SaveMessageUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/domain/usecase/SendAiRequestUseCase.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/entrypoint/ChatService.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/entrypoint/HumanWaitingBehavior.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/entrypoint/SaveMessageModelMapper.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/feature/business/entrypoint/business_message_handlers.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/locales/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/locales/ru/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/locales/ru/strings.ftl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/GenerateStrings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/Strings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/resource/locales/ru/strings.ftl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/bot/util/logger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/requirements.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/release/run.sh" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,7 +88,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="sprint2-deepseek" />
+        <entry key="$PROJECT_DIR$" value="sprint2" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -67,11 +116,37 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_HOME_DIR$/plugins/python-ce/helpers/typeshed/stdlib/logging/__init__.pyi" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/_collections_abc.py" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/abc.py" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/locks.py" root0="SKIP_INSPECTION" />
     <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/tasks.py" root0="SKIP_INSPECTION" />
     <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/threads.py" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/logging/__init__.py" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/re/__init__.py" root0="SKIP_INSPECTION" />
+    <setting file="file:///Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/typing.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/Library/Caches/JetBrains/PyCharm2025.2/python_stubs/-1688634795/builtins.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/client/bot.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/client/context_controller.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/client/session/aiohttp.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/client/session/base.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/dispatcher/dispatcher.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/dispatcher/event/handler.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/dispatcher/event/telegram.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/dispatcher/router.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/enums/message_origin_type.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/business_connection.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/chat.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/custom.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/message.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/message_origin_channel.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/message_origin_hidden_user.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/message_origin_union.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/message_origin_user.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram/types/user.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram_i18n/context.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram_i18n/cores/base.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/aiogram_i18n/middleware.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/_client.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/_types.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/resources/completions.py" root0="SKIP_INSPECTION" />
@@ -79,14 +154,173 @@
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/types/responses/response.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/types/responses/response_input_param.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/openai/types/responses/response_output_item.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/pydantic/main.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/typing_extensions.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/_session_impl.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/connection.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/convert.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/issues.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/operation.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/pool.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/table.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/../python3.13.5/.venv/lib/python3.13/site-packages/ydb/tracing.py" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/.idea/workspace.xml">
+      <ranges>
+        <range start1="6" end1="24" start2="6" end2="26" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="25" end1="26" start2="27" end2="75" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="31" end1="31" start2="80" end2="86" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="41" end1="42" start2="96" end2="97" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="69" end1="69" start2="124" end2="128" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="71" end1="71" start2="130" end2="134" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="72" end1="72" start2="135" end2="145" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="74" end1="74" start2="147" end2="155" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="81" end1="81" start2="162" end2="163" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="86" end1="86" start2="168" end2="169" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="89" end1="89" start2="172" end2="329" changelist="180bce08-c746-4ca7-8c55-f6bb5c81abc1" />
+        <range start1="101" end1="127" start2="341" end2="369" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="128" end1="129" start2="370" end2="371" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="131" end1="135" start2="373" end2="378" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="137" end1="142" start2="380" end2="385" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="145" end1="146" start2="388" end2="389" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="154" end1="155" start2="397" end2="398" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="158" end1="159" start2="401" end2="402" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="167" end1="168" start2="410" end2="411" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="176" end1="177" start2="419" end2="420" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="180" end1="181" start2="423" end2="424" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="189" end1="190" start2="432" end2="433" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="198" end1="199" start2="441" end2="442" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="202" end1="203" start2="445" end2="446" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="234" end1="235" start2="477" end2="478" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="243" end1="244" start2="486" end2="487" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="247" end1="249" start2="490" end2="491" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="266" end1="266" start2="508" end2="510" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="268" end1="270" start2="512" end2="512" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="283" end1="283" start2="525" end2="526" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="291" end1="292" start2="534" end2="607" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="293" end1="296" start2="608" end2="611" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="297" end1="298" start2="612" end2="613" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="299" end1="300" start2="614" end2="615" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="301" end1="304" start2="616" end2="619" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="305" end1="306" start2="620" end2="621" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="307" end1="308" start2="622" end2="623" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="309" end1="312" start2="624" end2="627" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="313" end1="314" start2="628" end2="629" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="315" end1="316" start2="630" end2="631" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="317" end1="320" start2="632" end2="635" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="321" end1="322" start2="636" end2="637" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="323" end1="324" start2="638" end2="639" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="325" end1="328" start2="640" end2="643" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="329" end1="330" start2="644" end2="645" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="331" end1="332" start2="646" end2="647" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="333" end1="336" start2="648" end2="651" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="337" end1="338" start2="652" end2="653" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="339" end1="340" start2="654" end2="655" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="341" end1="344" start2="656" end2="659" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="345" end1="346" start2="660" end2="661" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="347" end1="348" start2="662" end2="663" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="349" end1="352" start2="664" end2="667" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="353" end1="354" start2="668" end2="669" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="355" end1="356" start2="670" end2="671" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="357" end1="360" start2="672" end2="675" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="361" end1="362" start2="676" end2="677" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="363" end1="364" start2="678" end2="679" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="365" end1="368" start2="680" end2="683" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="369" end1="370" start2="684" end2="685" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="371" end1="372" start2="686" end2="687" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="373" end1="376" start2="688" end2="691" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="377" end1="378" start2="692" end2="693" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="379" end1="380" start2="694" end2="695" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="381" end1="384" start2="696" end2="699" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="385" end1="386" start2="700" end2="701" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="387" end1="388" start2="702" end2="703" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="389" end1="392" start2="704" end2="707" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="393" end1="394" start2="708" end2="709" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="395" end1="396" start2="710" end2="711" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="397" end1="400" start2="712" end2="715" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="401" end1="402" start2="716" end2="717" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="403" end1="404" start2="718" end2="719" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="405" end1="408" start2="720" end2="723" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="409" end1="410" start2="724" end2="725" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="411" end1="412" start2="726" end2="727" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="413" end1="416" start2="728" end2="731" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="417" end1="418" start2="732" end2="733" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="419" end1="420" start2="734" end2="735" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="421" end1="424" start2="736" end2="739" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="425" end1="426" start2="740" end2="741" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="427" end1="428" start2="742" end2="743" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="429" end1="432" start2="744" end2="747" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="433" end1="434" start2="748" end2="749" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="435" end1="436" start2="750" end2="751" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="437" end1="440" start2="752" end2="755" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="441" end1="442" start2="756" end2="757" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="443" end1="444" start2="758" end2="759" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="445" end1="448" start2="760" end2="763" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="449" end1="450" start2="764" end2="765" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="451" end1="452" start2="766" end2="767" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="453" end1="456" start2="768" end2="771" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="457" end1="458" start2="772" end2="773" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="459" end1="460" start2="774" end2="775" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="461" end1="464" start2="776" end2="779" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="465" end1="466" start2="780" end2="781" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="467" end1="468" start2="782" end2="783" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="469" end1="472" start2="784" end2="787" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="473" end1="474" start2="788" end2="789" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="475" end1="476" start2="790" end2="791" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="477" end1="480" start2="792" end2="795" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="481" end1="482" start2="796" end2="797" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="483" end1="484" start2="798" end2="799" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="485" end1="488" start2="800" end2="803" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="489" end1="490" start2="804" end2="805" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="491" end1="492" start2="806" end2="807" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="493" end1="496" start2="808" end2="811" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="497" end1="498" start2="812" end2="813" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="499" end1="500" start2="814" end2="815" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="501" end1="504" start2="816" end2="819" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="505" end1="506" start2="820" end2="821" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="507" end1="508" start2="822" end2="823" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="509" end1="512" start2="824" end2="827" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="513" end1="514" start2="828" end2="829" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="515" end1="516" start2="830" end2="831" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="517" end1="520" start2="832" end2="835" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="521" end1="522" start2="836" end2="837" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="523" end1="524" start2="838" end2="839" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="525" end1="528" start2="840" end2="843" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="529" end1="530" start2="844" end2="845" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="531" end1="532" start2="846" end2="847" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="533" end1="536" start2="848" end2="851" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="537" end1="538" start2="852" end2="853" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="539" end1="540" start2="854" end2="855" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="541" end1="544" start2="856" end2="859" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="545" end1="546" start2="860" end2="861" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="547" end1="548" start2="862" end2="863" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="549" end1="552" start2="864" end2="867" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="553" end1="554" start2="868" end2="869" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="555" end1="556" start2="870" end2="871" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="557" end1="560" start2="872" end2="875" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="561" end1="562" start2="876" end2="877" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="563" end1="564" start2="878" end2="879" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="565" end1="568" start2="880" end2="883" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="569" end1="570" start2="884" end2="885" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="571" end1="572" start2="886" end2="887" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="573" end1="576" start2="888" end2="907" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="577" end1="578" start2="908" end2="909" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="579" end1="580" start2="910" end2="911" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="581" end1="584" start2="912" end2="915" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="585" end1="586" start2="916" end2="917" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="587" end1="588" start2="918" end2="919" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="589" end1="592" start2="920" end2="923" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="593" end1="594" start2="924" end2="925" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="595" end1="596" start2="926" end2="927" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="612" end1="613" start2="943" end2="944" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="625" end1="651" start2="956" end2="983" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="656" end1="657" start2="988" end2="989" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="661" end1="662" start2="993" end2="994" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="666" end1="667" start2="998" end2="999" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+        <range start1="671" end1="672" start2="1003" end2="1004" changelist="54f3de6d-592d-4c91-9016-593a00de6a41" />
+      </ranges>
+    </file>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3

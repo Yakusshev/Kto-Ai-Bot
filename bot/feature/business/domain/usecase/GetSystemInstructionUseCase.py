@@ -1,3 +1,4 @@
+import logging
 import zoneinfo
 
 from bot.core.domain.const.env_const import NEXT_MESSAGE_SEPARATOR
@@ -5,8 +6,10 @@ from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMess
 from bot.resource.Strings import Strings
 from datetime import datetime
 
+from bot.util.log_util import get_logger
 
-class GetSystemInstructionUseCase:
+
+class GetSystemInstructionUseCase():
     strings: Strings
 
     def __init__(
@@ -45,6 +48,8 @@ class GetSystemInstructionUseCase:
     ):
         time_readable = message_datetime.strftime("%Y-%m-%d %A %H:%M")
 
-        print("GetSystemInstructionUseCase.format_time ", time_readable)
+        _logger.debug(f"format_time {time_readable}")
 
         return time_readable
+
+_logger = get_logger(GetSystemInstructionUseCase.__name__)

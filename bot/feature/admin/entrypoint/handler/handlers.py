@@ -7,8 +7,9 @@ from aiogram.types import Message
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
 from bot.resource.Strings import Strings
+from bot.util.log_util import get_logger
 
-logger = logging.getLogger("admin_handler")
+logger = get_logger("admin_handler")
 admin_router = Router()
 
 

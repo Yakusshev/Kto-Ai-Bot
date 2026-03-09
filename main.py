@@ -13,6 +13,8 @@ from bot.feature.business import user_bot_manager
 from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.entrypoint.business_message_handlers import business_router
+from bot.util.log_util import get_logging_config
+import logging.config
 
 
 async def main():
@@ -71,8 +73,7 @@ async def start_admin_dispatcher_polling_task():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        level = logging.INFO,
-        format = '%(asctime)s - %(levelname)s - %(message)s',
-    )
+
+    logging.config.dictConfig(get_logging_config())
+
     asyncio.run(main())
