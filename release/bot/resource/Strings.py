@@ -18,9 +18,6 @@ class Strings:
     def sticker_not_loaded(self, emoji: object) -> str:
         return self._i18n.get('sticker-not-loaded', locale = self.locale, emoji = emoji)
 
-    def empty_message(self) -> str:
-        return self._i18n.get('empty-message', locale = self.locale)
-
     def photo_cannot_be_loaded(self) -> str:
         return self._i18n.get('photo-cannot-be-loaded', locale = self.locale)
 

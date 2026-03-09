@@ -1,5 +1,4 @@
 sticker-not-loaded = [стикер, он не загрузился, эмодзи стикера: { $emoji }]
-empty-message = []
 photo-cannot-be-loaded = [фотография, она не может быть загружена]
 photo-cannot-be-loaded-text = [фотография, она не может быть загружена, далее сообщение пользователя] { $text }
 photo-list-cannot-be-loaded = [несколько фотографий ({ $photo_number}), не грузятся]

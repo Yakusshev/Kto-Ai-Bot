@@ -39,12 +39,17 @@ class ChatService:
             message = message,
             content = text_content,
             role = role,
-            empty_message = self.strings.empty_message(),
         )
 
-        await self.save_message_use_case.invoke(
-            save_message_model_list = [save_message_model],
-        )
+        if save_message_model:
+            await self.save_message_use_case.invoke(
+                save_message_model_list = [save_message_model],
+            )
+        else:
+            _logger.warning(
+                f"save_message: пустой text_content, "
+                f"role = {role}, message = {message}",
+            )
 
     async def generate_ai_response(
         self,
@@ -74,38 +79,24 @@ class ChatService:
         save_message_model_list: list[SaveMessageModel] = []
 
         for message in message_list:
-            save_message_model_list.append(
-                to_save_message_model(
-                    message = message,
-                    content = message.text,
-                    role = MessageRole.ASSISTANT,
-                    empty_message = self.strings.empty_message(),
-                ),
+            save_message_model = to_save_message_model(
+                message = message,
+                content = message.text,
+                role = MessageRole.ASSISTANT,
             )
 
-        asyncio.create_task(
-            self.save_message_use_case.invoke(
-                save_message_model_list = save_message_model_list,
-            ),
-        )
+            if save_message_model:
+                save_message_model_list.append(save_message_model)
+            else:
+                _logger.warning(
+                    f"save_message: пустой text_content, message = {message}",
+                )
 
 
-def truncate_ai_refusal(text: str) -> str:
-    if not text:
-        return ""
-    refusal_patterns = [
-        r"я не могу обсужд[а-я ]+ эту тему",
-        r"я н могу обсуждать",
-        r"давайте поговорим о чём-нибудь ещё",
-        r"извините, но я не могу",
-        r"как искусственный интеллект, я",
-    ]
-    combined_pattern = re.compile("|".join(refusal_patterns), re.IGNORECASE)
-    match = combined_pattern.search(text)
-    if match:
-        cleaned_text = text[:match.start()].strip()
-        return cleaned_text
-    return text.strip()
-
+            asyncio.create_task(
+                self.save_message_use_case.invoke(
+                    save_message_model_list = save_message_model_list,
+                ),
+            )
 
 _logger = get_logger(ChatService.__name__)
