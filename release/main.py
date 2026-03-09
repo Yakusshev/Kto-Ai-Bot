@@ -14,6 +14,8 @@ from bot.feature.business import user_bot_manager
 from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.entrypoint.business_message_handlers import business_router
+from bot.resource.GracefulShutdownFluentRuntimeCore import \
+    GracefulShutdownFluentRuntimeCore
 from bot.util.log_util import get_logging_config
 import logging.config
 
@@ -34,7 +36,7 @@ async def main():
 
 async def prepare_business_bot():
     I18nMiddleware(
-        core = FluentRuntimeCore(
+        core = GracefulShutdownFluentRuntimeCore(
             path = "bot/resource/locales/{locale}",
         ),
         default_locale = "ru",
