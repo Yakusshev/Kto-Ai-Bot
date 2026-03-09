@@ -92,11 +92,8 @@ class ChatService:
                     f"save_message: пустой text_content, message = {message}",
                 )
 
-
-            asyncio.create_task(
-                self.save_message_use_case.invoke(
-                    save_message_model_list = save_message_model_list,
-                ),
-            )
+        await self.save_message_use_case.invoke(
+            save_message_model_list = save_message_model_list,
+        ),
 
 _logger = get_logger(ChatService.__name__)

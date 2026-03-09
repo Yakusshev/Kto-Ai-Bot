@@ -299,11 +299,9 @@ async def complete_answer(
             pass
     # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
     if answer_message_list:
-        asyncio.create_task(
-            chat_service.save_assistant_text_message_list(
-                message_list = answer_message_list,
-            ),
-        )
+        await chat_service.save_assistant_text_message_list(
+            message_list = answer_message_list,
+        ),
 
 
 async def __typing_loop(
