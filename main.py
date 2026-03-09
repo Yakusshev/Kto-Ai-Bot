@@ -7,6 +7,7 @@ from aiogram import Dispatcher, types
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
 
+from bot.core.domain.const.env_const import DEBUG_MODE_START_POLLING
 from bot.feature.admin import admin_bot_manager
 from bot.feature.admin.entrypoint.handler.handlers import admin_router
 from bot.feature.business import user_bot_manager
@@ -20,47 +21,27 @@ import logging.config
 async def main():
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    I18nMiddleware(
-        core=FluentRuntimeCore(
-            path="bot/resource/locales/{locale}",
-        ),
-        default_locale="ru",
-    ).setup(dispatcher = user_bot_manager.dispatcher)
+    await start_admin_bot()
+    await prepare_business_bot()
 
+    loop = asyncio.get_event_loop()
+    while True:
+        user_input = await loop \
+            .run_in_executor(None, input, "Ожидание ввода\n")
+        if user_input.lower() == "exit":
+            break
+
+
+async def prepare_business_bot():
     I18nMiddleware(
         core = FluentRuntimeCore(
             path = "bot/resource/locales/{locale}",
         ),
         default_locale = "ru",
-    ).setup(dispatcher = admin_bot_manager.dispatcher)
+    ).setup(dispatcher = user_bot_manager.dispatcher)
 
-    await start_user_dispatcher_polling_task()
-    await start_admin_dispatcher_polling_task()
-
-    await asyncio.Future()
-
-    while True:
-        # Запрашиваем ввод у пользователя
-        user_input = input("Ожидание ввода\n")
-
-        # Проверяем условие выхода (игнорируем регистр букв)
-        if user_input.lower() == "exit":
-            print("Программа завершена.")
-            break
-        else:
-            # Здесь можно выполнить любые действия с введёнными данными
-            print(f"Вы ввели: {user_input}")
-
-
-async def start_user_dispatcher_polling_task():
     user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
 
-    setup_business_router()
-
-    await user_bot_manager.start()
-
-
-def setup_business_router():
     user_bot_manager.dispatcher.business_message.middleware(ChatServiceMiddleware())
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
@@ -82,8 +63,18 @@ def setup_business_router():
 
     user_bot_manager.dispatcher.include_router(router = business_router)
 
+    if DEBUG_MODE_START_POLLING:
+        await user_bot_manager.start()
 
-async def start_admin_dispatcher_polling_task():
+
+async def start_admin_bot():
+    I18nMiddleware(
+        core = FluentRuntimeCore(
+            path = "bot/resource/locales/{locale}",
+        ),
+        default_locale = "ru",
+    ).setup(dispatcher = admin_bot_manager.dispatcher)
+
     admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
 
     admin_bot_manager.dispatcher.include_router(router = admin_router)
@@ -92,7 +83,6 @@ async def start_admin_dispatcher_polling_task():
 
 
 if __name__ == '__main__':
-
     logging.config.dictConfig(get_logging_config())
 
     asyncio.run(main())

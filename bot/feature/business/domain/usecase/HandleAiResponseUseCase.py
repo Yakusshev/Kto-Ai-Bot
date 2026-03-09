@@ -50,12 +50,20 @@ class HandleAiResponseUseCase:
         result = []
         current = lines[0]
 
-        for line in lines[1:]:
-            if random() < 0.75:
-                result.append(current)
-                current = line
+        double_message = False
+
+        for i, line in enumerate(lines[1:]):
+            if line[i - 1] != line:
+                if random() < 0.75:
+                    result.append(current)
+                    current = line
+                else:
+                    current += '\n' + line
             else:
-                current += '\n' + line
+                double_message = True
+
+        if double_message:
+            logger.info(f"DOUBLE_MESSAGE: ${lines}")
 
         result.append(current.strip())
 
