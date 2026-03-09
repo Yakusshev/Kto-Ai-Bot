@@ -43,8 +43,6 @@ class BotManager:
             return True
         else:
             return False
-            # self._task.cancel()
-            # await self._task
 
 
 _logger = get_logger(BotManager.__name__)

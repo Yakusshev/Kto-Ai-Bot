@@ -149,6 +149,13 @@ class TaskSchedulerRepositoryImpl:
         finally:
             self._states.pop(key, None)
 
+    async def wait_task_completion(self):
+        # Собираем все текущие задачи из состояний
+        tasks = [entry.task for entry in self._states.values()]
+        if tasks:
+            # Ждём их завершения, игнорируя исключения (они уже обработаны в самих задачах)
+            await asyncio.gather(*tasks, return_exceptions = True)
+
     @staticmethod
     async def _cancel_task(task: asyncio.Task) -> None:
         """Аккуратно отменяет задачу и ждёт её завершения."""
