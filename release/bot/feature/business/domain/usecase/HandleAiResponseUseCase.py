@@ -1,7 +1,8 @@
 import re
 from random import random
 from typing import List
-from venv import logger
+
+from bot.util.log_util import get_logger
 
 
 class HandleAiResponseUseCase:
@@ -16,6 +17,8 @@ class HandleAiResponseUseCase:
         self,
         response: str,
     ) -> List[str]:
+
+        logger.info(f'invoke: {response}')
 
         return self.split_messages(response = response)
 
@@ -38,11 +41,11 @@ class HandleAiResponseUseCase:
 
         lines: list[str] = re.split(pattern, response_no_space)
 
-        logger.info(f'GenerateAiResponseUseCase.split_messages lines = {lines}')
+        logger.info(f'split_messages lines = {lines}')
 
         if not lines:
             logger.warning(
-                f'GenerateAiResponseUseCase.split_messages: empty lines; '
+                f'split_messages: empty lines; '
                 f'response = {response}',
             )
             return []
@@ -53,7 +56,12 @@ class HandleAiResponseUseCase:
         double_message = False
 
         for i, line in enumerate(lines[1:]):
-            if line[i - 1] != line:
+
+            logger.debug(f"i = {i}, line = {line}, lines[i - 1] = {lines[i - 1]}")
+            if lines[i] != line:
+
+                line = HandleAiResponseUseCase\
+                    .fix_looping_response_advanced(text = line)
                 if random() < 0.75:
                     result.append(current)
                     current = line
@@ -88,3 +96,43 @@ class HandleAiResponseUseCase:
             return ' '
 
         return re.sub(pattern, replacer, text)
+
+    @staticmethod
+    def fix_looping_response_advanced(
+        text: str,
+    ) -> str:
+
+        logger.info(f'fix_looping_response_advanced input = {text}')
+
+        threshold_char: int = 7
+        threshold_word: int = 9
+        threshold_phrase: int = 3
+
+        if not text:
+            return text
+
+        # Паттерны для разных видов зацикливания с единым порогом
+        patterns = [
+            # Повторение одного символа (например, "оооооо")
+            (r'(.)\1{' + str(threshold_char) + r',}', 'char'),
+            # Повторение слова/слога (2-10 символов)
+            (r'(.{2,10})\1{' + str(threshold_word) + r',}', 'word'),
+            # \1{4,} значит 5+ повторений
+            # Повторение фразы (5-30 символов)
+            (r'(.{5,30})\1{' + str(threshold_phrase) + r',}', 'phrase')
+            # чуть меньше порог для длинных фраз
+        ]
+
+        for pattern, _ in patterns:
+            match = re.search(pattern, text, re.DOTALL)
+            if match:
+                # Обрезаем до начала зацикливания
+                return text[:match.start()].strip()
+
+        output = text.strip()
+
+        logger.info(f'fix_looping_response_advanced output = {output}')
+
+        return output
+
+logger = get_logger(HandleAiResponseUseCase.__name__)

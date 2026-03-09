@@ -20,4 +20,7 @@ async def wait_to_start_typing(
 async def wait_to_write_message(text: str):
     if not DEBUG_MODE_TYPING:
         write_time = len(text) / random.uniform(a = 2, b = 6)
-        await asyncio.sleep(write_time)
+
+        write_time_at_least = max(write_time, 1.5)
+
+        await asyncio.sleep(write_time_at_least)
