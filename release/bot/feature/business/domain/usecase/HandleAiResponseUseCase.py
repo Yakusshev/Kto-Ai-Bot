@@ -39,7 +39,10 @@ class HandleAiResponseUseCase:
         response_no_space = re\
             .sub(r' +', ' ', response_no_zero_no_tire)
 
-        lines: list[str] = re.split(pattern, response_no_space)
+        response_no_repeat = HandleAiResponseUseCase \
+            .fix_looping_response_advanced(text = response_no_space)
+
+        lines: list[str] = re.split(pattern, response_no_repeat)
 
         logger.info(f'split_messages lines = {lines}')
 
@@ -50,25 +53,26 @@ class HandleAiResponseUseCase:
             )
             return []
 
-        result = []
+        result: list[str] = []
         current = lines[0]
 
         double_message = False
 
         for i, line in enumerate(lines[1:]):
 
-            logger.debug(f"i = {i}, line = {line}, lines[i - 1] = {lines[i - 1]}")
-            if lines[i] != line:
+            logger.debug(f"i = {i}, line = {line}, lines[i] = {lines[i]}")
 
-                line = HandleAiResponseUseCase\
-                    .fix_looping_response_advanced(text = line)
+            repeat = HandleAiResponseUseCase\
+                .find(message_list = result, match = line)
+
+            if lines[i] != line and not repeat:
                 if random() < 0.75:
                     result.append(current)
                     current = line
                 else:
                     current += '\n' + line
             else:
-                double_message = True
+                double_message = lines[i] == line
 
         if double_message:
             logger.info(f"DOUBLE_MESSAGE: ${lines}")
@@ -76,6 +80,14 @@ class HandleAiResponseUseCase:
         result.append(current.strip())
 
         return result
+
+    @staticmethod
+    def find(message_list: List[str], match: str) -> bool:
+        for message in message_list:
+            logger.debug(f"find: message = {message}, match = {match}")
+            if match == message:
+                return True
+        return False
 
     @staticmethod
     def replace_brackets_except_next(text: str) -> str:
