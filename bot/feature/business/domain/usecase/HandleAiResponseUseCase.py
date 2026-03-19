@@ -43,6 +43,9 @@ class HandleAiResponseUseCase:
         response_no_repeat = HandleAiResponseUseCase \
             .fix_looping_response_advanced(text = response_no_space)
 
+        if response_no_repeat == '':
+            raise Exception("Пустая строка")
+
         pattern = fr'\n+|{HandleAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}'
         lines: list[str] = re.split(pattern, response_no_repeat)
 
@@ -53,7 +56,7 @@ class HandleAiResponseUseCase:
                 f'split_messages: empty lines; '
                 f'response = {response}',
             )
-            return []
+            raise Exception("Пустой ответ")
 
         result: list[str] = []
         current = lines[0]
@@ -152,10 +155,13 @@ class HandleAiResponseUseCase:
     @staticmethod
     def clean_unicode(raw_text: str) -> str:
         try:
-            return raw_text.encode('latin-1')\
-                .decode(encoding = 'unicode_escape', errors = 'ignore')
+            return raw_text.encode('utf-8')\
+                .decode('unicode_escape')\
+                .encode('latin-1')\
+                .decode('utf-8')
         except Exception as e:
             logger.error(e)
-            return raw_text
+            return raw_text.replace('\\n', '\n')\
+                .replace('\\t', '\t')
 
 logger = get_logger(HandleAiResponseUseCase.__name__)
