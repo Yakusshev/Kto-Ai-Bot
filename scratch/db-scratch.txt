@@ -7,11 +7,16 @@ ALTER TABLE chat_events_debug
     ADD COLUMN IF NOT EXISTS FORWARD_ORIGIN_JSON Json;
 
 ALTER TABLE chat_events_release
+    ADD COLUMN text_quote Utf8,
     ADD COLUMN forward_origin_type Utf8,
     ADD COLUMN forward_origin_date Timestamp,
     ADD COLUMN FORWARD_ORIGIN_JSON Json;
 
-CREATE TABLE chat_events_debug (
+
+ALTER TABLE chat_events_release_backup_1003_1254
+    ADD COLUMN text_quote Utf8,
+
+CREATE TABLE chat_events_release_backup_1003_1254 (
     chat_id Uint64,
     created_at Timestamp,
     message_id Uint64,
@@ -21,6 +26,10 @@ CREATE TABLE chat_events_debug (
     reply_to_id Uint64, -- ID сообщения, на которое ответили
     metadata Json,      -- Сюда можно кидать всё остальное (ссылку на фото, эмодзи стикера)
     business_conn_id Utf8,
+    text_quote Utf8,
+    forward_origin_type Utf8,
+    forward_origin_date Timestamp,
+    FORWARD_ORIGIN_JSON Json;
     PRIMARY KEY (chat_id, created_at)
 );
 
@@ -32,11 +41,98 @@ WHERE chat_id = 8123263696;
 
 SELECT *
 FROM chat_events_release
-WHERE content LIKE '%ты очень красивая!!%';
+WHERE content LIKE '%ну да, завтра на работу вставать, а я тут%';
+
+DELETE FROM chat_events_release
+WHERE chat_id = <нужный_chat_id> AND message_id = <нужный_message_id>;
 
 SELECT *
 FROM chat_events_release
 WHERE chat_id = '6370443738';
+
+
+
+SELECT *
+FROM chat_events_release
+WHERE chat_id = 7659801120
+ORDER BY created_at;
+
+DELETE FROM chat_events_release
+WHERE chat_id = 7659801120 AND message_id = 31256;
+
+DELETE FROM chat_events_release
+WHERE chat_id = 7659801120 AND message_id = 31261;
+DELETE FROM chat_events_release
+WHERE chat_id = 7659801120 AND message_id = 31281;
+
+
+
+
+-- ШАГ 1: Создаем временную таблицу с ключами для удаления
+$keys_to_delete = (
+    SELECT
+        -- Создаем уникальный строковый ключ
+        CAST(chat_id AS String) || '|' ||
+        CAST(message_id AS String) || '|' ||
+        CAST(created_at AS String) AS composite_key
+    FROM (
+        SELECT
+            chat_id,
+            message_id,
+            created_at,
+            ROW_NUMBER() OVER (
+                PARTITION BY chat_id, message_id
+                ORDER BY created_at ASC
+            ) AS rn
+        FROM chat_events_release
+        WHERE chat_id = 7659801120
+    )
+    WHERE rn > 1
+);
+
+-- ШАГ 2: Удаляем по ключу
+DELETE FROM chat_events_release
+WHERE
+    CAST(chat_id AS String) || '|' ||
+    CAST(message_id AS String) || '|' ||
+    CAST(created_at AS String) IN (
+        SELECT composite_key FROM $keys_to_delete
+    );
+
+
+
+
+$keys_to_delete = (
+    SELECT
+        CAST(chat_id AS String) || '|' ||
+        CAST(message_id AS String) || '|' ||
+        CAST(created_at AS String) AS composite_key
+    FROM (
+        SELECT
+            chat_id,
+            message_id,
+            created_at,
+            ROW_NUMBER() OVER (
+                PARTITION BY chat_id, message_id
+                ORDER BY created_at ASC
+            ) AS rn
+        FROM chat_events_release
+    )
+    WHERE rn > 1
+);
+
+-- Просмотр записей для удаления
+SELECT *
+FROM chat_events_release
+WHERE
+    CAST(chat_id AS String) || '|' ||
+    CAST(message_id AS String) || '|' ||
+    CAST(created_at AS String) IN (SELECT composite_key FROM $keys_to_delete)
+ORDER BY chat_id, message_id, created_at;
+
+
+
+
 
 
 {"request": [{"role": "user", "text": "[Time: 01-25T21:02:04][Sticker, где написано: Мужики в добрым утром и будьте здоровы\nбабы - идите нахуй; изображен нахмурившийся младенец"}], "response": "ну спасибо блин"}

@@ -45,11 +45,17 @@ class Strings:
     def admin_text_bot_start_failure(self) -> str:
         return self._i18n.get('admin-text-bot-start-failure', locale = self.locale)
 
+    def admin_start_command_received(self) -> str:
+        return self._i18n.get('admin-start-command-received', locale = self.locale)
+
     def admin_text_bot_stop_success(self) -> str:
         return self._i18n.get('admin-text-bot-stop-success', locale = self.locale)
 
     def admin_text_bot_stop_failure(self) -> str:
         return self._i18n.get('admin-text-bot-stop-failure', locale = self.locale)
+
+    def admin_stop_command_received(self) -> str:
+        return self._i18n.get('admin-stop-command-received', locale = self.locale)
 
     def you(self) -> str:
         return self._i18n.get('you', locale = self.locale)
@@ -84,8 +90,14 @@ class Strings:
     def system_instruction(self, username: object, full_name: object, date_and_time: object) -> str:
         return self._i18n.get('system_instruction', locale = self.locale, username = username, full_name = full_name, date_and_time = date_and_time)
 
+    def system_instruction_ignore(self) -> str:
+        return self._i18n.get('system_instruction_ignore', locale = self.locale)
+
     def system_instruction_part_2(self, message_separator: object) -> str:
         return self._i18n.get('system_instruction_part_2', locale = self.locale, message_separator = message_separator)
 
     def system_instruction_part_3(self, message_separator: object) -> str:
         return self._i18n.get('system_instruction_part_3', locale = self.locale, message_separator = message_separator)
+
+    def system_instruction_channel_lore(self) -> str:
+        return self._i18n.get('system_instruction_channel_lore', locale = self.locale)
