@@ -42,9 +42,21 @@ class TaskSchedulerRepositoryImpl:
                     cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def get_state(self, key: str) -> str | None:
-        entry = self._states.get(key)
-        return entry.kind if entry else None
+    async def cancel_task(
+        self,
+        key: str,
+    ) -> None:
+        state = self._states.get(key)
+        """Аккуратно отменяет задачу и ждёт её завершения."""
+        if state:
+            task = state.task
+            if task and not task.done():
+                task.cancel()
+                try:
+                    await task
+                except (asyncio.CancelledError, Exception):
+                    pass
+            self._states.pop(key, None)
 
     async def on_message(
         self,

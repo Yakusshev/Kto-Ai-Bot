@@ -136,6 +136,8 @@ async def __check_message_role(
             "MESSAGE NOT_BY_USER: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
         )
+        scheduler = TaskSchedulerRepositoryImpl()
+        await scheduler.cancel_task(key = str(message.chat.id))
         await chat_service.save_message(
             message = message,
             text_content = text_content,
