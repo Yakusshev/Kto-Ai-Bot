@@ -33,6 +33,8 @@ class GetSystemInstructionUseCase():
                 .format_time(message_datetime = moscow_now),
         )
 
+        part_ignore = self.strings.system_instruction_ignore()
+
         part2 = self.strings.system_instruction_part_2(
             message_separator = NEXT_MESSAGE_SEPARATOR,
         )
@@ -40,7 +42,10 @@ class GetSystemInstructionUseCase():
         part3 = self.strings.system_instruction_part_3(
             message_separator = NEXT_MESSAGE_SEPARATOR,
         )
-        return f"{part1}\n{part2}\n{part3}"
+
+        part_channel = self.strings.system_instruction_channel_lore()
+
+        return f"{part1}\n{part_ignore}\n{part2}\n{part3}\n{part_channel}"
 
     @staticmethod
     def format_time(

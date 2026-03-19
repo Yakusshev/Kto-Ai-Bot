@@ -27,13 +27,14 @@ class HandleAiResponseUseCase:
         response: str,
     ) -> List[str]:
 
-        pattern = fr'\n|\n\n|{HandleAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}'
-
         response_no_brackets = HandleAiResponseUseCase\
             .replace_brackets_except_next(response)
 
+        response_no_unicode = HandleAiResponseUseCase\
+            .clean_unicode(response_no_brackets)
+
         response_no_zero_no_tire = re\
-            .sub(r'\b0\b', '', response_no_brackets)\
+            .sub(r'\b0\b', '', response_no_unicode)\
             .replace('—', '-')\
             .replace('–', '-')
         response_no_space = re\
@@ -42,6 +43,7 @@ class HandleAiResponseUseCase:
         response_no_repeat = HandleAiResponseUseCase \
             .fix_looping_response_advanced(text = response_no_space)
 
+        pattern = fr'\n+|{HandleAiResponseUseCase.NEXT_MESSAGE_TAG_REGEX}'
         lines: list[str] = re.split(pattern, response_no_repeat)
 
         logger.info(f'split_messages lines = {lines}')
@@ -146,5 +148,14 @@ class HandleAiResponseUseCase:
         logger.info(f'fix_looping_response_advanced output = {output}')
 
         return output
+
+    @staticmethod
+    def clean_unicode(raw_text: str) -> str:
+        try:
+            return raw_text.encode('latin-1')\
+                .decode(encoding = 'unicode_escape', errors = 'ignore')
+        except Exception as e:
+            logger.error(e)
+            return raw_text
 
 logger = get_logger(HandleAiResponseUseCase.__name__)

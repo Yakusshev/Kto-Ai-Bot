@@ -1,5 +1,3 @@
-import logging
-
 from aiogram import Router, F, Bot
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -21,6 +19,11 @@ async def __handle_stop(
 ):
     logger.info(f"Handling stop command: {message}")
 
+    await bot.send_message(
+        chat_id = message.chat.id,
+        text = strings.admin_stop_command_received(),
+    )
+
     result = await user_bot_manager.stop()
 
     await bot.send_message(
@@ -37,6 +40,11 @@ async def __handle_start(
     strings: Strings,
 ):
     logger.info(f"Handling start command: {message}")
+
+    await bot.send_message(
+        chat_id = message.chat.id,
+        text = strings.admin_start_command_received(),
+    )
 
     result = await user_bot_manager.start()
 

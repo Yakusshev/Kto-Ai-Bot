@@ -28,7 +28,7 @@ anyio==4.12.1
     #   openai
 async-timeout==5.0.1
     # via aiohttp
-attrs==25.4.0
+attrs==26.1.0
     # via
     #   aiohttp
     #   fluent-runtime
@@ -44,7 +44,7 @@ certifi==2026.2.25
     #   requests
 cffi==2.0.0
     # via cryptography
-charset-normalizer==3.4.5
+charset-normalizer==3.4.6
     # via requests
 click==8.1.8
     # via aiogram-i18n
@@ -116,7 +116,7 @@ pydantic==2.11.10
     #   openai
 pydantic-core==2.33.2
     # via pydantic
-pyjwt==2.11.0
+pyjwt==2.12.1
     # via yandexcloud
 python-dotenv==1.2.1
     # via -r requirements.txt
@@ -144,6 +144,7 @@ typing-extensions==4.15.0
     #   openai
     #   pydantic
     #   pydantic-core
+    #   pyjwt
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
