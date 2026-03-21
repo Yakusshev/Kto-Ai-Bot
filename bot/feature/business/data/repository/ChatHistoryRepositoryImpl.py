@@ -9,7 +9,7 @@ from typing import cast
 import ydb
 from aiogram.enums import MessageOriginType
 from beartype import beartype
-from ydb import Driver, SessionPool
+from ydb import Driver, SessionPool, Session, BulkUpsertColumns
 
 from bot.core.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
 from bot.feature.business.data.ForwardOriginRequest import \
@@ -183,6 +183,7 @@ class ChatHistoryRepositoryImpl:
             if DEBUG_MODE_DATABASE \
             else ChatHistoryConst.TABLE_NAME_RELEASE
         self.driver = driver
+        self.column_types = self.create_column_types()
 
     async def get_session_data(self, chat_id: int) -> tuple[SaveMessageModel, ...]:
         query = f"""
@@ -192,7 +193,7 @@ class ChatHistoryRepositoryImpl:
             ORDER BY {Column.CREATED_AT} ASC;
         """
 
-        def execute(session) -> tuple[SaveMessageModel, ...]:
+        def execute(session: Session) -> tuple[SaveMessageModel, ...]:
             prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
                 query = prepared_query,
@@ -241,6 +242,7 @@ class ChatHistoryRepositoryImpl:
         message_list: list[SaveMessageModel],
     ) -> None:
         if not message_list:
+            _logger.error("add_text_message_list: message_list is empty")
             return
 
         rows = []
@@ -268,6 +270,26 @@ class ChatHistoryRepositoryImpl:
                 },
             )
 
+        def bulk():
+            max_retries = 5
+            for attempt in range(max_retries):
+                try:
+                    self.driver.table_client.bulk_upsert(
+                        table_path = self.get_table_path(),
+                        rows = rows,
+                        column_types = self.column_types,
+                    )
+                    return
+                except Exception as e:
+                    _logger.error(e)
+                    if attempt == max_retries - 1:
+                        raise
+                    time.sleep(1 * (attempt + 1))
+
+        await asyncio.to_thread(bulk)
+
+    @staticmethod
+    def create_column_types() -> BulkUpsertColumns:
         column_types = ydb.BulkUpsertColumns()
         column_types.add_column(Column.CHAT_ID, ydb.PrimitiveType.Uint64)
         column_types.add_column(Column.CREATED_AT, ydb.PrimitiveType.Timestamp)
@@ -295,22 +317,7 @@ class ChatHistoryRepositoryImpl:
             Column.FORWARD_ORIGIN_JSON, ydb.OptionalType(ydb.PrimitiveType.Json),
         )
 
-        def bulk():
-            max_retries = 3
-            for attempt in range(max_retries):
-                try:
-                    self.driver.table_client.bulk_upsert(
-                        table_path = self.get_table_path(),
-                        rows = rows,
-                        column_types = column_types,
-                    )
-                    return
-                except Exception:
-                    if attempt == max_retries - 1:
-                        raise
-                    time.sleep(1 * (attempt + 1))
-
-        await asyncio.to_thread(bulk)
+        return column_types
 
     def get_table_path(self) -> str:
         return f"{YDB_PATH}/{self.table_name}"

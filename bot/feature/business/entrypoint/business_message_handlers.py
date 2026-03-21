@@ -132,7 +132,7 @@ async def __check_message_role(
 
     if by_assistant:
         # отправлено в ручную
-        logger.warning(
+        logger.info(
             "MESSAGE NOT_BY_USER: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
         )
