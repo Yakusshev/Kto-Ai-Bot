@@ -7,9 +7,9 @@ class SaveMessageUseCase:
 
     def __init__(
         self,
-        session_repository: ChatHistoryRepositoryImpl,
+        chat_history_repository: ChatHistoryRepositoryImpl,
     ):
-        self.session_repository = session_repository
+        self.session_repository = chat_history_repository
 
     async def invoke(
         self,

@@ -158,7 +158,7 @@ class SendAiRequestUseCase:
 
         start_idx = min(index - 1, len(history) - 1)
         for i in range(start_idx, -1, -1):
-            if history[i].role == MessageRole.USER:
+            if history[i].last_message_role == MessageRole.USER:
                 return history[i]
 
         return None

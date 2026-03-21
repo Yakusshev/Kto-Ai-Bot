@@ -4,16 +4,18 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from typing import cast
+from typing import cast, Any, Tuple
 
 import ydb
 from aiogram.enums import MessageOriginType
 from beartype import beartype
 from ydb import Driver, SessionPool, Session, BulkUpsertColumns
+from ydb.convert import ResultSets, ResultSet
 
 from bot.core.domain.const.env_const import DEBUG_MODE_DATABASE, YDB_PATH
 from bot.feature.business.data.ForwardOriginRequest import \
     ForwardOriginRequest
+from bot.feature.business.domain.model.ChatInfoModel import ChatInfoModel
 from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
     MessageRole
 from bot.feature.business.domain.model.ForwardOriginState import (
@@ -195,12 +197,12 @@ class ChatHistoryRepositoryImpl:
 
         def execute(session: Session) -> tuple[SaveMessageModel, ...]:
             prepared_query = session.prepare(query)
-            result_sets = session.transaction().execute(
+            result_sets: list[ResultSet] = session.transaction().execute(
                 query = prepared_query,
                 parameters = {'$chat_id': int(chat_id)},
                 commit_tx = True,
             )
-            rows = result_sets[0].rows
+            rows: list[dict[str, Any]] = result_sets[0].rows
             models = []
             for row in rows:
                 timestamp_micros = row[Column.CREATED_AT]
@@ -319,8 +321,72 @@ class ChatHistoryRepositoryImpl:
 
         return column_types
 
+    async def get_chat_info_tuple(self) -> Tuple[ChatInfoModel, ...]:
+        query = f"""
+            SELECT 
+                {Column.CHAT_ID},
+                {Column.BUSINESS_CONN_ID},
+                msg_count AS {ChatInfo.MESSAGE_COUNT},
+                created_at AS {ChatInfo.LAST_MESSAGE_DATE},
+                role AS {ChatInfo.LAST_MESSAGE_ROLE},
+                content AS {ChatInfo.LAST_MESSAGE_CONTENT}
+            FROM (
+                SELECT 
+                    {Column.CHAT_ID},
+                    {Column.BUSINESS_CONN_ID},
+                    {Column.ROLE},
+                    {Column.CONTENT},
+                    {Column.CREATED_AT},
+                    COUNT(*) OVER (PARTITION BY {Column.CHAT_ID}) AS msg_count,
+                    ROW_NUMBER() OVER (PARTITION BY {Column.CHAT_ID} ORDER BY {Column.CREATED_AT} DESC) AS rn
+                FROM {self.table_name}
+            )
+            WHERE rn = 1
+            ORDER BY {ChatInfo.MESSAGE_COUNT} DESC;
+        """
+
+        def execute(session: Session) -> list:
+            prepared_query = session.prepare(query)
+            result_sets = session.transaction().execute(
+                query = prepared_query,
+                commit_tx = True,
+            )
+            rows = result_sets[0].rows
+            return rows
+
+        result_set: list[ResultSet] = await asyncio.to_thread(
+            self.ydb_session_pool.retry_operation_sync,
+            callee = execute,
+        )
+        rows: list[dict[str, Any]] = result_set[0].rows
+
+        _logger.debug(rows)
+
+        chat_models = [self.to_chat_info_model(chat) for chat in rows]
+
+        return tuple(chat_models)
+
+    @staticmethod
+    def to_chat_info_model(
+        chat_info: dict[str, Any],
+    ) -> ChatInfoModel:
+        return ChatInfoModel(
+            id = chat_info[Column.CHAT_ID],
+            business_connection_id = chat_info[Column.BUSINESS_CONN_ID],
+            message_count = chat_info[ChatInfo.MESSAGE_COUNT],
+            last_message_date = chat_info[ChatInfo.LAST_MESSAGE_DATE],
+            last_message_role = chat_info[ChatInfo.LAST_MESSAGE_ROLE],
+            last_message_content = chat_info[ChatInfo.LAST_MESSAGE_CONTENT],
+        )
+
     def get_table_path(self) -> str:
         return f"{YDB_PATH}/{self.table_name}"
+
+class ChatInfo:
+    MESSAGE_COUNT = "message_count"
+    LAST_MESSAGE_DATE = "last_message_date"
+    LAST_MESSAGE_ROLE = "last_message_role"
+    LAST_MESSAGE_CONTENT = "last_message_content"
 
 
 _logger = get_logger(ChatHistoryRepositoryImpl.__name__)

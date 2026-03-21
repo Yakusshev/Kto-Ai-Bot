@@ -78,6 +78,7 @@ async def start_admin_bot():
     ).setup(dispatcher = admin_bot_manager.dispatcher)
 
     admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
+    admin_bot_manager.dispatcher.message.middleware(ChatServiceMiddleware())
 
     admin_bot_manager.dispatcher.include_router(router = admin_router)
 

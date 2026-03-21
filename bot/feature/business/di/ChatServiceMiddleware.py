@@ -11,6 +11,8 @@ from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
+from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
+    GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
     GetForwardOriginTextForAiUseCase
 from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
@@ -37,7 +39,7 @@ class ChatServiceMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        session_repository = ChatHistoryRepositoryImpl(
+        chat_history_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
             driver = self.driver,
         )
@@ -48,7 +50,7 @@ class ChatServiceMiddleware(BaseMiddleware):
             generate_ai_response_scenario = GenerateAiResponseScenario(
                 handle_ai_response_use_case = HandleAiResponseUseCase(),
                 send_ai_request_use_case = SendAiRequestUseCase(
-                    session_repository = session_repository,
+                    session_repository = chat_history_repository,
                     ai_repository = get_llm_repository(),
                     getForwardOriginUseCase = GetForwardOriginTextForAiUseCase(
                         strings = strings,
@@ -59,9 +61,13 @@ class ChatServiceMiddleware(BaseMiddleware):
                 ),
             ),
             save_message_use_case = SaveMessageUseCase(
-                session_repository = session_repository,
+                chat_history_repository = chat_history_repository,
             ),
             strings = strings,
+        )
+
+        data["get_chat_info_tuple_use_case"] = GetChatInfoTupleUseCase(
+            chat_history_repository = chat_history_repository,
         )
 
         return await handler(event, data)
