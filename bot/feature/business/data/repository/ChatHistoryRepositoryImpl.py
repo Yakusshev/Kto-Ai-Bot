@@ -52,7 +52,6 @@ class Column:
     FORWARD_ORIGIN_JSON = "FORWARD_ORIGIN_JSON"
 
 
-
 def _serialize_forward_origin(
     origin: ForwardOriginState | None,
 ) -> ForwardOriginRequest:
@@ -345,14 +344,13 @@ class ChatHistoryRepositoryImpl:
             ORDER BY {ChatInfo.MESSAGE_COUNT} DESC;
         """
 
-        def execute(session: Session) -> list:
+        def execute(session: Session) -> list[ResultSet]:
             prepared_query = session.prepare(query)
             result_sets = session.transaction().execute(
                 query = prepared_query,
                 commit_tx = True,
             )
-            rows = result_sets[0].rows
-            return rows
+            return result_sets
 
         result_set: list[ResultSet] = await asyncio.to_thread(
             self.ydb_session_pool.retry_operation_sync,
@@ -370,17 +368,25 @@ class ChatHistoryRepositoryImpl:
     def to_chat_info_model(
         chat_info: dict[str, Any],
     ) -> ChatInfoModel:
+        timestamp_micros = chat_info[ChatInfo.LAST_MESSAGE_DATE]
+
         return ChatInfoModel(
             id = chat_info[Column.CHAT_ID],
             business_connection_id = chat_info[Column.BUSINESS_CONN_ID],
             message_count = chat_info[ChatInfo.MESSAGE_COUNT],
-            last_message_date = chat_info[ChatInfo.LAST_MESSAGE_DATE],
-            last_message_role = chat_info[ChatInfo.LAST_MESSAGE_ROLE],
+            last_message_date = datetime.datetime.fromtimestamp(
+                timestamp = timestamp_micros / 1_000_000,
+                tz = datetime.timezone.utc,
+            ),
+            last_message_role = MessageRole.ASSISTANT
+            if chat_info[ChatInfo.LAST_MESSAGE_ROLE] == MessageRole.ASSISTANT.value
+            else MessageRole.USER,
             last_message_content = chat_info[ChatInfo.LAST_MESSAGE_CONTENT],
         )
 
     def get_table_path(self) -> str:
         return f"{YDB_PATH}/{self.table_name}"
+
 
 class ChatInfo:
     MESSAGE_COUNT = "message_count"
