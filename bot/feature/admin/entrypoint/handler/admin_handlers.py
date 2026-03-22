@@ -59,28 +59,7 @@ async def __handle_start(
         if result else strings.admin_text_bot_start_failure(),
     )
 
-@admin_router.message(Command("users"), IsAdminUserFilter())
-async def __handle_users(
-    message: Message,
-    bot: Bot,
-    get_chat_info_tuple_use_case: GetChatInfoTupleUseCase,
-):
-    logger.info(f"Handling users command: {message}")
-
-    try:
-        result = await get_chat_info_tuple_use_case.invoke()
-    except Exception as e:
-        raise e
-        logger.error(e)
-        result = str(e)
-
-    for text in result:
-        await bot.send_message(
-            chat_id = message.chat.id,
-            text = text,
-        )
-
-@admin_router.message(Command("users_match"), IsAdminUserFilter())
+@admin_router.message(Command("update_users"), IsAdminUserFilter())
 async def __handle_users_match(
     message: Message,
     bot: Bot,
@@ -90,6 +69,22 @@ async def __handle_users_match(
     logger.info(f"Handling users command: {message}")
 
     await update_user_table_from_chat_history_use_case.invoke()
+
+    user_info_list = await get_user_list_use_case.invoke()
+
+    for text in user_info_list:
+        await bot.send_message(
+            chat_id = message.chat.id,
+            text = text,
+        )
+
+@admin_router.message(Command("users"), IsAdminUserFilter())
+async def __handle_users_match(
+    message: Message,
+    bot: Bot,
+    get_user_list_use_case: GetUserListUseCase,
+):
+    logger.info(f"Handling users command: {message}")
 
     user_info_list = await get_user_list_use_case.invoke()
 

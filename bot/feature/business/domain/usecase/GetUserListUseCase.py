@@ -35,16 +35,16 @@ class GetUserListUseCase:
             user = users_dict.get(chat_info.id)
 
             if user:
-                result += f"username = {user.username}\n"
+                result += f"username = @{user.username}\n"
                 result += f"first_name + last_name = [{user.first_name}][{user.last_name}]\n"
                 result = self.add(body = result, data = user.bio, title = "bio")
                 result = self.add(body = result, data = user.birthdate, title = "birthdate")
                 result = self.add(body = result, data = user.update_date, title = "update_date")
-                result = self.add(body = result, data = user.channel_username, title = "channel_username")
+                result += f"channel_username = @{user.channel_username}\n"
                 result = self.add(body = result, data = user.channel_title, title = "channel_title")
                 result = self.add(body = result, data = user.channel_id, title = "channel_id")
             else:
-                result += f"user не найден"
+                result += f"user не найден\n"
 
 
             result += f"message_count = {chat_info.message_count}\n"
