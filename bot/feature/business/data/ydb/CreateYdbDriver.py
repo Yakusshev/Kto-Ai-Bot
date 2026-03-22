@@ -27,7 +27,7 @@ def create_ydb_driver() -> Driver:
 
     # Ожидаем готовности драйвера (таймаут 5 секунд)
     try:
-        driver.wait(fail_fast = False, timeout = 15)
+        driver.wait(fail_fast = True, timeout = 10)
         print("YDB: Драйвер успешно инициализирован")
     except TimeoutError:
         print("YDB: Ошибка инициализации драйвера (timeout)")

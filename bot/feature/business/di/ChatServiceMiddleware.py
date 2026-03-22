@@ -4,15 +4,24 @@ from typing import Callable, Dict, Any, Awaitable
 import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
+from ydb import SessionPool
+from ydb.aio import Driver
 
+from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
+    TelegramRemoteDataSource
+from bot.feature.business.data.datasource.UserRemoteDataSource import \
+    UserRemoteDataSource
 from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
+from bot.feature.business.data.repository.UserRepositoryImpl import \
+    UserRepositoryImpl
 from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
-from bot.feature.business.domain.usecase.GetChatHistoryUserIdListUseCase import \
-    GetChatHistoryUserIdListUseCase
+from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
+from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
+    UpdateUserTableFromChatHistoryUseCase
 from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
@@ -41,6 +50,7 @@ class ChatServiceMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
+
         chat_history_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
             driver = self.driver,
@@ -72,8 +82,28 @@ class ChatServiceMiddleware(BaseMiddleware):
             chat_history_repository = chat_history_repository,
         )
 
-        data["get_chat_history_user_id_list_use_case"] = GetChatHistoryUserIdListUseCase(
-            chat_history_repository = chat_history_repository,
-        )
+        user_remote_data_source = \
+            UserRemoteDataSource(
+                ydb_session_pool = self.ydb_session_pool,
+                driver = self.driver,
+            )
+
+        user_repository_impl = \
+            UserRepositoryImpl(
+                user_remote_data_source = user_remote_data_source,
+                telegram_remote_data_source = TelegramRemoteDataSource(),
+            )
+
+        data["update_user_table_from_chat_history_use_case"] = \
+            UpdateUserTableFromChatHistoryUseCase(
+                chat_history_repository = chat_history_repository,
+                user_repository = user_repository_impl,
+            )
+
+        data["get_user_list_use_case"] = \
+            GetUserListUseCase(
+                user_repository = user_repository_impl,
+                chat_history_repository = chat_history_repository,
+            )
 
         return await handler(event, data)

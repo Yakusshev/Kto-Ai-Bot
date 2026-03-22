@@ -25,6 +25,7 @@ from bot.feature.business.domain.model.ForwardOriginState import (
     ForwardOriginChatModel,
     ForwardOriginChannelModel,
 )
+from bot.feature.business.domain.util.datetime_util import moscow_datetime
 from bot.util.log_util import get_logger
 
 
@@ -374,10 +375,7 @@ class ChatHistoryRepositoryImpl:
             id = chat_info[Column.CHAT_ID],
             business_connection_id = chat_info[Column.BUSINESS_CONN_ID],
             message_count = chat_info[ChatInfo.MESSAGE_COUNT],
-            last_message_date = datetime.datetime.fromtimestamp(
-                timestamp = timestamp_micros / 1_000_000,
-                tz = datetime.timezone.utc,
-            ),
+            last_message_date = moscow_datetime(micros = timestamp_micros),
             last_message_role = MessageRole.ASSISTANT
             if chat_info[ChatInfo.LAST_MESSAGE_ROLE] == MessageRole.ASSISTANT.value
             else MessageRole.USER,
