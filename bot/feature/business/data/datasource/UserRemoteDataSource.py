@@ -15,7 +15,13 @@ class Column:
     USERNAME = "username"
     FIRST_NAME = "first_name"
     LAST_NAME = "last_name"
+    BIO = "bio"
+    BIRTHDATE = "birthdate"
     BUSINESS_CONNECTION_ID = "business_connection_id"
+    UPDATE_DATE = "update_date" #Последнее время обновления информации о пользователе
+    CHANNEL_TITLE = "channel_title"
+    CHANNEL_USERNAME = "channel_username"
+    CHANNEL_ID = "channel_id"
 
 
 class UserRemoteDataSource:
@@ -41,7 +47,13 @@ class UserRemoteDataSource:
                 {Column.USERNAME} Utf8?,
                 {Column.FIRST_NAME} Utf8 NOT NULL,
                 {Column.LAST_NAME} Utf8?,
+                {Column.BIO} Utf8?,
+                {Column.BIRTHDATE} Timestamp?,
                 {Column.BUSINESS_CONNECTION_ID} Utf8?,
+                {Column.UPDATE_DATE} Timestamp,
+                {Column.CHANNEL_TITLE} Utf8?,
+                {Column.CHANNEL_USERNAME} Utf8?,
+                {Column.CHANNEL_ID} Int64?,
                 PRIMARY KEY (id)
             );
         """

@@ -4,6 +4,8 @@ from aiogram.types import Message
 
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
+from bot.feature.business.domain.usecase.GetChatHistoryUserIdListUseCase import \
+    GetChatHistoryUserIdListUseCase
 from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
     GetChatInfoTupleUseCase
 from bot.resource.Strings import Strings
@@ -57,7 +59,7 @@ async def __handle_start(
     )
 
 @admin_router.message(Command("users"), IsAdminUserFilter())
-async def __handle_start(
+async def __handle_users(
     message: Message,
     bot: Bot,
     get_chat_info_tuple_use_case: GetChatInfoTupleUseCase,
@@ -71,7 +73,23 @@ async def __handle_start(
         logger.error(e)
         result = str(e)
 
-    await bot.send_message(
-        chat_id = message.chat.id,
-        text = result,
-    )
+    for text in result:
+        await bot.send_message(
+            chat_id = message.chat.id,
+            text = text,
+        )
+
+@admin_router.message(Command("users_match"), IsAdminUserFilter())
+async def __handle_users_match(
+    message: Message,
+    bot: Bot,
+    get_chat_history_user_id_list_use_case: GetChatHistoryUserIdListUseCase,
+):
+    logger.info(f"Handling users command: {message}")
+
+    id_list = await get_chat_history_user_id_list_use_case.invoke()
+
+    chat = await user_bot_manager.bot.get_chat(id_list[0])
+
+    logger.debug(f"chat = {chat}")
+

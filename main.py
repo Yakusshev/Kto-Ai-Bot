@@ -9,7 +9,7 @@ from aiogram_i18n.cores import FluentRuntimeCore
 
 from bot.core.domain.const.env_const import DEBUG_MODE_START_POLLING
 from bot.feature.admin import admin_bot_manager
-from bot.feature.admin.entrypoint.handler.handlers import admin_router
+from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
 from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
@@ -23,8 +23,10 @@ import logging.config
 async def main():
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    await start_admin_bot()
-    await prepare_business_bot()
+    chat_service_middleware = ChatServiceMiddleware()
+
+    await start_admin_bot(chat_service_middleware)
+    await prepare_business_bot(chat_service_middleware)
 
     loop = asyncio.get_event_loop()
     while True:
@@ -34,7 +36,9 @@ async def main():
             break
 
 
-async def prepare_business_bot():
+async def prepare_business_bot(
+    chat_service_middleware: ChatServiceMiddleware,
+):
     I18nMiddleware(
         core = GracefulShutdownFluentRuntimeCore(
             path = "bot/resource/locales/{locale}",
@@ -44,7 +48,7 @@ async def prepare_business_bot():
 
     user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
 
-    user_bot_manager.dispatcher.business_message.middleware(ChatServiceMiddleware())
+    user_bot_manager.dispatcher.business_message.middleware(chat_service_middleware)
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
     @user_bot_manager.dispatcher.business_connection()
@@ -69,7 +73,9 @@ async def prepare_business_bot():
         await user_bot_manager.start()
 
 
-async def start_admin_bot():
+async def start_admin_bot(
+    chat_service_middleware: ChatServiceMiddleware,
+):
     I18nMiddleware(
         core = FluentRuntimeCore(
             path = "bot/resource/locales/{locale}",
@@ -78,7 +84,7 @@ async def start_admin_bot():
     ).setup(dispatcher = admin_bot_manager.dispatcher)
 
     admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
-    admin_bot_manager.dispatcher.message.middleware(ChatServiceMiddleware())
+    admin_bot_manager.dispatcher.message.middleware(chat_service_middleware)
 
     admin_bot_manager.dispatcher.include_router(router = admin_router)
 

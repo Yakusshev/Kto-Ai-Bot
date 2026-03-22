@@ -11,6 +11,8 @@ from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
+from bot.feature.business.domain.usecase.GetChatHistoryUserIdListUseCase import \
+    GetChatHistoryUserIdListUseCase
 from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
@@ -67,6 +69,10 @@ class ChatServiceMiddleware(BaseMiddleware):
         )
 
         data["get_chat_info_tuple_use_case"] = GetChatInfoTupleUseCase(
+            chat_history_repository = chat_history_repository,
+        )
+
+        data["get_chat_history_user_id_list_use_case"] = GetChatHistoryUserIdListUseCase(
             chat_history_repository = chat_history_repository,
         )
 
