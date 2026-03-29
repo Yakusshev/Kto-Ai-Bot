@@ -1,11 +1,8 @@
-from datetime import datetime
 from typing import Callable, Dict, Any, Awaitable
 
 import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
-from ydb import SessionPool
-from ydb.aio import Driver
 
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
@@ -19,30 +16,32 @@ from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
-from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
-from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
-    UpdateUserTableFromChatHistoryUseCase
 from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
     GetForwardOriginTextForAiUseCase
-from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
-    HandleAiResponseUseCase
-from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
-    SendAiRequestUseCase
 from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
     GetSystemInstructionUseCase
+from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
+from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
+    HandleAiResponseUseCase
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.feature.business.entrypoint.ChatService import ChatService
+from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
+    SendAiRequestUseCase
+from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
+    UpdateUserTableFromChatHistoryUseCase
+from bot.feature.business.entrypoint.service.ChatService import ChatService
 
 
 class ChatServiceMiddleware(BaseMiddleware):
 
     def __init__(
         self,
+        driver: ydb.Driver,
+        ydb_session_pool: ydb.SessionPool,
     ):
-        self.driver = create_ydb_driver()
-        self.ydb_session_pool = ydb.SessionPool(self.driver)
+        self.driver = driver
+        self.ydb_session_pool = ydb_session_pool
 
     async def __call__(
         self,
@@ -50,7 +49,6 @@ class ChatServiceMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-
         chat_history_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
             driver = self.driver,
@@ -107,3 +105,4 @@ class ChatServiceMiddleware(BaseMiddleware):
             )
 
         return await handler(event, data)
+

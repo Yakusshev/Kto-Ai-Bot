@@ -38,3 +38,14 @@ class BotRepositoryImpl:
                 .get_business_connection_owner(id = id)
             self._local_data_source.set_owner(owner = owner)
             return owner
+
+    async def send_typing_chat_action(
+        self,
+        chat_id: int,
+        business_connection_id: str,
+    ):
+        self._telegram_remote_data_source.send_chat_action(
+            chat_id = chat_id,
+            action = "typing",
+            business_connection_id = business_connection_id,
+        )

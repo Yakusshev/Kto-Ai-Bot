@@ -3,6 +3,7 @@ import asyncio
 import locale
 import logging
 
+import ydb
 from aiogram import Dispatcher, types
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
@@ -11,7 +12,9 @@ from bot.core.domain.const.env_const import DEBUG_MODE_START_POLLING
 from bot.feature.admin import admin_bot_manager
 from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
+from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
+from bot.feature.business.di.ReminderServiceProvider import ReminderServiceProvider
 from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.entrypoint.business_message_handlers import business_router
 from bot.resource.GracefulShutdownFluentRuntimeCore import \
@@ -23,15 +26,31 @@ import logging.config
 async def main():
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 
-    chat_service_middleware = ChatServiceMiddleware()
+    driver = create_ydb_driver()
+    ydb_session_pool = ydb.SessionPool(driver)
+
+    chat_service_middleware = ChatServiceMiddleware(
+        driver = driver,
+        ydb_session_pool = ydb_session_pool,
+    )
 
     await start_admin_bot(chat_service_middleware)
     await prepare_business_bot(chat_service_middleware)
 
+    reminder_service = ReminderServiceProvider.create(
+        driver = driver,
+        ydb_session_pool = ydb_session_pool,
+    )
+
+    if DEBUG_MODE_START_POLLING:
+        asyncio.create_task(reminder_service.invoke())
+
     loop = asyncio.get_event_loop()
     while True:
         user_input = await loop \
-            .run_in_executor(None, input, "Ожидание ввода\n")
+            .run_in_executor(None, input, "Ожидание ввода exit\n")
+        if user_input.lower == "remind":
+            asyncio.create_task(reminder_service.invoke())
         if user_input.lower() == "exit":
             break
 
@@ -39,12 +58,13 @@ async def main():
 async def prepare_business_bot(
     chat_service_middleware: ChatServiceMiddleware,
 ):
-    I18nMiddleware(
+    i18n = I18nMiddleware(
         core = GracefulShutdownFluentRuntimeCore(
             path = "bot/resource/locales/{locale}",
         ),
         default_locale = "ru",
-    ).setup(dispatcher = user_bot_manager.dispatcher)
+    )
+    i18n.setup(dispatcher = user_bot_manager.dispatcher)
 
     user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
 

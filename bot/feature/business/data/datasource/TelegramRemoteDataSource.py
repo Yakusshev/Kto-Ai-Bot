@@ -42,4 +42,16 @@ class TelegramRemoteDataSource:
             full_name = connection.user.full_name,
         )
 
+    def send_chat_action(
+        self,
+        chat_id: int,
+        action: str,
+        business_connection_id: str,
+    ):
+        self.bot.send_chat_action(
+            chat_id = chat_id,
+            action = action,
+            business_connection_id = business_connection_id,
+        )
+
 

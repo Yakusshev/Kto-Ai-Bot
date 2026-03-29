@@ -42,6 +42,9 @@ class TaskSchedulerRepositoryImpl:
                     cls.__instance = super().__new__(cls)
         return cls.__instance
 
+    def is_task_exist(self, key: str) -> bool:
+        return key in self._states
+
     async def cancel_task(
         self,
         key: str,
@@ -104,6 +107,51 @@ class TaskSchedulerRepositoryImpl:
 
             # Прочитать новое сообщение сразу
             await read_message_factory()
+
+            entry = _StateEntry(
+                kind = "answering",
+                task = asyncio.create_task(asyncio.sleep(0)),  # placeholder
+                started_at = datetime.now(),
+                latest_read_coro = None,
+            )
+            self._states[key] = entry
+            entry.task = asyncio.create_task(
+                self._answering_flow(key, answer_factory),
+            )
+
+    async def on_remind(
+        self,
+        key: str,
+        answer_factory: Callable[[], Awaitable],
+    ) -> None:
+        """
+        Args:
+            key:                 Идентификатор чата
+            answer_factory:      Фабрика корутины генерации ответа
+        """
+
+        state = self._states.get(key)
+
+        async def empty():
+            pass
+
+        if state is None:
+            # Холодный старт: запускаем фазу подготовки (ожидание 10-30 сек)
+            entry = _StateEntry(
+                kind = "answering",
+                task = asyncio.create_task(asyncio.sleep(0)),  # placeholder
+                started_at = datetime.now(),
+                latest_read_coro = empty,
+            )
+            self._states[key] = entry
+            entry.task = asyncio.create_task(
+                self._answering_flow(key, answer_factory),
+            )
+
+        elif state.kind == "answering":
+            # Бот уже печатает — отменяем текущий ответ и отвечаем заново
+            # на все сообщения (включая только что пришедшее, которое уже в БД)
+            await self._cancel_task(state.task)
 
             entry = _StateEntry(
                 kind = "answering",
