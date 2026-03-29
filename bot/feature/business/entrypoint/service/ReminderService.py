@@ -3,12 +3,13 @@ from asyncio import Event, Task
 
 from aiogram.types import Message
 
+from bot.feature.admin.domain.CommandConst import CommandConst
 from bot.feature.business.data.repository.BotRepositoryImpl import BotRepositoryImpl
 from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.feature.business.domain.model.InactiveChatModel import InactiveChatModel
 from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
     MessageRole
+from bot.feature.business.domain.model.UserChatModel import UserChatModel
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
     UserMessageInfoForAiModel
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
@@ -42,17 +43,48 @@ class ReminderService:
         self.typing_loop_use_case = typing_loop_use_case
         self.save_message_use_case = save_message_use_case
 
-    async def invoke(self):
+    async def invoke(
+        self,
+        args: str,
+    ) -> bool:
 
+        if args == CommandConst.REMIND_ALL:
+            await self.remind_all()
+            return True
+        else:
+            return await self.remind(int(args))
+
+    async def remind(
+        self,
+        id: int,
+    ) -> bool:
         inactive_chat_list = await self.get_inactive_chat_list_use_case.invoke()
 
-        # for chat in inactive_chat_list:
+        user_chat = next(
+            (user_chat
+             for user_chat in inactive_chat_list
+             if user_chat.chat_info_model.id == int(id)
+             ),
+            None,
+        )
 
-        chat = inactive_chat_list[0]
+        if user_chat:
+            await self.remind_task(chat = user_chat)
+            return True
+        else:
+            return False
 
-        await self.remind_task(chat = chat)
+    async def remind_all(self):
+        inactive_chat_list = await self.get_inactive_chat_list_use_case.invoke()
 
-    async def remind_task(self, chat: InactiveChatModel):
+        task_list = [
+            self.remind_task(chat = user_chat) for user_chat in inactive_chat_list
+        ]
+
+        for task in asyncio.as_completed(task_list):
+            await task
+
+    async def remind_task(self, chat: UserChatModel):
 
         task_key = str(chat.chat_info_model.id)
 
@@ -100,22 +132,21 @@ class ReminderService:
                             )
                             answer_message_list.append(sent)
                     except Exception as e:
-                        logger.error(
-                            f"__answer_message EXCEPTION\n"
+                        _logger.error(
+                            f"remind_task EXCEPTION\n"
                             f"id = {chat.chat_info_model.id}\n"
                             f"chat = {chat}\n"
                             f"e = {e}",
                         )
                     except asyncio.CancelledError as canceled_error:
                         raise canceled_error
-
             except asyncio.CancelledError:
                 await self.complete_answer(
                     answer_message_list = answer_message_list,
                     stop_typing = stop_typing,
                     typing_task = typing_task,
                 )
-                logger.info("__answer_message отменён: chat_id=%s", message_chat_id)
+                _logger.info("remind_task отменён: chat_id=%s", message_chat_id)
                 raise
 
             finally:
@@ -124,6 +155,7 @@ class ReminderService:
                     stop_typing = stop_typing,
                     typing_task = typing_task,
                 )
+                _logger.info(f"remind_task completed for id = {chat.chat_info_model.id}; {chat}")
 
         await self.task_scheduler.on_remind(
             key = task_key,
@@ -166,7 +198,7 @@ class ReminderService:
             if save_message_model:
                 save_message_model_list.append(save_message_model)
             else:
-                logger.warning(
+                _logger.warning(
                     f"save_message: пустой text_content, message = {message}",
                 )
 
@@ -174,4 +206,5 @@ class ReminderService:
             save_message_model_list = save_message_model_list,
         ),
 
-logger = get_logger(TypingLoopUseCase.__name__)
+
+_logger = get_logger(TypingLoopUseCase.__name__)

@@ -5,6 +5,6 @@ from bot.feature.business.domain.model.UserModel import UserModel
 
 
 @dataclass(frozen = True)
-class InactiveChatModel:
-    user_model: UserModel
+class UserChatModel:
+    user_model: UserModel | None
     chat_info_model: ChatInfoModel

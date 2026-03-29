@@ -4,7 +4,7 @@ from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
 from bot.feature.business.data.repository.UserRepositoryImpl import \
     UserRepositoryImpl
-from bot.feature.business.domain.model.InactiveChatModel import InactiveChatModel
+from bot.feature.business.domain.model.UserChatModel import UserChatModel
 from bot.feature.business.domain.model.UserModel import UserModel
 from bot.feature.business.domain.util.datetime_util import moscow_datetime
 from bot.util.log_util import get_logger
@@ -20,14 +20,14 @@ class GetInactiveChatListUseCase:
         self.chat_history_repository = chat_history_repository
         self._user_repository = user_repository
 
-    async def invoke(self) -> list[InactiveChatModel]:
+    async def invoke(self) -> list[UserChatModel]:
 
         user_tuple = await self._user_repository.get_all_users()
         chat_info_tuple = await self.chat_history_repository.get_chat_info_tuple()
 
         users_dict: dict[int, UserModel] = {user.id: user for user in user_tuple}
 
-        result_list: list[InactiveChatModel] = []
+        result_list: list[UserChatModel] = []
         for chat_info_model in chat_info_tuple:
 
             now = moscow_datetime(datetime.now().microsecond)  # Текущее время
@@ -36,13 +36,14 @@ class GetInactiveChatListUseCase:
 
             # if 16 < diff_in_hours < 48:
             user = users_dict.get(chat_info_model.id)
-            if user:
-                result_list.append(
-                    InactiveChatModel(
-                        user_model = user,
-                        chat_info_model = chat_info_model,
-                    )
+
+            result_list.append(
+                UserChatModel(
+                    user_model = user,
+                    chat_info_model = chat_info_model,
                 )
+            )
+
 
         _logger.debug(f"invoke: {result_list}")
 

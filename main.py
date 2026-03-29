@@ -37,21 +37,10 @@ async def main():
     await start_admin_bot(chat_service_middleware)
     await prepare_business_bot(chat_service_middleware)
 
-    reminder_service = await ReminderServiceProvider.create(
-        driver = driver,
-        ydb_session_pool = ydb_session_pool,
-    )
-
-    if DEBUG_MODE_START_POLLING:
-        asyncio.create_task(reminder_service.invoke())
-
     loop = asyncio.get_event_loop()
     while True:
         user_input = await loop \
             .run_in_executor(None, input, "Ожидание ввода команды\n")
-        if user_input.lower() == "remind":
-            print("remind command received")
-            asyncio.create_task(reminder_service.invoke())
         if user_input.lower() == "exit":
             print("exit command received")
             break

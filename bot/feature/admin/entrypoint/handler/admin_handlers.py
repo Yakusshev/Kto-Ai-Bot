@@ -1,14 +1,18 @@
 from aiogram import Router, Bot
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 
+from bot.feature.admin.domain.CommandConst import CommandConst
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
 from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
     GetChatInfoTupleUseCase
+from bot.feature.business.domain.usecase.GetRemindInfoTextScenario import \
+    GetRemindInfoTextScenario
 from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
 from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
     UpdateUserTableFromChatHistoryUseCase
+from bot.feature.business.entrypoint.service.ReminderService import ReminderService
 from bot.resource.Strings import Strings
 from bot.util.log_util import get_logger
 
@@ -93,4 +97,41 @@ async def __handle_users_match(
             chat_id = message.chat.id,
             text = text,
         )
+
+@admin_router.message(
+    Command(CommandConst.REMIND),
+    IsAdminUserFilter(),
+)
+async def __handle_users_match(
+    message: Message,
+    bot: Bot,
+    command: CommandObject,
+    get_remind_info_text_scenario: GetRemindInfoTextScenario,
+    reminder_service: ReminderService
+):
+    logger.info(f"Handling users command: {message}")
+
+    args = command.args
+
+    if not args:
+        # Если аргументов нет, можно вернуть общий список или ошибку
+        user_info_list = await get_remind_info_text_scenario.invoke()
+
+        for text in user_info_list:
+            await bot.send_message(
+                chat_id = message.chat.id,
+                text = text,
+            )
+    else:
+
+        await reminder_service.invoke()
+        # Разбиваем строку по пробелам, если нужно обработать сразу несколько ID
+
+        # Здесь логика фильтрации: либо передай user_ids в UseCase,
+        # либо отфильтруй результат на месте
+        all_users = await get_user_list_use_case.invoke()
+        user_info_list = [u for u in all_users if any(uid in u for uid in user_ids)]
+
+    user_info_list = await get_user_list_use_case.invoke()
+
 

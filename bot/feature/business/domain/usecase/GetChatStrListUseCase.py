@@ -1,8 +1,5 @@
-from typing import Tuple
-
 from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
-from bot.feature.business.domain.model.ChatInfoModel import ChatInfoModel
 from bot.util.log_util import get_logger
 
 
