@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
-from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
+from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
 from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \

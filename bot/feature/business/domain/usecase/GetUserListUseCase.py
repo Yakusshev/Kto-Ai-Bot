@@ -33,25 +33,24 @@ class GetUserListUseCase:
 
         for chat_info in chat_info_tuple:
             user = users_dict.get(chat_info.id)
-
             if user:
                 result += f"username = @{user.username}\n"
                 result += f"first_name + last_name = [{user.first_name}][{user.last_name}]\n"
                 result = self.add(body = result, data = user.bio, title = "bio")
                 result = self.add(body = result, data = user.birthdate, title = "birthdate")
-                result = self.add(body = result, data = user.update_date, title = "update_date")
-                result += f"channel_username = @{user.channel_username}\n"
-                result = self.add(body = result, data = user.channel_title, title = "channel_title")
-                result = self.add(body = result, data = user.channel_id, title = "channel_id")
+
+                update_date = user.update_date.strftime("%Y-%m-%d %A %H:%M")
+                result = self.add(body = result, data = update_date, title = "update_date")
+                result += f"channel @{user.channel_username}; {user.channel_title}\n"
             else:
                 result += f"user не найден\n"
 
 
             result += f"message_count = {chat_info.message_count}\n"
-            result += f"    last_message_date = {chat_info.last_message_date}\n"
-            result += f"    last_message_role = {chat_info.last_message_role}\n"
-            result += f"    last_message_content = {chat_info.last_message_content}\n"
-            result += f"    id = {chat_info.id}\n\n"
+            update_date = chat_info.last_message_date.strftime("%Y-%m-%d %A %H:%M")
+            result += f"last_message: {update_date}\n"
+            result += f"    {chat_info.last_message_role}\n"
+            result += f"    {chat_info.last_message_content}\n\n"
 
             if len(result) > 3500:
                 result_list.append(result)

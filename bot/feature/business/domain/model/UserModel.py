@@ -21,3 +21,9 @@ class UserModel:
     channel_title: str | None
     channel_username: str | None
     channel_id: int | None
+
+    @property
+    def full_name(self) -> str:
+        if self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.first_name

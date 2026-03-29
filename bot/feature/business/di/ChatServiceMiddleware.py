@@ -22,7 +22,7 @@ from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
 from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
 from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
     UpdateUserTableFromChatHistoryUseCase
-from bot.feature.business.domain.usecase.GetChatInfoTupleUseCase import \
+from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
     GetForwardOriginTextForAiUseCase
