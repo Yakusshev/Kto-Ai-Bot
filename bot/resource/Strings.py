@@ -87,6 +87,9 @@ class Strings:
     def forwarded_own_channel(self, author_name: object) -> str:
         return self._i18n.get('forwarded_own_channel', locale = self.locale, author_name = author_name)
 
+    def remind_instruction(self) -> str:
+        return self._i18n.get('remind_instruction', locale = self.locale)
+
     def system_instruction(self, username: object, full_name: object, date_and_time: object) -> str:
         return self._i18n.get('system_instruction', locale = self.locale, username = username, full_name = full_name, date_and_time = date_and_time)
 

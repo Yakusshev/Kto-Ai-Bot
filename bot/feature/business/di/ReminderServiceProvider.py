@@ -1,6 +1,6 @@
 import ydb
 from aiogram_i18n import I18nMiddleware
-from ydb.aio import Driver
+from ydb import Driver
 
 from bot.feature.business.data.datasource.LocalDataSource import LocalDataSource
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
@@ -38,13 +38,15 @@ from bot.resource.Strings import Strings
 class ReminderServiceProvider:
 
     @staticmethod
-    def create(
+    async def create(
         ydb_session_pool: ydb.SessionPool,
         driver: Driver,
     ) -> ReminderService:
         i18n = I18nMiddleware(
+            #TODO создавать кор один раз
             core = GracefulShutdownFluentRuntimeCore(
                 path = "bot/resource/locales/{locale}",
+                default_locale = "ru",
             ),
             default_locale = "ru",
         )
@@ -53,6 +55,8 @@ class ReminderServiceProvider:
             locale = "ru",
             data = {},
         )
+        await i18n.core.startup()
+
 
         strings = Strings(i18n = i18n)
 
@@ -81,6 +85,7 @@ class ReminderServiceProvider:
                     getForwardOriginUseCase = GetForwardOriginTextForAiUseCase(
                         strings = strings,
                     ),
+                    strings = strings,
                 ),
                 get_system_instruction_use_case = GetSystemInstructionUseCase(
                     strings = strings,

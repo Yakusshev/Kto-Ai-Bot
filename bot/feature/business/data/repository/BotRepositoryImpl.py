@@ -1,3 +1,5 @@
+from aiogram.types import Message
+
 from bot.feature.business.data.datasource.LocalDataSource import LocalDataSource
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
@@ -18,8 +20,8 @@ class BotRepositoryImpl:
         chat_id: int,
         business_connection_id: str,
         text: str,
-    ):
-        await self._telegram_remote_data_source.send_message(
+    ) -> Message:
+        return await self._telegram_remote_data_source.send_message(
             chat_id = chat_id,
             business_connection_id = business_connection_id,
             text = text,
@@ -44,7 +46,7 @@ class BotRepositoryImpl:
         chat_id: int,
         business_connection_id: str,
     ):
-        self._telegram_remote_data_source.send_chat_action(
+        await self._telegram_remote_data_source.send_chat_action(
             chat_id = chat_id,
             action = "typing",
             business_connection_id = business_connection_id,

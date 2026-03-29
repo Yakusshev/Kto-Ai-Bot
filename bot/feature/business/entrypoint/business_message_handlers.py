@@ -9,11 +9,11 @@ from aiogram.types import Message
 
 from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.feature.business.entrypoint.ChatService import ChatService
 from bot.feature.business.entrypoint.HumanWaitingBehavior import (
     wait_to_start_typing,
     wait_to_write_message,
 )
+from bot.feature.business.entrypoint.service.ChatService import ChatService
 from bot.resource.Strings import Strings
 from bot.feature.business.domain.model.SaveMessageModel import MessageRole
 from bot.util.log_util import get_logger

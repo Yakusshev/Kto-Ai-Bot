@@ -68,6 +68,7 @@ class ChatService:
                 username = business_connection.user.username,
                 full_name = business_connection.user.full_name,
             ),
+            remind = False,
         )
 
         return await ai_response

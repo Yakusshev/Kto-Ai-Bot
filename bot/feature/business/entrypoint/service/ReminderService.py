@@ -50,82 +50,85 @@ class ReminderService:
 
         chat = inactive_chat_list[0]
 
-        await self.__answer_message(chat = chat)
+        await self.remind_task(chat = chat)
 
-    async def __answer_message(
-        self,
-        chat: InactiveChatModel,
-    ) -> None:
+    async def remind_task(self, chat: InactiveChatModel):
+
         task_key = str(chat.chat_info_model.id)
 
-        if self.task_scheduler.is_task_exist(key = task_key):
-            return
+        async def answer_message() -> None:
 
-        stop_typing = asyncio.Event()
-        typing_task = None
-
-        message_chat_id = str()
-        business_connection_id = chat.chat_info_model.business_connection_id
-        answer_message_list: list[Message] = []
-
-        try:
             stop_typing = asyncio.Event()
-            typing_task = asyncio.create_task(
-                self.typing_loop_use_case.invoke(
-                    chat_id = chat.chat_info_model.id,
-                    business_connection_id = business_connection_id,
-                    stop_event = stop_typing,
-                ),
-            )
+            typing_task = None
 
-            response_list = await self.generate_ai_response_scenario.invoke(
-                user_for_ai_model = UserMessageInfoForAiModel(
-                    chat_id = chat.chat_info_model.id,
-                    username = chat.user_model.username,
-                    full_name = chat.user_model.full_name,
-                    datetime = chat.chat_info_model.last_message_date,
-                ),
-                owner_model = await self.bot_repository.get_business_connection_owner(
-                    id = chat.chat_info_model.business_connection_id,
-                ),
-            )
+            message_chat_id = str()
+            business_connection_id = chat.chat_info_model.business_connection_id
+            answer_message_list: list[Message] = []
 
-            for ai_answer in response_list:
-                await wait_to_write_message(ai_answer)
+            try:
+                stop_typing = asyncio.Event()
+                typing_task = asyncio.create_task(
+                    self.typing_loop_use_case.invoke(
+                        chat_id = chat.chat_info_model.id,
+                        business_connection_id = business_connection_id,
+                        stop_event = stop_typing,
+                    ),
+                )
 
-                try:
-                    if ai_answer:
-                        sent = await self.bot_repository.send_message(
-                            chat_id = chat.chat_info_model.id,
-                            text = ai_answer,
-                            business_connection_id = business_connection_id,
+                response_list = await self.generate_ai_response_scenario.invoke(
+                    user_for_ai_model = UserMessageInfoForAiModel(
+                        chat_id = chat.chat_info_model.id,
+                        username = chat.user_model.username,
+                        full_name = chat.user_model.full_name,
+                        datetime = chat.chat_info_model.last_message_date,
+                    ),
+                    owner_model = await self.bot_repository.get_business_connection_owner(
+                        id = chat.chat_info_model.business_connection_id,
+                    ),
+                    remind = True,
+                )
+
+                for ai_answer in response_list:
+                    await wait_to_write_message(ai_answer)
+
+                    try:
+                        if ai_answer:
+                            sent = await self.bot_repository.send_message(
+                                chat_id = chat.chat_info_model.id,
+                                text = ai_answer,
+                                business_connection_id = business_connection_id,
+                            )
+                            answer_message_list.append(sent)
+                    except Exception as e:
+                        logger.error(
+                            f"__answer_message EXCEPTION\n"
+                            f"id = {chat.chat_info_model.id}\n"
+                            f"chat = {chat}\n"
+                            f"e = {e}",
                         )
-                        answer_message_list.append(sent)
-                except Exception as e:
-                    logger.error(
-                        f"__answer_message EXCEPTION\n"
-                        f"id = {chat.chat_info_model.id}\n"
-                        f"chat = {chat}\n"
-                        f"e = {e}",
-                    )
-                except asyncio.CancelledError as canceled_error:
-                    raise canceled_error
+                    except asyncio.CancelledError as canceled_error:
+                        raise canceled_error
 
-        except asyncio.CancelledError:
-            await self.complete_answer(
-                answer_message_list = answer_message_list,
-                stop_typing = stop_typing,
-                typing_task = typing_task,
-            )
-            logger.info("__answer_message отменён: chat_id=%s", message_chat_id)
-            raise
+            except asyncio.CancelledError:
+                await self.complete_answer(
+                    answer_message_list = answer_message_list,
+                    stop_typing = stop_typing,
+                    typing_task = typing_task,
+                )
+                logger.info("__answer_message отменён: chat_id=%s", message_chat_id)
+                raise
 
-        finally:
-            await self.complete_answer(
-                answer_message_list = answer_message_list,
-                stop_typing = stop_typing,
-                typing_task = typing_task,
-            )
+            finally:
+                await self.complete_answer(
+                    answer_message_list = answer_message_list,
+                    stop_typing = stop_typing,
+                    typing_task = typing_task,
+                )
+
+        await self.task_scheduler.on_remind(
+            key = task_key,
+            answer_factory = answer_message,
+        )
 
     async def complete_answer(
         self,

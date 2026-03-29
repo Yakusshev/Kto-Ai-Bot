@@ -28,6 +28,7 @@ class UserRepositoryImpl:
         await self._user_remote_data_source.add_users(user_model_list)
 
     async def get_all_users(self) -> Tuple[UserModel, ...]:
+        await self._user_remote_data_source.create_table_if_not_exists()
         return await self._user_remote_data_source.get_user_tuple()
 
     async def add_user(
@@ -41,5 +42,6 @@ class UserRepositoryImpl:
         self,
         chat_id: int,
     ) -> UserModel:
+        await self._user_remote_data_source.create_table_if_not_exists()
         return await self._telegram_remote_data_source\
             .get_user_model(chat_id = chat_id)

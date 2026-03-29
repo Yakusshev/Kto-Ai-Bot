@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Awaitable
 from bot.feature.business.entrypoint.HumanWaitingBehavior import wait_to_see_message
+from bot.util.log_util import get_logger
 
 
 @dataclass
@@ -135,6 +136,10 @@ class TaskSchedulerRepositoryImpl:
         async def empty():
             pass
 
+        if state is not None:
+            _logger.warning("on_remind: вызван для диалога, в котором есть активная задача")
+            return
+
         if state is None:
             # Холодный старт: запускаем фазу подготовки (ожидание 10-30 сек)
             entry = _StateEntry(
@@ -225,3 +230,5 @@ class TaskSchedulerRepositoryImpl:
                 await task
             except (asyncio.CancelledError, Exception):
                 pass
+
+_logger = get_logger(TaskSchedulerRepositoryImpl.__name__)

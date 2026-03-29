@@ -1,5 +1,3 @@
-import logging
-from typing import List
 
 from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
@@ -11,6 +9,7 @@ from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
 from bot.feature.business.domain.repository.AiRepository import AiRepository
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
     GetForwardOriginTextForAiUseCase
+from bot.resource.Strings import Strings
 from bot.util.log_util import get_logger
 
 
@@ -24,16 +23,19 @@ class SendAiRequestUseCase:
         ai_repository: AiRepository,
         session_repository: ChatHistoryRepositoryImpl,
         getForwardOriginUseCase: GetForwardOriginTextForAiUseCase,
+        strings: Strings,
     ):
         self.llm_repository = ai_repository
         self.session_repository = session_repository
         self.getForwardOriginUseCase = getForwardOriginUseCase
+        self.strings = strings
 
     async def invoke(
         self,
         user_for_ai_model: UserMessageInfoForAiModel,
         owner_model: OwnerModel,
         system_prompt: str,
+        remind: bool,
     ) -> str:
 
         history: tuple[SaveMessageModel, ...] = await self.session_repository \
@@ -42,13 +44,21 @@ class SendAiRequestUseCase:
         ai_list: list[MessageForAiModel] = []
 
         for index, message in enumerate(history):
-            await self.add_message(
+            self.add_message(
                 ai_list = ai_list,
                 history = history,
                 index = index,
                 message = message,
                 owner_model = owner_model,
                 user_for_ai_model = user_for_ai_model,
+            )
+
+        if remind:
+            ai_list.append(
+                MessageForAiModel(
+                    role = MessageRole.USER,
+                    content = self.strings.remind_instruction(),
+                )
             )
 
         ai_response = await self.llm_repository.generate_response(
@@ -58,7 +68,7 @@ class SendAiRequestUseCase:
 
         return ai_response
 
-    async def add_message(
+    def add_message(
         self,
         ai_list: list[MessageForAiModel],
         history: tuple[SaveMessageModel, ...],

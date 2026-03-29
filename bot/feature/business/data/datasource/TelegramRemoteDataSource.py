@@ -1,3 +1,5 @@
+from aiogram.types import Message
+
 from bot.feature.business import user_bot_manager
 from bot.feature.business.data.datasource.UserModelMapper import to_user_model
 from bot.feature.business.domain.model.SaveMessageModel import OwnerModel
@@ -22,8 +24,8 @@ class TelegramRemoteDataSource:
         chat_id: int,
         business_connection_id: str,
         text: str,
-    ):
-        self.bot.send_message(
+    ) -> Message:
+        return await self.bot.send_message(
             chat_id = chat_id,
             business_connection_id = business_connection_id,
             text = text,
@@ -42,13 +44,13 @@ class TelegramRemoteDataSource:
             full_name = connection.user.full_name,
         )
 
-    def send_chat_action(
+    async def send_chat_action(
         self,
         chat_id: int,
         action: str,
         business_connection_id: str,
     ):
-        self.bot.send_chat_action(
+        await self.bot.send_chat_action(
             chat_id = chat_id,
             action = action,
             business_connection_id = business_connection_id,

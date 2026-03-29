@@ -339,7 +339,7 @@ class ChatHistoryRepositoryImpl:
                     {Column.CREATED_AT},
                     COUNT(*) OVER (PARTITION BY {Column.CHAT_ID}) AS msg_count,
                     ROW_NUMBER() OVER (PARTITION BY {Column.CHAT_ID} ORDER BY {Column.CREATED_AT} DESC) AS rn
-                FROM {ChatHistoryConst.TABLE_NAME_RELEASE}
+                FROM {self.table_name}
             )
             WHERE rn = 1
             ORDER BY {ChatInfo.MESSAGE_COUNT} DESC;

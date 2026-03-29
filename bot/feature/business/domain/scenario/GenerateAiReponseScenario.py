@@ -27,6 +27,7 @@ class GenerateAiResponseScenario:
         self,
         user_for_ai_model: UserMessageInfoForAiModel,
         owner_model: OwnerModel,
+        remind: bool,
     ) -> List[str]:
         response = await self.send_ai_request_use_case.invoke(
             user_for_ai_model = user_for_ai_model,
@@ -34,6 +35,7 @@ class GenerateAiResponseScenario:
                 info = user_for_ai_model,
             ),
             owner_model = owner_model,
+            remind = remind,
         )
 
         message_list = await self.handle_ai_response_use_case.invoke(response)

@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-from random import random
+import random
 
 from bot.feature.business.data.repository.BotRepositoryImpl import BotRepositoryImpl
 from bot.util.log_util import get_logger
@@ -33,7 +33,7 @@ class TypingLoopUseCase:
 
             delta = datetime.datetime.now() - start_typing_time
 
-            if delta.seconds > random.uniform(15, 20):
+            if delta.seconds > random.uniform(a = 15, b = 20):
                 break
 
             try:
@@ -44,7 +44,7 @@ class TypingLoopUseCase:
             except Exception as e:
                 logger.warning("typing_loop ошибка send_chat_action: %s", e)
 
-            await asyncio.sleep(default_pause + random.uniform(1, 5))
+            await asyncio.sleep(default_pause + random.uniform(a = 1, b = 5))
 
 
 logger = get_logger(TypingLoopUseCase.__name__)

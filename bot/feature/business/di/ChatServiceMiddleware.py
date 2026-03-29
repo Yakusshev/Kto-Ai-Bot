@@ -65,6 +65,7 @@ class ChatServiceMiddleware(BaseMiddleware):
                     getForwardOriginUseCase = GetForwardOriginTextForAiUseCase(
                         strings = strings,
                     ),
+                    strings = strings,
                 ),
                 get_system_instruction_use_case = GetSystemInstructionUseCase(
                     strings = strings,
