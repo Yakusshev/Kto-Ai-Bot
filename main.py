@@ -10,6 +10,7 @@ from aiogram_i18n.cores import FluentRuntimeCore
 
 from bot.core.domain.const.env_const import DEBUG_MODE_START_POLLING
 from bot.feature.admin import admin_bot_manager
+from bot.feature.admin.di.ReminderServiceMiddleware import ReminderServiceMiddleware
 from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
 from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
@@ -21,6 +22,8 @@ from bot.resource.GracefulShutdownFluentRuntimeCore import \
     GracefulShutdownFluentRuntimeCore
 from bot.util.log_util import get_logging_config
 import logging.config
+from bot.feature.admin.di.GetRemindInfoTextScenarioMiddleware import \
+    GetRemindInfoTextScenarioMiddleware
 
 
 async def main():
@@ -98,6 +101,12 @@ async def start_admin_bot(
 
     admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
     admin_bot_manager.dispatcher.message.middleware(chat_service_middleware)
+    admin_bot_manager.dispatcher.message.middleware(
+        ReminderServiceMiddleware(),
+    )
+    admin_bot_manager.dispatcher.message.middleware(
+        GetRemindInfoTextScenarioMiddleware(),
+    )
 
     admin_bot_manager.dispatcher.include_router(router = admin_router)
 

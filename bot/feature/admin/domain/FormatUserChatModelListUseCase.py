@@ -34,12 +34,13 @@ class FormatUserChatModelListUseCase:
             result += f"last_message: {update_date}\n"
             result += f"    {chat.last_message_role}\n"
             result += f"    {chat.last_message_content}\n"
-            result += f"/remind {chat.id}\n"
+            result += f"/remind_{chat.id}\n"
             result += "\n"
 
             if len(result) > 3500:
                 result_list.append(result)
                 result = ""
+                break
 
         if result:
             result_list.append(result)

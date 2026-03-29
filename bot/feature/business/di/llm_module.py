@@ -11,7 +11,6 @@ def get_llm_repository() -> AiRepository:
         api_key = os.getenv("DEEPSEEK_API_KEY")
         if not api_key:
             raise ValueError("DEEPSEEK_API_KEY не найден в .env")
-        print("INFO: Using DeepSeek LLM provider.")
         return DeepseekRepository(api_key, base_url = "https://api.deepseek.com/v1")
 
     elif provider == "yandex":

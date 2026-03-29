@@ -1,4 +1,4 @@
-from bot.feature.business.domain.usecase.FormatUserChatModelListUseCase import \
+from bot.feature.admin.domain.FormatUserChatModelListUseCase import \
     FormatUserChatModelListUseCase
 from bot.feature.business.domain.usecase.GetInactiveChatListUseCase import \
     GetInactiveChatListUseCase

@@ -4,6 +4,7 @@ import ydb
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
+from bot.core.di.DiConst import DiConst
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
 from bot.feature.business.data.datasource.UserRemoteDataSource import \
@@ -49,10 +50,16 @@ class ChatServiceMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
+
+        data[DiConst.YDB_SESSION_POOL] = self.ydb_session_pool
+        data[DiConst.YDB_DRIVER] = self.driver
+
         chat_history_repository = ChatHistoryRepositoryImpl(
             ydb_session_pool = self.ydb_session_pool,
             driver = self.driver,
         )
+
+        data[DiConst.CHAT_HISTORY_REPOSITORY] = chat_history_repository
 
         strings = data["strings"]
 
@@ -92,6 +99,8 @@ class ChatServiceMiddleware(BaseMiddleware):
                 user_remote_data_source = user_remote_data_source,
                 telegram_remote_data_source = TelegramRemoteDataSource(),
             )
+
+        data[DiConst.USER_REPOSITORY] = user_repository_impl
 
         data["update_user_table_from_chat_history_use_case"] = \
             UpdateUserTableFromChatHistoryUseCase(

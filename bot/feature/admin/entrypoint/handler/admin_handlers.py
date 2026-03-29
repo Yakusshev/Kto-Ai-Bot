@@ -1,14 +1,14 @@
-from aiogram import Router, Bot
+import re
+
+from aiogram import Router, Bot, F
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 
 from bot.feature.admin.domain.CommandConst import CommandConst
+from bot.feature.admin.domain.scenario.GetRemindInfoTextScenario import \
+    GetRemindInfoTextScenario
 from bot.feature.admin.entrypoint.filter.IsAdminUserFilter import IsAdminUserFilter
 from bot.feature.business import user_bot_manager
-from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
-    GetChatInfoTupleUseCase
-from bot.feature.business.domain.usecase.GetRemindInfoTextScenario import \
-    GetRemindInfoTextScenario
 from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
 from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
     UpdateUserTableFromChatHistoryUseCase
@@ -18,7 +18,6 @@ from bot.util.log_util import get_logger
 
 logger = get_logger("admin_handler")
 admin_router = Router()
-
 
 @admin_router.message(Command("stop"), IsAdminUserFilter())
 async def __handle_stop(
@@ -64,7 +63,7 @@ async def __handle_start(
     )
 
 @admin_router.message(Command("update_users"), IsAdminUserFilter())
-async def __handle_users_match(
+async def __handle_update_users(
     message: Message,
     bot: Bot,
     update_user_table_from_chat_history_use_case: UpdateUserTableFromChatHistoryUseCase,
@@ -99,21 +98,25 @@ async def __handle_users_match(
         )
 
 @admin_router.message(
-    Command(CommandConst.REMIND),
+    F.text.startswith("/remind"),
     IsAdminUserFilter(),
 )
-async def __handle_users_match(
+async def __handle_remind_match(
     message: Message,
     bot: Bot,
-    command: CommandObject,
     get_remind_info_text_scenario: GetRemindInfoTextScenario,
-    reminder_service: ReminderService
+    reminder_service: ReminderService,
 ):
-    logger.info(f"Handling users command: {message}")
+    await bot.send_message(
+        chat_id = message.chat.id,
+        text = f"Получена команда {message.text}",
+    )
 
-    args = command.args
+    parts = message.text.split("_", maxsplit=1)
 
-    if not args:
+    action = next(iter(parts[1:2]), None)
+
+    if not action:
         # Если аргументов нет, можно вернуть общий список или ошибку
         user_info_list = await get_remind_info_text_scenario.invoke()
 
@@ -123,15 +126,17 @@ async def __handle_users_match(
                 text = text,
             )
     else:
+        await reminder_service.invoke(args = action)
 
-        await reminder_service.invoke()
-        # Разбиваем строку по пробелам, если нужно обработать сразу несколько ID
+        await bot.send_message(
+            chat_id = message.chat.id,
+            text = f"Команда {message.text} обработана",
+        )
 
-        # Здесь логика фильтрации: либо передай user_ids в UseCase,
-        # либо отфильтруй результат на месте
-        all_users = await get_user_list_use_case.invoke()
-        user_info_list = [u for u in all_users if any(uid in u for uid in user_ids)]
 
-    user_info_list = await get_user_list_use_case.invoke()
 
+@admin_router.message()
+async def debug_all(message: Message):
+    print(f"asdasd {message.text}")
+    logger.info(f"DEBUG: Catch all in admin router: {message.text}")
 
