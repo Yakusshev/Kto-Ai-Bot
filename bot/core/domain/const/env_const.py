@@ -3,28 +3,42 @@ import os
 # 1. Загружаем переменные окружения в самом начале
 from dotenv import load_dotenv
 
+from bot.core.config.EnvReader import EnvReader
+
 load_dotenv()
 
-TELEGRAM_BOT_TOKEN_DEBUG = os.getenv("BOT_TOKEN")
-TELEGRAM_BOT_TOKEN_RELEASE = os.getenv("BOT_TOKEN_RELEASE")
-TELEGRAM_BOT_TOKEN_ADMIN = os.getenv("BOT_TOKEN_ADMIN")
-TELEGRAM_BOT_TOKEN_ADMIN_RELEASE = os.getenv("BOT_TOKEN_ADMIN_RELEASE")
+_reader = EnvReader(environ = os.environ)
 
-YANDEX_FOLDER_ID = os.getenv("YANDEX_FOLDER_ID")
-YANDEX_API_KEY = os.getenv("YANDEX_API_KEY")
-YDB_ENDPOINT = os.getenv("YDB_ENDPOINT")
-YDB_PATH = os.getenv("YDB_PATH")
-YDB_AUTH_KEY_FILE = os.getenv("YDB_AUTH_KEY_FILE")
+DEBUG_MODE_TYPING = _reader.flag("DEBUG_MODE_TYPING")
+DEBUG_MODE_START_POLLING = _reader.flag("DEBUG_MODE_START_POLLING")
+DEBUG_MODE_LOGGING = _reader.flag("DEBUG_MODE_LOGGING")
+DEBUG_MODE_TOKEN = _reader.flag("DEBUG_MODE_TOKEN")
+DEBUG_MODE_DATABASE = _reader.flag("DEBUG_MODE_DATABASE")
 
-DEBUG_MODE_TYPING = os.getenv("DEBUG_MODE_TYPING") == "True"
-DEBUG_MODE_START_POLLING = os.getenv("DEBUG_MODE_START_POLLING") == "True"
-DEBUG_MODE_LOGGING = os.getenv("DEBUG_MODE_LOGGING") == "True"
-DEBUG_MODE_TOKEN = os.getenv("DEBUG_MODE_TOKEN") == "True"
-DEBUG_MODE_DATABASE = os.getenv("DEBUG_MODE_DATABASE") == "True"
+# Обязательны только токены того режима, в котором запускается бот
+if DEBUG_MODE_TOKEN:
+    TELEGRAM_BOT_TOKEN_DEBUG = _reader.require_str("BOT_TOKEN")
+    TELEGRAM_BOT_TOKEN_ADMIN = _reader.require_str("BOT_TOKEN_ADMIN")
+    TELEGRAM_BOT_TOKEN_RELEASE = _reader.optional_str("BOT_TOKEN_RELEASE") or ""
+    TELEGRAM_BOT_TOKEN_ADMIN_RELEASE = _reader.optional_str("BOT_TOKEN_ADMIN_RELEASE") or ""
+else:
+    TELEGRAM_BOT_TOKEN_DEBUG = _reader.optional_str("BOT_TOKEN") or ""
+    TELEGRAM_BOT_TOKEN_ADMIN = _reader.optional_str("BOT_TOKEN_ADMIN") or ""
+    TELEGRAM_BOT_TOKEN_RELEASE = _reader.require_str("BOT_TOKEN_RELEASE")
+    TELEGRAM_BOT_TOKEN_ADMIN_RELEASE = _reader.require_str("BOT_TOKEN_ADMIN_RELEASE")
 
-NEXT_MESSAGE_SEPARATOR = os.getenv("NEXT_MESSAGE_SEPARATOR")
-NEXT_MESSAGE_SEPARATOR_REGEX = os.getenv("NEXT_MESSAGE_SEPARATOR_REGEX")
+YANDEX_FOLDER_ID = _reader.optional_str("YANDEX_FOLDER_ID")
+YANDEX_API_KEY = _reader.optional_str("YANDEX_API_KEY")
+YDB_ENDPOINT = _reader.require_str("YDB_ENDPOINT")
+YDB_PATH = _reader.require_str("YDB_PATH")
+YDB_AUTH_KEY_FILE = _reader.optional_str("YDB_AUTH_KEY_FILE")
 
-ADMIN_ID_LIST = list(map(int, os.getenv("ADMIN_ID_LIST", "").split(",")))
-OWN_CHANNEL_ID = int(os.getenv("OWN_CHANNEL_ID"))
-OWN_CHAT_ID = int(os.getenv("OWN_CHAT_ID"))
+NEXT_MESSAGE_SEPARATOR = _reader.require_str("NEXT_MESSAGE_SEPARATOR")
+NEXT_MESSAGE_SEPARATOR_REGEX = _reader.optional_str("NEXT_MESSAGE_SEPARATOR_REGEX")
+
+ADMIN_ID_LIST = _reader.require_int_list("ADMIN_ID_LIST")
+OWN_CHANNEL_ID = _reader.require_int("OWN_CHANNEL_ID")
+OWN_CHAT_ID = _reader.require_int("OWN_CHAT_ID")
+
+# Падаем сразу при импорте с перечнем всех проблем, а не на первом int(None)
+_reader.validate()
