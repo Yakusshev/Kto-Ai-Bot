@@ -11,6 +11,10 @@ inputs:
     description: Версия yc CLI (https://storage.yandexcloud.net/yandexcloud-yc/release/stable)
     required: false
     default: "1.41.0"
+  sha256:
+    description: sha256 бинарника linux/amd64 этой версии (меняется вместе с version)
+    required: false
+    default: "7231c18ab1553fc1ac2a8157cad8b230156b08c2c7852509a7bd765efcd27956"
 
 runs:
   using: composite
@@ -19,12 +23,14 @@ runs:
       shell: bash
       env:
         YC_VERSION: ${{ inputs.version }}
+        YC_SHA256: ${{ inputs.sha256 }}
       run: |
         set -euo pipefail
         dir="${RUNNER_TEMP}/yc/bin"
         mkdir -p "$dir"
         curl -fsSL --retry 3 -o "$dir/yc" \
           "https://storage.yandexcloud.net/yandexcloud-yc/release/${YC_VERSION}/linux/amd64/yc"
+        echo "${YC_SHA256}  $dir/yc" | sha256sum -c -
         chmod +x "$dir/yc"
         echo "$dir" >> "$GITHUB_PATH"
         "$dir/yc" version

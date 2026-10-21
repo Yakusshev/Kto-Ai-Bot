@@ -23,12 +23,32 @@
      пока карточки в колонке «Тестирование». `main` получает спринт целиком в конце, и его
      коммит тоже проходит через test, прежде чем поехать в прод.
      Изменения только в `docs/`, `infra/`, `*.md`, `scratch/` выкладку не запускают.
+     Пока репозиторная переменная `DEPLOY_TEST_ENABLED` не равна `true`, выкладка на push
+     пропускается: CI проходит, а job deploy остаётся `skipped` с предупреждением.
   2. Run workflow (`workflow_dispatch`) → выбрать `environment` (`test`/`prod`) и `sha`.
-     Для prod job ждёт подтверждения в GitHub Environment `prod`. Он выкладывает только sha,
-     который уже **успешно** выкладывался на test, и только после этого начинает работу.
+     На test перед выкладкой тоже запускается CI для этого sha. Для prod job ждёт
+     подтверждения в GitHub Environment `prod`.
 
 Тег образа равен полному sha коммита. Если такой образ уже есть в registry (откат,
-повторный запуск), сборка пропускается.
+повторный запуск), сборка пропускается. Скрипты выкладки берутся из ветки запуска,
+исходники образа — из выкладываемого коммита, поэтому откат на sha старше этого
+workflow работает.
+
+**Гейт prod: признак «прошёл test» хранится на образе.**
+
+1. Выкладка на test заканчивается успешно (CI, выкладка, проверка старта).
+2. CI ставит тег `tested-<sha>` на тот же digest в test-registry.
+3. Выкладка в prod не собирает образ. Она проверяет, что `tested-<sha>` существует,
+   копирует **этот digest** в prod-registry под тегом `<sha>` и сверяет digest.
+
+Поэтому в prod уходит ровно то, что работало на тестовых ботах, и откат prod на любой
+ранее проверенный sha работает. GitHub deployments для гейта не используются: их статусы
+становятся `inactive` после следующей выкладки и пишутся на HEAD ветки, а не на
+выложенный sha.
+
+Если выкладываемый тег уже стоит на VM (повторный запуск, тот же sha из `main` после
+`sprint*`), COI контейнер не пересоздаст. Тогда job перезапускает VM
+(`yc compute instance restart`) и проверяет свежий старт: пропустить проверку нельзя.
 
 **Проверка после выкладки** (`.github/scripts/verify-deploy.sh`) читает логи контейнера
 из Cloud Logging начиная с момента выкладки. Выкладка успешна, если:
@@ -50,13 +70,19 @@ Serial port не подходит: вывод контейнеров COI идё�
 ### 1. Инфраструктура и секреты бота
 
 По `infra/README.md` для каждого окружения: `make -C infra apply ENV=<env>`, затем заполнить
-Lockbox (`make -C infra secrets ...`). В этом PR SA CI получил роль `logging.reader`
-(`infra/iam.tf`). Если инфраструктура уже создана, выполните `make -C infra apply ENV=<env>`
-ещё раз.
+Lockbox (`make -C infra secrets ...`).
 
-> Роль `logging.reader` выдаётся на каталог (IAM на уровне log group у провайдера нет).
-> Если test и prod в одном каталоге, ключ тестового CI может читать боевые логи, а там
-> переписка. Держите prod в отдельном каталоге (`folder_id` в `infra/envs/prod.tfvars`).
+С D3 SA CI получает две роли:
+
+- `logging.reader` **только на log group своего окружения**, поэтому ключ test-CI
+  не читает боевую переписку, даже если окружения в одном каталоге;
+- для prod — `container-registry.images.puller` на test-registry, чтобы копировать
+  проверенный образ. Для этого в `infra/envs/prod.tfvars` задайте
+  `promote_from_registry_id = "<infra/apply.sh test output -raw registry_id>"`.
+
+Обе роли выдаются через `yc ... add-access-binding` из `terraform_data`: в провайдере нет
+таких IAM-ресурсов. Если инфраструктура уже создана, выполните
+`make -C infra apply ENV=test` и `make -C infra apply ENV=prod` ещё раз.
 
 ### 2. Ключ CI
 
@@ -77,6 +103,8 @@ Settings → Environments → создать `test` и `prod`.
 | `test`, `prod` | `YC_IMAGE_REPOSITORY` | variable | `infra/apply.sh <env> output -raw image_repository` |
 | `test`, `prod` | `YC_INSTANCE_ID` | variable | `infra/apply.sh <env> output -raw instance_id` |
 | `test`, `prod` | `YC_LOG_GROUP_ID` | variable | `infra/apply.sh <env> output -raw log_group_id` |
+| `prod` | `YC_TEST_IMAGE_REPOSITORY` | variable | `infra/apply.sh test output -raw image_repository` |
+| репозиторий | `DEPLOY_TEST_ENABLED` | variable | `true`, когда `test` настроен (до этого push не выкладывает) |
 
 Значения задаются в **environment**, а не в репозитории. Имена в обоих окружениях
 одинаковые, а job видит только значения своего окружения: ключ prod недоступен
@@ -91,16 +119,23 @@ gh variable set YC_IMAGE_REPOSITORY --env "$ENV" --body "$(infra/apply.sh $ENV o
 gh variable set YC_INSTANCE_ID      --env "$ENV" --body "$(infra/apply.sh $ENV output -raw instance_id)"
 gh variable set YC_LOG_GROUP_ID     --env "$ENV" --body "$(infra/apply.sh $ENV output -raw log_group_id)"
 rm "ci-key-$ENV.json"
+
+# только для prod и для репозитория
+gh variable set YC_TEST_IMAGE_REPOSITORY --env prod --body "$(infra/apply.sh test output -raw image_repository)"
+gh variable set DEPLOY_TEST_ENABLED --body true
 ```
 
 Настройки окружения **prod** (Settings → Environments → prod):
 
 - **Required reviewers**: вы (и кто ещё может разрешать выкладку в прод);
 - **Prevent self-review**: включите, если reviewer'ов больше одного;
-- **Deployment branches and tags**: Selected branches → `main` и `sprint*`.
+- **Deployment branches and tags**: Selected branches → только `main`.
 
-Окружение `test` оставьте без reviewer'ов. Ограничение по веткам для него тоже
-`main` и `sprint*`.
+Почему только `main`: гейт — это код `deploy.yml` той ветки, с которой запущен workflow.
+Под маску `sprint*` попадает любая новая ветка, и в ней гейт можно убрать. `main` защищён
+правилами ветки.
+
+Окружение `test` оставьте без reviewer'ов, ветки — `main` и `sprint*`.
 
 Рекомендуется: в правилах защиты веток `main` и `sprint*` сделать обязательными проверки
 `pytest`, `mypy`, `docker build` из workflow CI.
@@ -121,7 +156,8 @@ Yandex Cloud поддерживает федерацию с OIDC GitHub Actions:
 2. Остановите локальный запуск бота с этими же токенами. Два процесса с long polling
    на одном токене мешают друг другу: Telegram отвечает `409 Conflict`.
 3. Запустите выкладку одним из способов:
-   - влейте PR в `sprint<N>` (или сделайте push в эту ветку);
+   - влейте PR в `sprint<N>` (или сделайте push в эту ветку). Для этого нужна
+     переменная `DEPLOY_TEST_ENABLED=true`;
    - Actions → **Deploy** → Run workflow → branch `sprint<N>`, environment `test`,
      sha пустой.
 4. Дождитесь зелёного job. В summary будут образ, предыдущий тег и команда отката.
@@ -194,21 +230,12 @@ Yandex Cloud поддерживает федерацию с OIDC GitHub Actions:
    (иначе `409 Conflict`).
 2. Убедитесь, что нужный sha прошёл test (зелёный Deploy в test) и чек-лист регресса.
 3. Actions → **Deploy** → Run workflow:
-   - branch: `main` (или `sprint<N>`), environment: `prod`;
+   - branch: `main`, environment: `prod`;
    - sha: коммит, проверенный на test (полный или короткий sha, можно имя ветки).
 4. Reviewer подтверждает выкладку (Review deployments → Approve).
-5. Job проверяет, что sha успешно выкладывался на test. Затем собирает образ из этого
-   коммита в prod-registry, выкладывает и ждёт старта бота.
+5. Job проверяет, что в test-registry есть `tested-<sha>`, и копирует этот digest
+   в prod-registry. Затем выкладывает его и ждёт старта бота.
 6. Проверьте в боевых ботах 2–3 ключевых сценария: ответ на текст, `/users` в админ-боте.
-
-> Гейт смотрит на GitHub deployments окружения `test` с этим sha. Они создаются
-> автоматической выкладкой на push и ручным запуском, где sha пустой (HEAD ветки).
-> Ручной запуск на test с явным старым sha записывается в GitHub на HEAD ветки,
-> поэтому гейт его не учитывает.
-
-> Образ для prod собирается заново из того же коммита (registry у окружений разные).
-> Базовый `python:3.11-slim` и незафиксированные версии в `requirements.txt` могут дать
-> немного другой образ. Если это станет проблемой, зафиксируйте базовый образ по digest.
 
 ## Откат
 
@@ -217,7 +244,9 @@ Yandex Cloud поддерживает федерацию с OIDC GitHub Actions:
 
 - Actions → **Deploy** → Run workflow → environment `test`/`prod`, sha = предыдущий тег.
   Образ уже в registry, поэтому сборки нет, откат занимает около минуты плюс время старта.
-  Для prod тоже нужно подтверждение reviewer'а.
+  Для prod нужно подтверждение reviewer'а. Работает для любого sha с `tested-<sha>`.
+  На test можно указать и тег образа, которого нет в git: например `latest`, если
+  неудачной была самая первая выкладка.
 - Без GitHub (нужны `yc`, `jq` и права на VM):
   ```bash
   ENV=prod
@@ -242,10 +271,12 @@ yc container image list --repository-name "$(infra/apply.sh prod output -raw reg
 | Где упало | Что смотреть |
 |---|---|
 | «Проверить настройки окружения» | не заданы variables в GitHub Environment |
+| «Образ для prod», `Нет …:tested-<sha>` | sha не проходил test: сначала выложите его на test |
+| «Образ для prod», `denied` | нет pull из test-registry: `promote_from_registry_id` в `prod.tfvars` + `make apply ENV=prod` |
 | setup-yc | пустой или неверный `YC_SA_KEY`, ключ удалён (ротация) |
 | push образа | нет роли `container-registry.images.pusher` у SA CI, неверный `YC_IMAGE_REPOSITORY` |
 | «Выложить на VM» | нет `compute.editor` на VM или `iam.serviceAccounts.user` на SA VM, неверный `YC_INSTANCE_ID` |
-| «Дождаться старта бота», warning `yc logging read` | нет `logging.reader` (не выполнен `make apply` после этого PR), неверный `YC_LOG_GROUP_ID` |
+| «Дождаться старта бота», warning `yc logging read` | нет `logging.reader` на log group (не выполнен `make apply` после D3), неверный `YC_LOG_GROUP_ID` |
 | «Дождаться старта бота», `Некорректная конфигурация` | в Lockbox не хватает переменных, имена в логе job |
 | «Дождаться старта бота», `lockbox-launcher: giving up` | у SA VM нет доступа к Lockbox или секрет пуст |
 | «Дождаться старта бота», таймаут | смотреть полные логи: `yc logging read --group-name kto-ai-bot-<env> --since 30m` |

@@ -30,14 +30,18 @@ stable_sec="${4:-60}"
 START_MARKER="Бот запущен"
 # Строки, которые безопасно показывать: в них нет пользовательских данных
 SAFE_PATTERN='^lockbox-launcher:|Некорректная конфигурация|^  - '
+# Полнотекстовый поиск Cloud Logging; точное совпадение проверяется ниже grep'ом
+LOG_FILTER='message: "Бот запущен" OR message: "lockbox-launcher" OR message: "Некорректная конфигурация" OR message: "переменная"'
 
 err_file="$(mktemp)"
 trap 'rm -f "$err_file"' EXIT
 
 read_messages() {
   local raw
+  # Фильтр на стороне Logging: под нагрузкой с момента выкладки может быть больше
+  # записей, чем --limit, и строки старта среди них не окажется
   if ! raw="$(yc logging read --group-id "$group_id" --since "$since" \
-    --limit 1000 --format json 2>"$err_file")"; then
+    --filter "$LOG_FILTER" --limit 1000 --format json 2>"$err_file")"; then
     # Ошибка yc (нет роли logging.reader, неверный group id) — без содержимого логов
     echo "::warning::yc logging read: $(head -c 300 "$err_file")" >&2
     return 0

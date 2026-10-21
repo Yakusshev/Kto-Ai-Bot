@@ -59,7 +59,7 @@ if [[ "$previous" == "$tag" ]]; then
 fi
 
 sed -i -E "s#(${repo}):[^\"[:space:]]+#\\1:${tag}#" "$compose"
-yc compute instance update --id "$instance_id" \
+yc compute instance add-metadata --id "$instance_id" \
   --metadata-from-file docker-compose="$compose" >/dev/null
 
 get_compose > "$work/applied.yaml"

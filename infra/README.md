@@ -26,8 +26,11 @@ Lockbox, Cloud Logging, сеть и постоянно работающая VM �
   на базу из `ydb_database_id`. Если переменная пуста, роль не выдаётся.
 - **SA CI**: `container-registry.images.pusher` на registry, `compute.editor` только на эту VM,
   `iam.serviceAccounts.user` на SA VM (без него нельзя менять VM с привязанным SA),
-  `logging.reader` на каталог (проверка старта бота по логам после выкладки; IAM на уровне
-  log group у провайдера нет, поэтому test и prod лучше держать в разных каталогах).
+  `logging.reader` только на log group окружения (проверка старта бота после выкладки).
+  У SA CI prod дополнительно `container-registry.images.puller` на test-registry из
+  `promote_from_registry_id`: prod выкатывает тот же digest, что прошёл test.
+  Ролей на log group и на чужой registry в провайдере нет, поэтому они выдаются через
+  `yc ... add-access-binding` из `terraform_data` (нужен `yc` там, где запускается apply).
 
 ## Как устроен запуск на VM
 
@@ -183,7 +186,7 @@ Outputs (`infra/apply.sh <env> output -json`):
 | Output | Пример использования |
 |---|---|
 | `registry_id`, `image_repository` | `docker push <image_repository>:<sha>` |
-| `instance_id`, `instance_name` | `yc compute instance update ...` / `restart` |
+| `instance_id`, `instance_name` | `yc compute instance add-metadata ...` / `restart` |
 | `lockbox_secret_id`, `lockbox_secret_name` | проверка, что секрет заполнен |
 | `log_group_id` | ссылки на логи |
 | `ci_service_account_id` | для выпуска ключа CI |
@@ -201,8 +204,15 @@ compose только при создании VM, с тегом из `image_tag` 
 yc compute instance get --id "$INSTANCE_ID" --full --format json \
   | jq -r '.metadata["docker-compose"]' > compose.yaml
 sed -i -E "s#(${IMAGE_REPOSITORY}):[^\"[:space:]]+#\1:${SHA}#" compose.yaml
-yc compute instance update --id "$INSTANCE_ID" --metadata-from-file docker-compose=compose.yaml
+yc compute instance add-metadata --id "$INSTANCE_ID" --metadata-from-file docker-compose=compose.yaml
 ```
+
+`add-metadata`, а не `update --metadata-from-file`: `update` заменяет весь набор metadata,
+и с VM пропали бы `serial-port-enable` и `user-data`.
+
+**Признак «прошёл test».** После успешной выкладки на test и проверки старта CI ставит
+на тот же digest тег `<image_repository>:tested-<sha>` в test-registry. Выкладка в prod
+копирует именно `tested-<sha>` в prod-registry под тегом `<sha>`, без пересборки.
 
 Реализация: `.github/workflows/deploy.yml` и `.github/scripts/deploy-vm.sh`
 (инструкция — `docs/deploy.md`). Откат делается той же командой с предыдущим `<sha>`. Неизменяемый тег, а не `:latest`,

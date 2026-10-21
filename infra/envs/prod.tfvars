@@ -10,6 +10,10 @@ deletion_protection = true
 # ID боевой базы YDB: ydb.editor только на неё. Пусто — нужен ключ в Lockbox.
 ydb_database_id = ""
 
+# ID test-registry: CI prod копирует оттуда образ tested-<sha> (docs/deploy.md).
+# Значение: infra/apply.sh test output -raw registry_id
+promote_from_registry_id = ""
+
 # Несекретные переменные бота (секреты и всё остальное — в Lockbox).
 bot_environment = {}
 
