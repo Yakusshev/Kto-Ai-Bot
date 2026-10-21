@@ -1,10 +1,8 @@
 # Environments
 .env
 /.env
-/release/.env
 .ydb_authorized_key.json
 /credentials/ydb_authorized_key.json
-/release/credentials/ydb_authorized_key.json
 .venv
 venv/
 __pycache__/
@@ -21,4 +19,6 @@ workspace.xml
 .idea/workspace.xml
 .firebaseServiceAccountKey.json
 /credentials/firebaseServiceAccountKey.json
-/release/credentials/firebaseServiceAccountKey.json
+
+# Устаревшая локальная сборка (заменена Docker-образом)
+/release/
