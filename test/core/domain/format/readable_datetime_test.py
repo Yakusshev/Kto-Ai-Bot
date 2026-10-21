@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from bot.core.domain.format.ReadableDateTime import format_readable_datetime
+from bot.core.domain.format.readable_datetime import format_readable_datetime
 
 
 @pytest.mark.parametrize(

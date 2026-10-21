@@ -1,7 +1,7 @@
 import logging
 import zoneinfo
 
-from bot.core.domain.format.ReadableDateTime import format_readable_datetime
+from bot.core.domain.format.readable_datetime import format_readable_datetime
 from bot.core.domain.const.env_const import NEXT_MESSAGE_SEPARATOR
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
 from bot.resource.Strings import Strings

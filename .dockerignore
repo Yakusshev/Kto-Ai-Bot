@@ -1,34 +1,19 @@
-# Секреты: передаются в контейнер только через переменные окружения
-.env
-.env.*
+# Allowlist: в контекст сборки попадает только то, что нужно в рантайме.
+# Новый файл в корне (секрет, scratch, ключ) не попадёт в образ, даже если о нём забыли.
+# Секреты передаются в контейнер только через переменные окружения.
+*
+!bot/
+!main.py
+!requirements.txt
+
+# Второй рубеж внутри разрешённых путей: шаблоны рекурсивные,
+# т.к. без **/ Docker сопоставляет их только от корня контекста
 **/.env
-credentials/
+**/.env.*
 **/credentials/
-*.pem
-*.key
-*_key.json
-*ServiceAccountKey*.json
-.ydb_authorized_key.json
-
-# Служебное и окружение разработчика
-.git
-.gitignore
-.venv
-venv/
+**/*.pem
+**/*.key
+**/*key*.json
+**/*ServiceAccountKey*.json
 **/__pycache__/
-*.pyc
-.pytest_cache/
-.mypy_cache/
-.idea
-.claude
-.aiexclude
-
-# Не нужно в рантайме
-release/
-scratch/
-test/
-test_ai.py
-pytest.ini
-build_release.sh
-Dockerfile
-.dockerignore
+**/*.pyc
