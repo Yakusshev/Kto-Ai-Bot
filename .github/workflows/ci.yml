@@ -33,16 +33,28 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4.2.2
-      - uses: actions/setup-python@v5.6.0
+      - uses: actions/checkout@v5.0.0
+      - uses: actions/setup-python@v6.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
           cache-dependency-path: requirements.txt
       - name: Установить зависимости
         run: pip install --disable-pip-version-check -r requirements.txt
-      # Корневой test_ai.py — ручной скрипт с сетевыми вызовами, в CI его не собираем
+      # Корневой test_ai.py — ручной скрипт с сетевыми вызовами, в CI его не собираем.
+      # env_const валидирует окружение при импорте: даём фиктивные значения,
+      # в сеть тесты не ходят, секреты не нужны.
       - name: pytest test
+        env:
+          DEBUG_MODE_TOKEN: "True"
+          BOT_TOKEN: "0:ci-dummy"
+          BOT_TOKEN_ADMIN: "0:ci-dummy"
+          YDB_ENDPOINT: "grpcs://localhost:2135"
+          YDB_PATH: "/ci/dummy"
+          NEXT_MESSAGE_SEPARATOR: "|||"
+          ADMIN_ID_LIST: "1"
+          OWN_CHANNEL_ID: "1"
+          OWN_CHAT_ID: "1"
         run: python -m pytest test -q
 
   mypy:
@@ -50,10 +62,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0 # нужен base-коммит для списка изменённых файлов
-      - uses: actions/setup-python@v5.6.0
+      - uses: actions/setup-python@v6.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -102,7 +114,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
       - name: Собрать образ (без пуша)
         run: docker build --label "org.opencontainers.image.revision=${GITHUB_SHA}" -t kto-ai-bot:ci .
       - name: Образ стартует и импортирует зависимости

@@ -60,7 +60,7 @@ jobs:
       env: ${{ steps.resolve.outputs.env }}
       sha: ${{ steps.resolve.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
       - id: resolve
@@ -142,7 +142,7 @@ jobs:
           echo "::error::${SHA} не выкладывался успешно на test. Сначала push в sprint*/main или ручной запуск с environment=test"
           exit 1
 
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v5.0.0
         with:
           ref: ${{ needs.resolve.outputs.sha }}
 
