@@ -66,3 +66,47 @@ resource "yandex_iam_service_account_iam_binding" "ci_uses_vm_sa" {
   role               = "iam.serviceAccounts.user"
   members            = ["serviceAccount:${yandex_iam_service_account.ci.id}"]
 }
+
+# Проверка после выкладки читает логи контейнера (.github/scripts/verify-deploy.sh).
+# Роль только на log group окружения: в логах переписка, и ключ test-CI не должен
+# читать prod, даже если оба окружения в одном каталоге. В провайдере нет IAM-ресурса
+# для log group, а в платформе он есть, поэтому выдаём через yc (apply.sh его требует).
+resource "terraform_data" "ci_log_reader" {
+  input = {
+    log_group_id = yandex_logging_group.bot.id
+    sa_id        = yandex_iam_service_account.ci.id
+  }
+
+  provisioner "local-exec" {
+    command = "yc logging group add-access-binding --id ${self.input.log_group_id} --role logging.reader --service-account-id ${self.input.sa_id}"
+  }
+
+  provisioner "local-exec" {
+    when       = destroy
+    on_failure = continue
+    command    = "yc logging group remove-access-binding --id ${self.input.log_group_id} --role logging.reader --service-account-id ${self.input.sa_id}"
+  }
+}
+
+# Только prod: CI берёт из test-registry образ с тегом tested-<sha> (тот же digest,
+# что прошёл тестовых ботов) и копирует его к себе. Нужен pull из чужого registry.
+# Ресурс в state prod, а registry принадлежит state test, поэтому не authoritative
+# binding (он затёр бы puller у SA VM test), а точечный access binding через yc.
+resource "terraform_data" "ci_promote_puller" {
+  count = var.promote_from_registry_id == "" ? 0 : 1
+
+  input = {
+    registry_id = var.promote_from_registry_id
+    sa_id       = yandex_iam_service_account.ci.id
+  }
+
+  provisioner "local-exec" {
+    command = "yc container registry add-access-binding --id ${self.input.registry_id} --role container-registry.images.puller --service-account-id ${self.input.sa_id}"
+  }
+
+  provisioner "local-exec" {
+    when       = destroy
+    on_failure = continue
+    command    = "yc container registry remove-access-binding --id ${self.input.registry_id} --role container-registry.images.puller --service-account-id ${self.input.sa_id}"
+  }
+}

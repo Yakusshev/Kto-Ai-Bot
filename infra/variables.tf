@@ -132,6 +132,12 @@ variable "ydb_database_id" {
   default     = ""
 }
 
+variable "promote_from_registry_id" {
+  description = "Только для prod: ID test-registry (`infra/apply.sh test output -raw registry_id`). SA CI prod получает pull из него, чтобы выкатывать проверенный на test образ (tested-<sha>). Пусто — роль не выдаётся, выкладка в prod не сможет взять образ."
+  type        = string
+  default     = ""
+}
+
 variable "deletion_protection" {
   description = "Защита Lockbox-секрета от удаления (рекомендуется для prod)."
   type        = bool

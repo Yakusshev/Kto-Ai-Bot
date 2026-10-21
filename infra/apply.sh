@@ -81,7 +81,7 @@ case "$ACTION" in
       sed -i -E "s#(${repo}):[^\"[:space:]]+#\\1:${current_tag}#" "$compose_file"
       echo "Сохраняю тег образа с VM: ${current_tag}" >&2
     fi
-    yc compute instance update --id "$instance_id" \
+    yc compute instance add-metadata --id "$instance_id" \
       --metadata-from-file docker-compose="$compose_file" >/dev/null
     echo "docker-compose обновлён на ${instance_id}" >&2
     ;;
