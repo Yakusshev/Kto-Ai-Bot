@@ -66,3 +66,13 @@ resource "yandex_iam_service_account_iam_binding" "ci_uses_vm_sa" {
   role               = "iam.serviceAccounts.user"
   members            = ["serviceAccount:${yandex_iam_service_account.ci.id}"]
 }
+
+# Проверка после выкладки читает логи контейнера (.github/scripts/verify-deploy.sh).
+# Как и logging.writer у SA VM, роль на каталог: IAM на уровне log group
+# у провайдера нет. Значит, ключ CI читает все log group каталога — держите
+# test и prod в разных каталогах, если тестовый ключ не должен видеть боевые логи.
+resource "yandex_resourcemanager_folder_iam_member" "ci_log_reader" {
+  folder_id = var.folder_id
+  role      = "logging.reader"
+  member    = "serviceAccount:${yandex_iam_service_account.ci.id}"
+}

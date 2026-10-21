@@ -1,0 +1,109 @@
+# Проверки кода: тесты, mypy, сборка Docker-образа без пуша.
+#
+# Запуск:
+#   - на каждый PR;
+#   - на push в рабочие ветки (не main и не sprint*);
+#   - из deploy.yml (workflow_call). Для main и sprint* CI запускает
+#     deploy.yml перед выкладкой на test, поэтому здесь эти ветки
+#     исключены, чтобы проверки не шли дважды на один и тот же push.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+      - "sprint*"
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11" # как в Dockerfile (python:3.11-slim)
+  MYPY_VERSION: "2.4.0"
+
+jobs:
+  tests:
+    name: pytest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Установить зависимости
+        run: pip install --disable-pip-version-check -r requirements.txt
+      # Корневой test_ai.py — ручной скрипт с сетевыми вызовами, в CI его не собираем
+      - name: pytest test
+        run: python -m pytest test -q
+
+  mypy:
+    name: mypy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0 # нужен base-коммит для списка изменённых файлов
+      - uses: actions/setup-python@v5.6.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Установить зависимости
+        run: pip install --disable-pip-version-check -r requirements.txt "mypy==${MYPY_VERSION}"
+      # Как в скилле yak-static-analysis: блокирующая проверка изменённых файлов.
+      # --follow-imports=silent: ошибки в импортируемых, но не изменённых модулях
+      # не валят PR (в коде есть накопленные ошибки, см. шаг ниже).
+      - name: mypy по изменённым файлам (блокирующий)
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          base="${PR_BASE_SHA:-${PUSH_BEFORE_SHA:-}}"
+          if [[ -z "$base" || "$base" =~ ^0+$ ]] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "::notice::Нет base-коммита (новая ветка или ручной запуск): блокирующая проверка пропущена"
+            exit 0
+          fi
+          mapfile -t files < <(
+            git diff --name-only --diff-filter=ACMR "$base" HEAD -- '*.py' | grep -v '^scratch/' || true
+          )
+          if [[ ${#files[@]} -eq 0 ]]; then
+            echo "Изменённых Python-файлов нет"
+            exit 0
+          fi
+          printf 'Проверяю:\n'; printf '  %s\n' "${files[@]}"
+          python -m mypy "${files[@]}" \
+            --ignore-missing-imports --explicit-package-bases --follow-imports=silent
+      # Накопленные ошибки всего проекта: только для информации, пока их не исправят
+      - name: mypy по всему проекту (информационный)
+        continue-on-error: true
+        run: |
+          python -m mypy bot main.py test \
+            --ignore-missing-imports --explicit-package-bases \
+            | tee mypy-full.txt || true
+          {
+            echo "### mypy по всему проекту (не блокирует)"
+            echo '```'
+            tail -n 1 mypy-full.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  docker:
+    name: docker build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - name: Собрать образ (без пуша)
+        run: docker build --label "org.opencontainers.image.revision=${GITHUB_SHA}" -t kto-ai-bot:ci .
+      - name: Образ стартует и импортирует зависимости
+        run: docker run --rm --entrypoint python kto-ai-bot:ci -c "import aiogram, ydb, openai, aiogram_i18n"

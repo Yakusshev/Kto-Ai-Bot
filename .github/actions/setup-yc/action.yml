@@ -1,0 +1,55 @@
+name: Setup yc CLI
+description: >-
+  Ставит yc CLI фиксированной версии, авторизует его JSON-ключом сервисного
+  аккаунта kto-ai-bot-<env>-ci и логинит docker в cr.yandex.
+
+inputs:
+  sa-key:
+    description: Содержимое авторизованного ключа SA (yc iam key create ... --output key.json)
+    required: true
+  version:
+    description: Версия yc CLI (https://storage.yandexcloud.net/yandexcloud-yc/release/stable)
+    required: false
+    default: "1.41.0"
+
+runs:
+  using: composite
+  steps:
+    - name: Установить yc
+      shell: bash
+      env:
+        YC_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        dir="${RUNNER_TEMP}/yc/bin"
+        mkdir -p "$dir"
+        curl -fsSL --retry 3 -o "$dir/yc" \
+          "https://storage.yandexcloud.net/yandexcloud-yc/release/${YC_VERSION}/linux/amd64/yc"
+        chmod +x "$dir/yc"
+        echo "$dir" >> "$GITHUB_PATH"
+        "$dir/yc" version
+
+    - name: Авторизовать yc ключом SA
+      shell: bash
+      env:
+        SA_KEY: ${{ inputs.sa-key }}
+      run: |
+        set -euo pipefail
+        if [[ -z "$SA_KEY" ]]; then
+          echo "::error::Пустой ключ SA: заведите секрет YC_SA_KEY в GitHub Environment (docs/deploy.md)"
+          exit 1
+        fi
+        key_file="${RUNNER_TEMP}/yc-sa-key.json"
+        (umask 077 && printf '%s' "$SA_KEY" > "$key_file")
+        yc config profile create ci >/dev/null
+        # yc копирует ключ в свой конфиг, сам файл больше не нужен
+        yc config set service-account-key "$key_file"
+        rm -f "$key_file"
+
+    - name: docker login cr.yandex
+      shell: bash
+      run: |
+        set -euo pipefail
+        token="$(yc iam create-token)"
+        echo "::add-mask::$token"
+        printf '%s' "$token" | docker login cr.yandex --username iam --password-stdin

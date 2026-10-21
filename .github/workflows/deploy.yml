@@ -1,0 +1,200 @@
+# Выкладка бота на VM в Yandex Cloud (infra/README.md, «Контракт для CI»).
+#
+#   push в main или sprint* → CI → сборка → выкладка на test (тестовые боты).
+#     sprint* — ветка текущего спринта: задачи вливаются туда, и именно её
+#     прогоняют на тестовых ботах перед переносом в main. main — чтобы на test
+#     был и коммит, который потом поедет в прод.
+#   workflow_dispatch → выкладка выбранного sha на test или prod.
+#     prod — только вручную, через GitHub Environment `prod` с required
+#     reviewers и только для sha, который уже успешно выкладывался на test.
+#     Откат — тот же запуск с предыдущим sha (он есть в job summary).
+#
+# Значения берутся из GitHub Environment (test/prod), id не хардкодятся:
+#   vars.YC_IMAGE_REPOSITORY  ← output image_repository
+#   vars.YC_INSTANCE_ID       ← output instance_id
+#   vars.YC_LOG_GROUP_ID      ← output log_group_id
+#   secrets.YC_SA_KEY         ← ключ SA kto-ai-bot-<env>-ci
+# Подробности — docs/deploy.md.
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - "sprint*"
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "infra/**"
+      - "scratch/**"
+      - ".claude/**"
+      - ".idea/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Окружение
+        type: choice
+        options:
+          - test
+          - prod
+        default: test
+      sha:
+        description: Коммит (sha, ветка или тег git). Пусто — HEAD выбранной ветки
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/ci.yml
+
+  resolve:
+    name: Окружение и коммит
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      env: ${{ steps.resolve.outputs.env }}
+      sha: ${{ steps.resolve.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+      - id: resolve
+        env:
+          INPUT_ENV: ${{ inputs.environment }}
+          INPUT_SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            env_name="test"
+            sha="$GITHUB_SHA"
+          else
+            env_name="$INPUT_ENV"
+            ref="${INPUT_SHA:-$GITHUB_SHA}"
+            if ! sha="$(git rev-parse --verify --quiet "${ref}^{commit}")"; then
+              # ветка, которой нет локально
+              sha="$(git rev-parse --verify --quiet "origin/${ref}^{commit}")" || {
+                echo "::error::Не найден коммит '${ref}'"
+                exit 1
+              }
+            fi
+          fi
+          echo "env=${env_name}" >> "$GITHUB_OUTPUT"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "Выкладка ${sha} на ${env_name}"
+
+  deploy:
+    name: Выкладка на ${{ needs.resolve.outputs.env }}
+    needs: [ci, resolve]
+    # ci пропускается при ручном запуске: prod получает sha, уже прошедший CI и test
+    if: >-
+      always() && needs.resolve.result == 'success' &&
+      (needs.ci.result == 'success' || needs.ci.result == 'skipped')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: ${{ needs.resolve.outputs.env }}
+    concurrency:
+      # Одна выкладка на окружение за раз; следующая ждёт, а не отменяет текущую
+      group: deploy-${{ needs.resolve.outputs.env }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      deployments: read
+    env:
+      ENV_NAME: ${{ needs.resolve.outputs.env }}
+      SHA: ${{ needs.resolve.outputs.sha }}
+      IMAGE_REPOSITORY: ${{ vars.YC_IMAGE_REPOSITORY }}
+      INSTANCE_ID: ${{ vars.YC_INSTANCE_ID }}
+      LOG_GROUP_ID: ${{ vars.YC_LOG_GROUP_ID }}
+    steps:
+      - name: Проверить настройки окружения
+        run: |
+          missing=()
+          for name in IMAGE_REPOSITORY INSTANCE_ID LOG_GROUP_ID; do
+            [[ -n "${!name}" ]] || missing+=("YC_${name}")
+          done
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::В GitHub Environment '${ENV_NAME}' не заданы variables: ${missing[*]} (docs/deploy.md)"
+            exit 1
+          fi
+
+      # Прод получает только то, что уже успешно отработало на тестовых ботах.
+      # Деплойменты в test создаёт этот же workflow (job с environment: test).
+      - name: Гейт — sha уже был успешно выложен на test
+        if: env.ENV_NAME == 'prod'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          ids="$(gh api "repos/${GITHUB_REPOSITORY}/deployments?environment=test&sha=${SHA}&per_page=100" --jq '.[].id')"
+          for id in $ids; do
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${id}/statuses?per_page=1" --jq '.[0].state // ""')"
+            if [[ "$state" == "success" ]]; then
+              echo "На test успешно выкладывался ${SHA} (deployment ${id})"
+              exit 0
+            fi
+          done
+          echo "::error::${SHA} не выкладывался успешно на test. Сначала push в sprint*/main или ручной запуск с environment=test"
+          exit 1
+
+      - uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+
+      - uses: ./.github/actions/setup-yc
+        with:
+          sa-key: ${{ secrets.YC_SA_KEY }}
+
+      # Тег неизменяемый (= sha): если образ уже в registry (откат, повторный запуск),
+      # пересобирать не нужно
+      - name: Собрать и запушить образ
+        run: |
+          set -euo pipefail
+          image="${IMAGE_REPOSITORY}:${SHA}"
+          if docker buildx imagetools inspect "$image" >/dev/null 2>&1; then
+            echo "Образ ${image} уже есть в registry, сборка пропущена"
+            exit 0
+          fi
+          docker build \
+            --label "org.opencontainers.image.revision=${SHA}" \
+            --label "org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+            -t "$image" .
+          docker push "$image"
+
+      - name: Выложить на VM
+        id: deploy
+        run: |
+          set -euo pipefail
+          date -u +%Y-%m-%dT%H:%M:%SZ > "${RUNNER_TEMP}/deploy-started-at"
+          .github/scripts/deploy-vm.sh "$INSTANCE_ID" "$IMAGE_REPOSITORY" "$SHA"
+
+      - name: Дождаться старта бота
+        if: steps.deploy.outputs.changed == 'true'
+        run: |
+          .github/scripts/verify-deploy.sh "$LOG_GROUP_ID" "$(cat "${RUNNER_TEMP}/deploy-started-at")"
+
+      - name: Итог
+        if: always()
+        env:
+          PREVIOUS_TAG: ${{ steps.deploy.outputs.previous_tag }}
+          CHANGED: ${{ steps.deploy.outputs.changed }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo "### Выкладка на \`${ENV_NAME}\`: ${JOB_STATUS}"
+            echo ""
+            echo "- образ: \`${IMAGE_REPOSITORY}:${SHA}\`"
+            echo "- было на VM: \`${PREVIOUS_TAG:-?}\`"
+            if [[ "$CHANGED" == "false" ]]; then
+              echo "- тег уже стоял на VM, контейнер не перезапускался"
+            fi
+            if [[ -n "${PREVIOUS_TAG:-}" && "$PREVIOUS_TAG" != "$SHA" ]]; then
+              echo ""
+              echo "**Откат:** Actions → Deploy → Run workflow: environment=\`${ENV_NAME}\`, sha=\`${PREVIOUS_TAG}\`"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

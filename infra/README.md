@@ -25,7 +25,9 @@ Lockbox, Cloud Logging, сеть и постоянно работающая VM �
   `logging.writer` на каталог (у провайдера нет IAM на уровне log group), `ydb.editor` только
   на базу из `ydb_database_id`. Если переменная пуста, роль не выдаётся.
 - **SA CI**: `container-registry.images.pusher` на registry, `compute.editor` только на эту VM,
-  `iam.serviceAccounts.user` на SA VM (без него нельзя менять VM с привязанным SA).
+  `iam.serviceAccounts.user` на SA VM (без него нельзя менять VM с привязанным SA),
+  `logging.reader` на каталог (проверка старта бота по логам после выкладки; IAM на уровне
+  log group у провайдера нет, поэтому test и prod лучше держать в разных каталогах).
 
 ## Как устроен запуск на VM
 
@@ -136,12 +138,13 @@ make -C infra secrets ENV=test FILE=secrets.test.env
 #    с ключом YDB (обязательно, если ydb_database_id в envs/test.tfvars пуст):
 make -C infra secrets ENV=test FILE=secrets.test.env YDB_KEY=../credentials/ydb_authorized_key.json
 
-# 3. Образ. До D3 — вручную:
+# 3. Образ и выкладка — GitHub Actions (workflow Deploy), см. docs/deploy.md.
+#    Без CI, вручную:
 yc container registry configure-docker
 REPO=$(infra/apply.sh test output -raw image_repository)
 docker build -t "$REPO:latest" . && docker push "$REPO:latest"
 
-# 4. Перезапуск, чтобы контейнер взял секрет и образ
+# 4. Перезапуск, чтобы контейнер взял секрет и образ (после выкладки через CI не нужен)
 yc compute instance restart kto-ai-bot-test
 ```
 
@@ -201,7 +204,8 @@ sed -i -E "s#(${IMAGE_REPOSITORY}):[^\"[:space:]]+#\1:${SHA}#" compose.yaml
 yc compute instance update --id "$INSTANCE_ID" --metadata-from-file docker-compose=compose.yaml
 ```
 
-Откат делается той же командой с предыдущим `<sha>`. Неизменяемый тег, а не `:latest`,
+Реализация: `.github/workflows/deploy.yml` и `.github/scripts/deploy-vm.sh`
+(инструкция — `docs/deploy.md`). Откат делается той же командой с предыдущим `<sha>`. Неизменяемый тег, а не `:latest`,
 нужен, чтобы точно знать, что запущено, и чтобы COI видел изменение metadata.
 
 **Изменение шаблона compose** (`templates/*`, `bot_environment`, `stop_grace_period`,
@@ -228,7 +232,7 @@ Terraform ключ не создаёт, чтобы он не попал в state
 
 ```bash
 yc iam key create --service-account-name kto-ai-bot-test-ci --output ci-key.json
-# содержимое ci-key.json → секрет GitHub Actions (например YC_SA_KEY_TEST), потом удалить файл
+# содержимое ci-key.json → секрет GitHub Actions `YC_SA_KEY` в GitHub Environment `test` (для prod — в `prod`), потом удалить файл
 rm ci-key.json
 ```
 
