@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Одна команда для инфраструктуры окружения.
 #
-#   infra/apply.sh <test|prod> [apply|plan|destroy|output] [доп. аргументы terraform]
+#   infra/apply.sh <test|prod> [apply|plan|destroy|output|compose] [доп. аргументы terraform]
 #
 # По умолчанию — apply. State: infra/state/<env>.tfstate (см. README.md).
+# compose — выложить на VM изменённый шаблон docker-compose с текущим тегом образа.
 set -euo pipefail
 
 ENV_NAME="${1:-}"
@@ -14,7 +15,7 @@ if [[ $# -gt 0 ]]; then shift; fi
 case "$ENV_NAME" in
   test|prod) ;;
   *)
-    echo "Использование: $0 <test|prod> [apply|plan|destroy|output] [аргументы terraform]" >&2
+    echo "Использование: $0 <test|prod> [apply|plan|destroy|output|compose] [аргументы terraform]" >&2
     exit 2
     ;;
 esac
@@ -61,8 +62,31 @@ case "$ACTION" in
   output)
     terraform output "$@"
     ;;
+  compose)
+    # Доставить изменения шаблона compose на VM, сохранив тег образа,
+    # который туда выложил CI. Перед этим нужен `apply`, чтобы обновился output.
+    instance_id="$(terraform output -raw instance_id)"
+    repo="$(terraform output -raw image_repository)"
+    compose_file="$(mktemp)"
+    trap 'rm -f "$compose_file"' EXIT
+    terraform output -raw docker_compose >"$compose_file"
+    # Тег можно передать явно: apply.sh <env> compose <tag> (например после -replace VM)
+    current_tag="${1:-}"
+    [[ -n "$current_tag" ]] || current_tag="$(
+      yc compute instance get --id "$instance_id" --full --format json \
+        | python3 -I -c 'import json, sys; print(json.load(sys.stdin)["metadata"].get("docker-compose", ""))' \
+        | grep -oE "${repo}:[^\"[:space:]]+" | head -n 1 | sed "s#^${repo}:##" || true
+    )"
+    if [[ -n "$current_tag" ]]; then
+      sed -i -E "s#(${repo}):[^\"[:space:]]+#\\1:${current_tag}#" "$compose_file"
+      echo "Сохраняю тег образа с VM: ${current_tag}" >&2
+    fi
+    yc compute instance update --id "$instance_id" \
+      --metadata-from-file docker-compose="$compose_file" >/dev/null
+    echo "docker-compose обновлён на ${instance_id}" >&2
+    ;;
   *)
-    echo "Неизвестное действие: $ACTION (apply|plan|destroy|output)" >&2
+    echo "Неизвестное действие: $ACTION (apply|plan|destroy|output|compose)" >&2
     exit 2
     ;;
 esac

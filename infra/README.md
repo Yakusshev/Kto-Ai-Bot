@@ -22,8 +22,8 @@ Lockbox, Cloud Logging, сеть и постоянно работающая VM �
 Роли (минимальные):
 
 - **SA VM**: `container-registry.images.puller` на registry, `lockbox.payloadViewer` на секрет,
-  `logging.writer` на каталог (у провайдера нет IAM на уровне log group), `ydb.editor` на каталог
-  с YDB (отключается `grant_ydb_editor = false`).
+  `logging.writer` на каталог (у провайдера нет IAM на уровне log group), `ydb.editor` только
+  на базу из `ydb_database_id`. Если переменная пуста, роль не выдаётся.
 - **SA CI**: `container-registry.images.pusher` на registry, `compute.editor` только на эту VM,
   `iam.serviceAccounts.user` на SA VM (без него нельзя менять VM с привязанным SA).
 
@@ -32,7 +32,10 @@ Lockbox, Cloud Logging, сеть и постоянно работающая VM �
 COI читает из metadata ключ `docker-compose` и сам поднимает контейнеры, а при изменении
 metadata пересоздаёт их. Compose рендерит Terraform (`templates/docker-compose.yaml.tftpl`):
 
-- **bot** — образ бота, `restart: always`, `network_mode: host`.
+- **bot** — образ бота, `restart: always`, `network_mode: host`, `stop_grace_period: 60s`
+  (переменная `stop_grace_period`). Лаунчер делает `exec`, поэтому python бота остаётся PID 1,
+  сам получает SIGTERM и успевает дописать ответы LLM. SIGKILL придёт только через 60 с.
+  До `exec` лаунчер завершается по SIGTERM сразу, даже если ещё ждёт Lockbox.
 - **fluentbit** — `cr.yandex/yc/fluent-bit-plugin-yandex`, принимает логи по forward-протоколу
   на `127.0.0.1:24224` и пишет их в log group от имени SA VM.
 
@@ -61,9 +64,11 @@ metadata пересоздаёт их. Compose рендерит Terraform (`templ
 Образ бота (после D1.2) содержит только `bot/`, `main.py`, `requirements.txt`: ни `.env`,
 ни `credentials/` в него не попадают. Для YDB есть два варианта:
 
-- **по умолчанию**: SA VM получает `ydb.editor`, файла ключа нет, и `CreateYdbDriver`
-  переходит на `MetadataUrlCredentials`. Ключ вообще не нужен;
-- **с ключом**: залейте `credentials/ydb_authorized_key.json` третьим аргументом
+- **без ключа (рекомендуется)**: укажите `ydb_database_id` базы этого окружения
+  в `envs/<env>.tfvars`. SA VM получит `ydb.editor` только на эту базу: test-VM не получит
+  доступ к prod-YDB, даже если оба окружения в одном каталоге. Файла ключа нет, и
+  `CreateYdbDriver` переходит на `MetadataUrlCredentials`;
+- **с ключом (обязательно, если `ydb_database_id` пуст)**: залейте `credentials/ydb_authorized_key.json` третьим аргументом
   `push-secrets.sh`, он попадёт в запись `YDB_AUTHORIZED_KEY_JSON` и будет смонтирован файлом,
   как описано выше.
 
@@ -128,7 +133,7 @@ make -C infra apply ENV=test          # или: infra/apply.sh test
 cp infra/secrets.env.example infra/secrets.test.env   # в .gitignore
 #    ... заполнить ...
 make -C infra secrets ENV=test FILE=secrets.test.env
-#    с ключом YDB (если не используете ydb.editor для SA VM):
+#    с ключом YDB (обязательно, если ydb_database_id в envs/test.tfvars пуст):
 make -C infra secrets ENV=test FILE=secrets.test.env YDB_KEY=../credentials/ydb_authorized_key.json
 
 # 3. Образ. До D3 — вручную:
@@ -180,7 +185,14 @@ Outputs (`infra/apply.sh <env> output -json`):
 | `log_group_id` | ссылки на логи |
 | `ci_service_account_id` | для выпуска ключа CI |
 
-Выкладка образа: CI пушит `:<sha>` и `:latest`, затем меняет тег в compose из metadata VM:
+**Кто чем владеет.** Тег образа в metadata `docker-compose` принадлежит CI. Terraform пишет
+compose только при создании VM, с тегом из `image_tag` (по умолчанию `latest`).
+После этого он его не трогает: `ignore_changes = [metadata["docker-compose"]]`. Поэтому
+`make apply` не откатывает тег, который выложил CI.
+
+**Выкладка образа (CI):** собрать и запушить `<image_repository>:<sha>`, затем заменить тег
+в compose, который сейчас лежит на VM. COI сам пересоздаст контейнер: старый получит SIGTERM
+и до 60 с на graceful shutdown.
 
 ```bash
 yc compute instance get --id "$INSTANCE_ID" --full --format json \
@@ -189,8 +201,26 @@ sed -i -E "s#(${IMAGE_REPOSITORY}):[^\"[:space:]]+#\1:${SHA}#" compose.yaml
 yc compute instance update --id "$INSTANCE_ID" --metadata-from-file docker-compose=compose.yaml
 ```
 
-COI пересоздаст контейнер с новым образом. Следующий `terraform apply` вернёт тег `latest`,
-но это тот же образ: CI пушит оба тега.
+Откат делается той же командой с предыдущим `<sha>`. Неизменяемый тег, а не `:latest`,
+нужен, чтобы точно знать, что запущено, и чтобы COI видел изменение metadata.
+
+**Изменение шаблона compose** (`templates/*`, `bot_environment`, `stop_grace_period`,
+версия fluent-bit) делает человек, CI тут не участвует:
+
+```bash
+make -C infra apply ENV=test     # обновит output docker_compose, VM не тронет
+make -C infra compose ENV=test   # выложит новый compose с текущим тегом образа с VM
+                                 # (ARGS=<tag> — задать тег явно)
+```
+
+**Обновление COI.** Образ ОС зафиксирован при создании VM (`ignore_changes` на `image_id`),
+поэтому новые релизы COI не пересоздают VM при каждом `apply`. Чтобы обновить COI осознанно
+(VM пересоздаётся, бот недолго недоступен, публичный IP меняется):
+
+```bash
+infra/apply.sh test apply -replace=yandex_compute_instance.bot
+make -C infra compose ENV=test ARGS=<sha>   # новая VM стартует с image_tag: вернуть тег из CI
+```
 
 ### Ключ для CI
 

@@ -14,6 +14,11 @@ output "image_repository" {
   value       = local.image_repository
 }
 
+output "docker_compose" {
+  description = "Актуальный compose по шаблону (тег image_tag). Применяет `apply.sh <env> compose`, сохраняя тег с VM."
+  value       = local.docker_compose
+}
+
 output "instance_id" {
   value = yandex_compute_instance.bot.id
 }

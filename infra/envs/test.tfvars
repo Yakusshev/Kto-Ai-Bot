@@ -7,6 +7,10 @@
 subnet_cidr         = "10.10.0.0/24"
 deletion_protection = false
 
+# ID тестовой базы YDB (`yc ydb database get <name> --format json | jq -r .id`):
+# SA VM получит ydb.editor только на неё, ключ YDB не нужен. Пусто — нужен ключ в Lockbox.
+ydb_database_id = ""
+
 # Несекретные переменные бота (секреты и всё остальное — в Lockbox).
 bot_environment = {}
 

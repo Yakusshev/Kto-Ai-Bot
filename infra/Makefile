@@ -3,14 +3,15 @@
 #   make -C infra plan ENV=prod
 #   make -C infra secrets ENV=test FILE=../.env.test [YDB_KEY=../credentials/ydb_authorized_key.json]
 #   make -C infra output ENV=test
+#   make -C infra compose ENV=test   # выложить изменённый шаблон compose, тег образа сохраняется
 #   make -C infra check        # fmt -check + validate, облако не нужно
 
 ENV ?= test
 ARGS ?=
 
-.PHONY: apply plan destroy output secrets check
+.PHONY: apply plan destroy output compose secrets check
 
-apply plan destroy output:
+apply plan destroy output compose:
 	./apply.sh $(ENV) $@ $(ARGS)
 
 secrets:

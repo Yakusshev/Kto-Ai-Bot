@@ -89,7 +89,7 @@ variable "image_name" {
 }
 
 variable "image_tag" {
-  description = "Тег образа бота. CI пушит :<sha> и :latest (см. README)."
+  description = "Тег образа только для первого создания VM. Дальше тег в metadata ведёт CI (см. README)."
   type        = string
   default     = "latest"
 }
@@ -98,6 +98,12 @@ variable "bot_command" {
   description = "Команда запуска бота внутри образа (её exec'ает Lockbox-лаунчер)."
   type        = list(string)
   default     = ["python", "main.py"]
+}
+
+variable "stop_grace_period" {
+  description = "Сколько docker ждёт после SIGTERM до SIGKILL. Должно покрывать самый долгий ответ LLM."
+  type        = string
+  default     = "60s"
 }
 
 variable "bot_environment" {
@@ -120,14 +126,8 @@ variable "log_retention" {
   default     = "168h"
 }
 
-variable "grant_ydb_editor" {
-  description = "Выдать VM SA роль ydb.editor: бот ходит в YDB по metadata-токену без файла ключа. false — кладите ключ в Lockbox (запись YDB_AUTHORIZED_KEY_JSON)."
-  type        = bool
-  default     = true
-}
-
-variable "ydb_folder_id" {
-  description = "Каталог, где лежит YDB (для роли ydb.editor). Пусто — каталог окружения (folder_id)."
+variable "ydb_database_id" {
+  description = "ID базы YDB этого окружения (`yc ydb database get <name>`). Если задан, SA VM получает ydb.editor только на эту базу и ходит в неё по metadata-токену без файла ключа. Пусто — роль не выдаётся, ключ обязателен (запись YDB_AUTHORIZED_KEY_JSON в Lockbox)."
   type        = string
   default     = ""
 }

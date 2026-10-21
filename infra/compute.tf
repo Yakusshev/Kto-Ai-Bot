@@ -55,6 +55,18 @@ resource "yandex_compute_instance" "bot" {
     yandex_container_registry_iam_binding.vm_puller,
     yandex_lockbox_secret_iam_binding.vm_payload_viewer,
     yandex_resourcemanager_folder_iam_member.vm_log_writer,
-    yandex_resourcemanager_folder_iam_member.vm_ydb,
+    yandex_ydb_database_iam_member.vm_ydb,
   ]
+
+  lifecycle {
+    ignore_changes = [
+      # Data source по family возвращает новый COI после каждого его релиза,
+      # а image_id — ForceNew: без этого любой apply пересоздавал бы VM.
+      # Обновить COI осознанно: apply.sh <env> apply -replace=yandex_compute_instance.bot
+      boot_disk[0].initialize_params[0].image_id,
+      # Тег образа в compose меняет CI (README, «Контракт для CI»). Изменения
+      # шаблона доставляет `apply.sh <env> compose` с сохранением текущего тега.
+      metadata["docker-compose"],
+    ]
+  }
 }

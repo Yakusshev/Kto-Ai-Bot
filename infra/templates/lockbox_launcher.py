@@ -10,6 +10,7 @@
 import base64
 import json
 import os
+import signal
 import sys
 import time
 import urllib.request
@@ -70,7 +71,17 @@ def entry_value(entry):
     return base64.b64decode(entry.get("binaryValue", "")).decode("utf-8")
 
 
+def stop_on_signal(signum, frame):
+    log("got signal {0} before bot start, exiting".format(signum))
+    sys.exit(128 + signum)
+
+
 def main():
+    # Пока лаунчер — PID 1, ядро не применяет к нему действие SIGTERM по
+    # умолчанию: без обработчика `docker stop` во время ретраев ждал бы SIGKILL.
+    signal.signal(signal.SIGTERM, stop_on_signal)
+    signal.signal(signal.SIGINT, stop_on_signal)
+
     if len(sys.argv) < 2:
         log("usage: python -c <launcher> <command> [args...]")
         sys.exit(2)
@@ -101,6 +112,9 @@ def main():
             ", ".join(sorted(loaded_keys)) or "<none>",
         ),
     )
+    # exec заменяет процесс: python бота остаётся PID 1 и сам получает SIGTERM
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     os.execvpe(sys.argv[1], sys.argv[1:], env)
 
 

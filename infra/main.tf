@@ -14,7 +14,8 @@ locals {
   launcher_source = replace(file("${path.module}/templates/lockbox_launcher.py"), "$", "$$")
 
   docker_compose = templatefile("${path.module}/templates/docker-compose.yaml.tftpl", {
-    bot_image = local.bot_image
+    bot_image         = local.bot_image
+    stop_grace_period = var.stop_grace_period
     bot_environment = jsonencode(merge(var.bot_environment, {
       LOCKBOX_SECRET_ID = yandex_lockbox_secret.bot.id
       BOT_ENV           = var.env

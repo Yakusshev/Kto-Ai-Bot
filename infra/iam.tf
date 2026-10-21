@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 # SA виртуальной машины: pull образа, чтение Lockbox, запись логов, (опц.) YDB.
-# Pull и Lockbox выданы на конкретный ресурс; logging.writer и ydb.editor —
-# на каталог (у провайдера нет IAM-ресурсов уровнем ниже).
+# Pull, Lockbox и YDB выданы на конкретный ресурс; logging.writer — на каталог
+# (у провайдера нет IAM-ресурса на уровне log group).
 # -----------------------------------------------------------------------------
 resource "yandex_iam_service_account" "vm" {
   name        = "${local.name}-vm"
@@ -28,11 +28,13 @@ resource "yandex_resourcemanager_folder_iam_member" "vm_log_writer" {
   member    = "serviceAccount:${yandex_iam_service_account.vm.id}"
 }
 
-resource "yandex_resourcemanager_folder_iam_member" "vm_ydb" {
-  count     = var.grant_ydb_editor ? 1 : 0
-  folder_id = var.ydb_folder_id == "" ? var.folder_id : var.ydb_folder_id
-  role      = "ydb.editor"
-  member    = "serviceAccount:${yandex_iam_service_account.vm.id}"
+# Роль только на базу своего окружения: test-VM не должна видеть prod-YDB,
+# даже если оба окружения в одном каталоге.
+resource "yandex_ydb_database_iam_member" "vm_ydb" {
+  count       = var.ydb_database_id == "" ? 0 : 1
+  database_id = var.ydb_database_id
+  role        = "ydb.editor"
+  member      = "serviceAccount:${yandex_iam_service_account.vm.id}"
 }
 
 # -----------------------------------------------------------------------------

@@ -9,6 +9,8 @@ services:
     container_name: kto-ai-bot
     image: ${bot_image}
     restart: always
+    # SIGTERM → graceful shutdown бота (дописывает ответы LLM), потом SIGKILL
+    stop_grace_period: ${stop_grace_period}
     # host-сеть: прямой доступ к metadata-сервису (IAM-токен SA для Lockbox и YDB)
     network_mode: host
     depends_on:
