@@ -1,6 +1,7 @@
 import logging
 import zoneinfo
 
+from bot.core.domain.format.ReadableDateTime import format_readable_datetime
 from bot.core.domain.const.env_const import NEXT_MESSAGE_SEPARATOR
 from bot.feature.business.domain.model.UserMessageInfoForAiModel import UserMessageInfoForAiModel
 from bot.resource.Strings import Strings
@@ -51,7 +52,7 @@ class GetSystemInstructionUseCase():
     def format_time(
         message_datetime: datetime,
     ):
-        time_readable = message_datetime.strftime("%Y-%m-%d %A %H:%M")
+        time_readable = format_readable_datetime(value = message_datetime)
 
         _logger.debug(f"format_time {time_readable}")
 

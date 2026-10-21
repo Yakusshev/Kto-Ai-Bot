@@ -1,5 +1,6 @@
 from typing import Any
 
+from bot.core.domain.format.ReadableDateTime import format_readable_datetime
 from bot.feature.business.domain.model.UserChatModel import UserChatModel
 
 
@@ -22,7 +23,9 @@ class FormatUserChatModelListUseCase:
                 result = self.add(body = result, data = user.bio, title = "bio")
                 result = self.add(body = result, data = user.birthdate, title = "birthdate")
 
-                update_date = user.update_date.strftime("%Y-%m-%d %A %H:%M")
+                update_date = None
+                if user.update_date:
+                    update_date = format_readable_datetime(value = user.update_date)
                 result = self.add(body = result, data = update_date, title = "update_date")
                 result += f"channel @{user.channel_username}; {user.channel_title}\n"
             else:
@@ -30,7 +33,7 @@ class FormatUserChatModelListUseCase:
 
             chat = user_chat.chat_info_model
             result += f"message_count = {chat.message_count}\n"
-            update_date = chat.last_message_date.strftime("%Y-%m-%d %A %H:%M")
+            update_date = format_readable_datetime(value = chat.last_message_date)
             result += f"last_message: {update_date}\n"
             result += f"    {chat.last_message_role}\n"
             result += f"    {chat.last_message_content}\n"

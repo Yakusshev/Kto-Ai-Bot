@@ -1,0 +1,34 @@
+# Секреты: передаются в контейнер только через переменные окружения
+.env
+.env.*
+**/.env
+credentials/
+**/credentials/
+*.pem
+*.key
+*_key.json
+*ServiceAccountKey*.json
+.ydb_authorized_key.json
+
+# Служебное и окружение разработчика
+.git
+.gitignore
+.venv
+venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.idea
+.claude
+.aiexclude
+
+# Не нужно в рантайме
+release/
+scratch/
+test/
+test_ai.py
+pytest.ini
+build_release.sh
+Dockerfile
+.dockerignore

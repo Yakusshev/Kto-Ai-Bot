@@ -1,6 +1,5 @@
 # main.py
 import asyncio
-import locale
 import logging
 import sys
 
@@ -37,8 +36,6 @@ from bot.feature.admin.di.GetRemindInfoTextScenarioMiddleware import \
 
 
 async def main():
-    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-
     # Ставим обработчики до подключения к YDB, чтобы ранний SIGTERM тоже
     # привёл к штатной остановке
     shutdown_signal = ShutdownSignal()
