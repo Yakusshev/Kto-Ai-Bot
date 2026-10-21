@@ -1,0 +1,32 @@
+# Рендерится Terraform'ом (infra/compute.tf) и кладётся в metadata VM
+# под ключом docker-compose. Container Optimized Image сам поднимает этот
+# compose и пересоздаёт контейнеры при изменении metadata.
+# Секретов здесь нет: их читает лаунчер из Lockbox при каждом старте контейнера.
+version: "3.7"
+
+services:
+  bot:
+    container_name: kto-ai-bot
+    image: ${bot_image}
+    restart: always
+    # host-сеть: прямой доступ к metadata-сервису (IAM-токен SA для Lockbox и YDB)
+    network_mode: host
+    depends_on:
+      - fluentbit
+    environment: ${bot_environment}
+    entrypoint: ${bot_entrypoint}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async: "true"
+        tag: kto-ai-bot
+
+  fluentbit:
+    container_name: fluentbit
+    image: ${fluentbit_image}
+    restart: always
+    ports:
+      - "127.0.0.1:24224:24224"
+    # Конфиг целиком в аргументах: не нужны файлы на хосте и user-data
+    command: ${fluentbit_command}

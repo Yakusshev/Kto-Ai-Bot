@@ -1,0 +1,9 @@
+#cloud-config
+# Только для отладки: пользователь для SSH. Бот и секреты от user-data не зависят.
+users:
+  - name: yc-user
+    groups: sudo
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    ssh_authorized_keys:
+      - ${ssh_public_key}

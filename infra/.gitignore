@@ -1,0 +1,11 @@
+.terraform/
+state/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+# Значения секретов и ключи — никогда в git
+secrets.*.env
+*.env
+!secrets.env.example
+*key*.json
