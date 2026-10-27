@@ -11,11 +11,11 @@
 
 Два workflow в `.github/workflows/`:
 
-- **CI** (`ci.yml`) — на каждый PR и push в рабочие ветки: `pytest test`, mypy, `docker build`
-  без пуша и проверка, что зависимости в образе импортируются.
-  mypy блокирует только изменённые Python-файлы (как в скилле `yak-static-analysis`).
-  Проверка всего проекта показывается в summary, но пока не блокирует: в коде накоплено
-  около 40 ошибок типизации.
+- **CI** (`ci.yml`) — на каждый PR и push в рабочие ветки, все джобы обязательные: `pytest test`,
+  `lint-imports` (контракты слоёв, `.importlinter`), `ruff` (`pyproject.toml`), тесты архитектуры
+  (`test/architecture`), `mypy` (весь проект, `mypy.ini`), `docker build` без пуша и проверка,
+  что зависимости в образе импортируются. Накопленные нарушения занесены в baseline
+  (см. CLAUDE.md), новые блокируют PR.
 - **Deploy** (`deploy.yml`):
   1. push в `sprint*` или `main` → CI → сборка образа `<image_repository>:<sha>` → push в
      Container Registry → замена тега в metadata `docker-compose` VM → проверка старта.
@@ -138,7 +138,7 @@ gh variable set DEPLOY_TEST_ENABLED --body true
 Окружение `test` оставьте без reviewer'ов, ветки — `main` и `sprint*`.
 
 Рекомендуется: в правилах защиты веток `main` и `sprint*` сделать обязательными проверки
-`pytest`, `mypy`, `docker build` из workflow CI.
+`pytest`, `lint-imports`, `ruff`, `тесты архитектуры`, `mypy`, `docker build` из workflow CI.
 
 ### Почему ключ, а не Workload Identity Federation
 

@@ -1,0 +1,5 @@
+# Инструменты проверки кода (CI и локально). В прод-образ (Dockerfile) не попадают.
+-r requirements.txt
+import-linter==2.15
+ruff==0.17.3
+mypy==2.4.0
