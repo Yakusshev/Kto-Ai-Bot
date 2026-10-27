@@ -14,9 +14,9 @@ from bot.core.di.AiogramI18nProvider import AiogramI18nProvider
 from bot.core.di.container import create_container
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
-from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
 from bot.feature.business.domain.repository.AiRepository import AiRepository
+from bot.feature.business.domain.usecase.ProcessChatEventUseCase import \
+    ProcessChatEventUseCase
 from bot.resource.Strings import Strings
 
 
@@ -43,7 +43,7 @@ class FakeBoundariesProvider(Provider):
 class TestAiogramIntegration:
 
     @pytest.mark.asyncio
-    async def test_when_update_arrives_expect_handler_gets_strings_and_scheduler(self):
+    async def test_when_update_arrives_expect_handler_gets_strings_and_process_chat_event(self):
         received: dict[str, object] = {}
         router = Router()
 
@@ -51,10 +51,10 @@ class TestAiogramIntegration:
         async def handler(
             message: Message,
             strings: FromDishka[Strings],
-            scheduler: FromDishka[TaskSchedulerRepositoryImpl],
+            process_chat_event: FromDishka[ProcessChatEventUseCase],
         ):
             received["strings"] = strings
-            received["scheduler"] = scheduler
+            received["process_chat_event"] = process_chat_event
 
         container = create_container(
             FakeBoundariesProvider(),
@@ -98,4 +98,4 @@ class TestAiogramIntegration:
         await bot.session.close()
 
         assert isinstance(received["strings"], Strings)
-        assert received["scheduler"] is TaskSchedulerRepositoryImpl()
+        assert isinstance(received["process_chat_event"], ProcessChatEventUseCase)

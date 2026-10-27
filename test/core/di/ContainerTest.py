@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncIterator
 from unittest.mock import MagicMock, patch
 
@@ -13,12 +14,20 @@ from bot.feature.admin.domain.scenario.GetRemindInfoTextScenario import \
     GetRemindInfoTextScenario
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
-from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
+from bot.feature.business.domain.repository.DelayedTaskQueue import DelayedTaskQueue
+from bot.feature.business.domain.usecase.HandleChatStepUseCase import \
+    HandleChatStepUseCase
 from bot.feature.business.domain.repository.AiRepository import AiRepository
 from bot.feature.business.entrypoint.service.ChatService import ChatService
 from bot.feature.business.entrypoint.service.ReminderService import ReminderService
+from bot.feature.business.domain.model.ChatState import ChatPhase, StepTicket
+from bot.feature.business.domain.model.ChatStep import ChatStepKind, ChatStepPayload
+from bot.feature.business.domain.repository.ChatStateRepository import \
+    ChatStateRepository
 from bot.resource.Strings import Strings
+from feature.business.domain.fake.ChatStepHarness import make_context
+from feature.business.domain.fake.FakeChatStateRepository import \
+    FakeChatStateRepository
 
 CORE_PROVIDER = 'bot.core.di.CoreProvider'
 REAL_SESSION_POOL = ydb.SessionPool
@@ -107,19 +116,73 @@ class TestContainerWithoutAiogram:
         assert first is not second
 
     @pytest.mark.asyncio
-    async def test_when_two_requests_expect_same_task_scheduler(
+    async def test_when_two_requests_expect_same_delayed_task_queue(
         self,
         container: AsyncContainer,
     ):
         async with container() as first_request:
-            first = await first_request.get(TaskSchedulerRepositoryImpl)
+            first = await first_request.get(DelayedTaskQueue)
             first_reminder = await first_request.get(ReminderService)
         async with container() as second_request:
-            second = await second_request.get(TaskSchedulerRepositoryImpl)
+            second = await second_request.get(DelayedTaskQueue)
 
         assert first is second
-        assert first is TaskSchedulerRepositoryImpl()
-        assert first_reminder.task_scheduler is first
+        assert first_reminder.process_chat_event_use_case is not None
+
+    @pytest.mark.asyncio
+    async def test_when_request_step_handler_expect_instance(
+        self,
+        container: AsyncContainer,
+    ):
+        async with container() as request_container:
+            actual = await request_container.get(HandleChatStepUseCase)
+
+        assert isinstance(actual, HandleChatStepUseCase)
+
+
+class SpyStateProvider(Provider):
+    """Подменяет хранилище состояния фейком: видно, что шаг дошёл до проверки талона."""
+
+    scope = Scope.APP
+
+    def __init__(self, repository: FakeChatStateRepository):
+        super().__init__()
+        self._repository = repository
+
+    @provide(override = True)
+    def get_chat_state_repository(self) -> ChatStateRepository:
+        return self._repository
+
+
+class TestInMemoryQueueWiring:
+
+    @pytest.mark.asyncio
+    async def test_when_step_sent_to_default_queue_expect_handled_in_request_scope(self):
+        repository = FakeChatStateRepository()
+        seen: list[int] = []
+        original_get = repository.get
+
+        async def spy_get(chat_id: int):
+            seen.append(chat_id)
+            return await original_get(chat_id)
+
+        repository.get = spy_get  # type: ignore[method-assign]
+        container = create_container(FakeBoundariesProvider(), SpyStateProvider(repository))
+
+        queue = await container.get(DelayedTaskQueue)
+        await queue.send(
+            task = ChatStepPayload(
+                step_id = "s1",
+                kind = ChatStepKind.READ_MESSAGE,
+                ticket = StepTicket(chat_id = 77, phase = ChatPhase.PREPARING, phase_version = 1),
+                context = make_context(),
+            ),
+            delay_seconds = 0,
+        )
+        await asyncio.sleep(0.1)
+        await container.close()
+
+        assert seen == [77]
 
 
 class TestCoreProviderLifecycle:
