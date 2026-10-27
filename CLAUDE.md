@@ -12,7 +12,7 @@ bot/feature/<имя>/
     entrypoint/      хендлеры aiogram, сервисы, фильтры
     data/            репозитории, datasource, YDB, внешние API
     domain/          usecase, scenario, model, интерфейсы репозиториев
-    di/              сборка зависимостей (middleware, провайдеры)
+    di/              провайдеры dishka (<Фича>Provider.py)
 ```
 
 Правила (проверяются машиной):
@@ -25,6 +25,16 @@ bot/feature/<имя>/
 
 Новый код: фича в `bot/feature/<имя>/{entrypoint,domain,data,di}`; общее для всех фич - в `bot/core`.
 Новая фича = добавить контейнер в контракт `feature-layers` и контракт `<имя>-isolated` в `.importlinter`.
+
+## DI: где добавить зависимость
+
+DI на dishka, контейнер не привязан к aiogram: `bot/core/di/container.py` (`create_container`) - единственное место сборки.
+
+- Новый класс (репозиторий, use case, сервис): добавить в `provide_all(...)` провайдера своей фичи, `bot/feature/<фича>/di/<Фича>Provider.py`. Зависимости берутся из типов `__init__`.
+- Scope: APP - YDB, репозитории, клиенты, состояние приложения; REQUEST - всё, что зависит от Strings/апдейта. Не клади в REQUEST финализаторы: фоновые задачи живут дольше апдейта.
+- Общее для всех фич (YDB driver/pool, Strings) - `bot/core/di/CoreProvider.py`. Провайдеры фич друг друга не импортируют: нужный тип чужой фичи просто указывается в `__init__`.
+- Хендлер получает зависимость как `x: FromDishka[Тип]` (auto_inject включён в `main.py` для обоих диспетчеров). Вне aiogram: `create_container(StandaloneI18nProvider())`, затем `async with container() as request: await request.get(ChatService)`.
+- Тесты: подменять внешние границы провайдером с `provide(override = True)`, образец - `test/core/di/ContainerTest.py`.
 
 ## Проверки и запуск
 

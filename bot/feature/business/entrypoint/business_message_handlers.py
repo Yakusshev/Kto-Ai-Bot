@@ -6,6 +6,7 @@ from asyncio import Event, Task
 
 from aiogram import Router, F, Bot
 from aiogram.types import Message
+from dishka import FromDishka
 
 from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
@@ -30,12 +31,14 @@ business_router = Router()
 async def __handle_text(
     message: Message,
     bot: Bot,
-    chat_service: ChatService,
+    chat_service: FromDishka[ChatService],
+    scheduler: FromDishka[TaskSchedulerRepositoryImpl],
 ):
     await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
+        scheduler = scheduler,
         text_content = message.text,
     )
 
@@ -44,13 +47,15 @@ async def __handle_text(
 async def __handle_sticker(
     message: Message,
     bot: Bot,
-    chat_service: ChatService,
-    strings: Strings,
+    chat_service: FromDishka[ChatService],
+    scheduler: FromDishka[TaskSchedulerRepositoryImpl],
+    strings: FromDishka[Strings],
 ):
     await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
+        scheduler = scheduler,
         text_content = strings.sticker_not_loaded(emoji = message.sticker.emoji),
     )
 
@@ -59,8 +64,9 @@ async def __handle_sticker(
 async def __handle_photo(
     message: Message,
     bot: Bot,
-    chat_service: ChatService,
-    strings: Strings,
+    chat_service: FromDishka[ChatService],
+    scheduler: FromDishka[TaskSchedulerRepositoryImpl],
+    strings: FromDishka[Strings],
 ):
     has_many = len(message.photo) > 1
     has_text = message.caption is not None
@@ -80,20 +86,22 @@ async def __handle_photo(
         )
     else:
         text_content = strings.photo_cannot_be_loaded()
-    await __check_message_role(message, bot, chat_service, text_content)
+    await __check_message_role(message, bot, chat_service, scheduler, text_content)
 
 
 @business_router.business_message(F.voice)
 async def __handle_voice(
     message: Message,
     bot: Bot,
-    chat_service: ChatService,
-    strings: Strings,
+    chat_service: FromDishka[ChatService],
+    scheduler: FromDishka[TaskSchedulerRepositoryImpl],
+    strings: FromDishka[Strings],
 ):
     await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
+        scheduler = scheduler,
         text_content = strings.voice_message_cannot_be_loaded(),
     )
 
@@ -102,13 +110,15 @@ async def __handle_voice(
 async def __handle_video_note(
     message: Message,
     bot: Bot,
-    chat_service: ChatService,
-    strings: Strings,
+    chat_service: FromDishka[ChatService],
+    scheduler: FromDishka[TaskSchedulerRepositoryImpl],
+    strings: FromDishka[Strings],
 ):
     await __check_message_role(
         message = message,
         bot = bot,
         chat_service = chat_service,
+        scheduler = scheduler,
         text_content = strings.video_message_cannot_be_loaded(),
     )
 
@@ -121,6 +131,7 @@ async def __check_message_role(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
+    scheduler: TaskSchedulerRepositoryImpl,
     text_content: str,
 ) -> None:
     """
@@ -136,7 +147,6 @@ async def __check_message_role(
             "MESSAGE NOT_BY_USER: %s | chat_id=%s | message=%s",
             text_content, message.chat.id, message,
         )
-        scheduler = TaskSchedulerRepositoryImpl()
         await scheduler.cancel_task(key = str(message.chat.id))
         await chat_service.save_message(
             message = message,
@@ -157,6 +167,7 @@ async def __check_message_role(
             message = message,
             bot = bot,
             chat_service = chat_service,
+            scheduler = scheduler,
             text_content = text_content,
         )
 
@@ -165,9 +176,9 @@ async def __handle_user_message(
     message: Message,
     bot: Bot,
     chat_service: ChatService,
+    scheduler: TaskSchedulerRepositoryImpl,
     text_content: str,
 ):
-    scheduler = TaskSchedulerRepositoryImpl()
     task_key = str(message.chat.id)
 
     connection_id = message.business_connection_id

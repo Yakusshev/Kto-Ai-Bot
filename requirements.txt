@@ -6,6 +6,7 @@ ydb==3.26.5
 yandexcloud==0.379.0
 fluent-runtime==0.4.0
 aiogram-i18n==1.4
+dishka==1.10.1
 beartype==0.22.2
 pytest
 pytest-asyncio

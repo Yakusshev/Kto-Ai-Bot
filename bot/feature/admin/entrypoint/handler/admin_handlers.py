@@ -3,6 +3,7 @@ import re
 from aiogram import Router, Bot, F
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
+from dishka import FromDishka
 
 from bot.feature.admin.domain.CommandConst import CommandConst
 from bot.feature.admin.domain.scenario.GetRemindInfoTextScenario import \
@@ -23,7 +24,7 @@ admin_router = Router()
 async def __handle_stop(
     message: Message,
     bot: Bot,
-    strings: Strings,
+    strings: FromDishka[Strings],
 ):
     logger.info(f"Handling stop command: {message}")
 
@@ -45,7 +46,7 @@ async def __handle_stop(
 async def __handle_start(
     message: Message,
     bot: Bot,
-    strings: Strings,
+    strings: FromDishka[Strings],
 ):
     logger.info(f"Handling start command: {message}")
 
@@ -66,8 +67,8 @@ async def __handle_start(
 async def __handle_update_users(
     message: Message,
     bot: Bot,
-    update_user_table_from_chat_history_use_case: UpdateUserTableFromChatHistoryUseCase,
-    get_user_list_use_case: GetUserListUseCase,
+    update_user_table_from_chat_history_use_case: FromDishka[UpdateUserTableFromChatHistoryUseCase],
+    get_user_list_use_case: FromDishka[GetUserListUseCase],
 ):
     logger.info(f"Handling users command: {message}")
 
@@ -85,7 +86,7 @@ async def __handle_update_users(
 async def __handle_users_match(
     message: Message,
     bot: Bot,
-    get_user_list_use_case: GetUserListUseCase,
+    get_user_list_use_case: FromDishka[GetUserListUseCase],
 ):
     logger.info(f"Handling users command: {message}")
 
@@ -104,8 +105,8 @@ async def __handle_users_match(
 async def __handle_remind_match(
     message: Message,
     bot: Bot,
-    get_remind_info_text_scenario: GetRemindInfoTextScenario,
-    reminder_service: ReminderService,
+    get_remind_info_text_scenario: FromDishka[GetRemindInfoTextScenario],
+    reminder_service: FromDishka[ReminderService],
 ):
     await bot.send_message(
         chat_id = message.chat.id,
