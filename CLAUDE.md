@@ -36,6 +36,13 @@ DI на dishka, контейнер не привязан к aiogram: `bot/core/d
 - Хендлер получает зависимость как `x: FromDishka[Тип]` (auto_inject включён в `main.py` для обоих диспетчеров). Вне aiogram: `create_container(StandaloneI18nProvider())`, затем `async with container() as request: await request.get(ChatService)`.
 - Тесты: подменять внешние границы провайдером с `provide(override = True)`, образец - `test/core/di/ContainerTest.py`.
 
+## Ответ бота: отложенные шаги
+
+Ответ состоит из шагов «прочитать -> печатает -> сгенерировать и отправить» (`business/domain/usecase/*StepUseCase`, диспетчер `HandleChatStepUseCase`).
+Шаги ставятся в `DelayedTaskQueue` (порт в domain; адаптеры `business/data/queue`: `InMemory` и `Sqs`, выбор - `DELAYED_QUEUE_BACKEND`, по умолчанию memory).
+Каждый шаг сверяет талон `StepTicket` (S1) и тихо завершается, если он устарел; `asyncio.Task.cancel` для отмены не используется. Паузы - `HumanDelays` (DEBUG_MODE_TYPING = 0).
+Вход: `ProcessChatEventUseCase` (хендлеры, `ReminderService`). Приёмник сообщений SQS (S2/S6) должен вызвать `HandleChatStepUseCase.invoke(ChatStepPayload.from_json(body))`.
+
 ## Проверки и запуск
 
 Зависимости: `pip install -r requirements-dev.txt` (инструменты не входят в прод-образ).

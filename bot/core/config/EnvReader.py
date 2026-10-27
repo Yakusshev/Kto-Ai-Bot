@@ -1,4 +1,4 @@
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from bot.core.config.ConfigError import ConfigError
 
@@ -9,6 +9,7 @@ NOT_INT_PROBLEM = "{name}: ожидается целое число, получ�
 NOT_INT_LIST_PROBLEM = (
     "{name}: ожидается список целых чисел через запятую, получено «{value}»"
 )
+NOT_ALLOWED_PROBLEM = "{name}: допустимые значения {allowed}, получено «{value}»"
 
 
 class EnvReader:
@@ -32,6 +33,29 @@ class EnvReader:
             return value
         else:
             return None
+
+    def optional_choice(
+        self,
+        name: str,
+        allowed: Sequence[str],
+        default: str,
+    ) -> str:
+        """Одно из допустимых значений; если переменная не задана - default."""
+        value = self.optional_str(name)
+        if value is None:
+            return default
+
+        if value in allowed:
+            return value
+
+        self._problem_list.append(
+            NOT_ALLOWED_PROBLEM.format(
+                name = name,
+                allowed = ", ".join(allowed),
+                value = value,
+            ),
+        )
+        return default
 
     def flag(self, name: str) -> bool:
         return self._environ.get(name) == TRUE_VALUE

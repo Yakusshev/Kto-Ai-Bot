@@ -199,3 +199,29 @@ class TestEnvReader:
         reader.validate()
 
         # Assert: validate не бросил исключение
+
+
+class TestOptionalChoice:
+
+    def test_when_not_set_expect_default_without_error(self):
+        reader = EnvReader(environ = {})
+
+        assert reader.optional_choice("MODE", allowed = ("memory", "sqs"), default = "memory") == "memory"
+        reader.validate()
+
+    def test_when_allowed_value_expect_value(self):
+        reader = EnvReader(environ = {"MODE": " sqs "})
+
+        assert reader.optional_choice("MODE", allowed = ("memory", "sqs"), default = "memory") == "sqs"
+        reader.validate()
+
+    def test_when_unknown_value_expect_config_error_with_allowed_list(self):
+        reader = EnvReader(environ = {"MODE": "kafka"})
+
+        reader.optional_choice("MODE", allowed = ("memory", "sqs"), default = "memory")
+
+        with pytest.raises(ConfigError) as error:
+            reader.validate()
+        assert "memory, sqs" in str(error.value)
+        assert "kafka" in str(error.value)
+

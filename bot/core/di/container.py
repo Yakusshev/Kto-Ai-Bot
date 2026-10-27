@@ -3,6 +3,7 @@ from dishka import AsyncContainer, Provider, make_async_container
 from bot.core.di.CoreProvider import CoreProvider
 from bot.feature.admin.di.AdminProvider import AdminProvider
 from bot.feature.business.di.BusinessProvider import BusinessProvider
+from bot.feature.business.di.ChatStepProvider import ChatStepProvider
 
 
 def create_container(
@@ -15,6 +16,7 @@ def create_container(
     return make_async_container(
         CoreProvider(),
         BusinessProvider(),
+        ChatStepProvider(),
         AdminProvider(),
         *context_providers,
     )

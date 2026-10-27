@@ -2,15 +2,18 @@ import asyncio
 import datetime
 import random
 
-from bot.feature.business.data.repository.BotRepositoryImpl import BotRepositoryImpl
+from bot.feature.business.domain.repository.BotRepository import BotRepository
 from bot.util.log_util import get_logger
+
+DEFAULT_PAUSE_SECONDS = 7
+MAX_TYPING_RANGE_SECONDS = (15, 20)
 
 
 class TypingLoopUseCase:
 
     def __init__(
         self,
-        bot_repository: BotRepositoryImpl,
+        bot_repository: BotRepository,
     ):
         self.bot_repository = bot_repository
 
@@ -22,10 +25,9 @@ class TypingLoopUseCase:
     ) -> None:
         """
         Поддерживает статус «печатает...» пока не выставлен stop_event.
-        Иногда делает паузу 1-3 сек (имитирует «задумался»).
+        Между действиями ждёт паузу 8-12 сек, но просыпается сразу по stop_event,
+        поэтому после остановки новых «печатает» не будет.
         """
-
-        default_pause = 7
 
         start_typing_time = datetime.datetime.now()
 
@@ -33,7 +35,10 @@ class TypingLoopUseCase:
 
             delta = datetime.datetime.now() - start_typing_time
 
-            if delta.seconds > random.uniform(a = 15, b = 20):
+            if delta.seconds > random.uniform(
+                a = MAX_TYPING_RANGE_SECONDS[0],
+                b = MAX_TYPING_RANGE_SECONDS[1],
+            ):
                 break
 
             try:
@@ -44,7 +49,11 @@ class TypingLoopUseCase:
             except Exception as e:
                 logger.warning("typing_loop ошибка send_chat_action: %s", e)
 
-            await asyncio.sleep(default_pause + random.uniform(a = 1, b = 5))
+            pause = DEFAULT_PAUSE_SECONDS + random.uniform(a = 1, b = 5)
+            try:
+                await asyncio.wait_for(stop_event.wait(), timeout = pause)
+            except asyncio.TimeoutError:
+                pass
 
 
 logger = get_logger(TypingLoopUseCase.__name__)

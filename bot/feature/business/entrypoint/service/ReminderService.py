@@ -1,27 +1,14 @@
 import asyncio
-from asyncio import Event, Task
-
-from aiogram.types import Message
 
 from bot.feature.admin.domain.CommandConst import CommandConst
-from bot.feature.business.data.repository.BotRepositoryImpl import BotRepositoryImpl
-from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
-from bot.feature.business.domain.model.SaveMessageModel import SaveMessageModel, \
-    MessageRole
+from bot.feature.business.domain.model.ChatDecision import ChatAction
+from bot.feature.business.domain.model.ChatEvent import ChatEvent, ChatEventKind
+from bot.feature.business.domain.model.ChatStep import ChatStepContext
 from bot.feature.business.domain.model.UserChatModel import UserChatModel
-from bot.feature.business.domain.model.UserMessageInfoForAiModel import \
-    UserMessageInfoForAiModel
-from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
-    GenerateAiResponseScenario
 from bot.feature.business.domain.usecase.GetInactiveChatListUseCase import \
     GetInactiveChatListUseCase
-from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.feature.business.domain.usecase.TypingLoopUseCase import TypingLoopUseCase
-from bot.feature.business.entrypoint.HumanWaitingBehavior import \
-    wait_to_write_message
-from bot.feature.business.entrypoint.SaveMessageModelMapper import \
-    to_save_message_model
+from bot.feature.business.domain.usecase.ProcessChatEventUseCase import \
+    ProcessChatEventUseCase
 from bot.util.log_util import get_logger
 
 
@@ -29,19 +16,11 @@ class ReminderService:
 
     def __init__(
         self,
-        generate_ai_response_scenario: GenerateAiResponseScenario,
         get_inactive_chat_list_use_case: GetInactiveChatListUseCase,
-        bot_repository: BotRepositoryImpl,
-        task_scheduler: TaskSchedulerRepositoryImpl,
-        typing_loop_use_case: TypingLoopUseCase,
-        save_message_use_case: SaveMessageUseCase,
+        process_chat_event_use_case: ProcessChatEventUseCase,
     ):
-        self.generate_ai_response_scenario = generate_ai_response_scenario
         self.get_inactive_chat_list_use_case = get_inactive_chat_list_use_case
-        self.bot_repository = bot_repository
-        self.task_scheduler = task_scheduler
-        self.typing_loop_use_case = typing_loop_use_case
-        self.save_message_use_case = save_message_use_case
+        self.process_chat_event_use_case = process_chat_event_use_case
 
     async def invoke(
         self,
@@ -85,126 +64,26 @@ class ReminderService:
             await task
 
     async def remind_task(self, chat: UserChatModel):
-
-        task_key = str(chat.chat_info_model.id)
-
-        async def answer_message() -> None:
-
-            stop_typing = asyncio.Event()
-            typing_task = None
-
-            message_chat_id = str()
-            business_connection_id = chat.chat_info_model.business_connection_id
-            answer_message_list: list[Message] = []
-
-            try:
-                stop_typing = asyncio.Event()
-                typing_task = asyncio.create_task(
-                    self.typing_loop_use_case.invoke(
-                        chat_id = chat.chat_info_model.id,
-                        business_connection_id = business_connection_id,
-                        stop_event = stop_typing,
-                    ),
-                )
-
-                response_list = await self.generate_ai_response_scenario.invoke(
-                    user_for_ai_model = UserMessageInfoForAiModel(
-                        chat_id = chat.chat_info_model.id,
-                        username = chat.user_model.username,
-                        full_name = chat.user_model.full_name,
-                        datetime = chat.chat_info_model.last_message_date,
-                    ),
-                    owner_model = await self.bot_repository.get_business_connection_owner(
-                        id = chat.chat_info_model.business_connection_id,
-                    ),
-                    remind = True,
-                )
-
-                for ai_answer in response_list:
-                    await wait_to_write_message(ai_answer)
-
-                    try:
-                        if ai_answer:
-                            sent = await self.bot_repository.send_message(
-                                chat_id = chat.chat_info_model.id,
-                                text = ai_answer,
-                                business_connection_id = business_connection_id,
-                            )
-                            answer_message_list.append(sent)
-                    except Exception as e:
-                        _logger.error(
-                            f"remind_task EXCEPTION\n"
-                            f"id = {chat.chat_info_model.id}\n"
-                            f"chat = {chat}\n"
-                            f"e = {e}",
-                        )
-                    except asyncio.CancelledError as canceled_error:
-                        raise canceled_error
-            except asyncio.CancelledError:
-                await self.complete_answer(
-                    answer_message_list = answer_message_list,
-                    stop_typing = stop_typing,
-                    typing_task = typing_task,
-                )
-                _logger.info("remind_task отменён: chat_id=%s", message_chat_id)
-                raise
-
-            finally:
-                await self.complete_answer(
-                    answer_message_list = answer_message_list,
-                    stop_typing = stop_typing,
-                    typing_task = typing_task,
-                )
-                _logger.info(f"remind_task completed for id = {chat.chat_info_model.id}; {chat}")
-
-        await self.task_scheduler.on_remind(
-            key = task_key,
-            answer_factory = answer_message,
+        """Запускает ответ по напоминанию: шаги ведёт очередь, как у входящего сообщения."""
+        user = chat.user_model
+        action = await self.process_chat_event_use_case.invoke(
+            chat_id = chat.chat_info_model.id,
+            event = ChatEvent(kind = ChatEventKind.REMIND),
+            context = ChatStepContext(
+                business_connection_id = chat.chat_info_model.business_connection_id,
+                username = (user.username if user else None) or "",
+                full_name = (user.full_name if user else None) or "",
+                message_datetime = chat.chat_info_model.last_message_date,
+                message_text = "",
+                remind = True,
+            ),
         )
 
-    async def complete_answer(
-        self,
-        answer_message_list: list[Message],
-        stop_typing: Event,
-        typing_task: Task[None] | None,
-    ):
-        if stop_typing:
-            stop_typing.set()
-        if typing_task:
-            typing_task.cancel()
-            try:
-                await typing_task
-            except asyncio.CancelledError:
-                pass
-        # Сохраняем отправленные сообщения бота в БД (fire-and-forget)
-        if answer_message_list:
-            await self.save_assistant_text_message_list(
-                message_list = answer_message_list,
-            ),
-
-    async def save_assistant_text_message_list(
-        self,
-        message_list: list[Message],
-    ):
-        save_message_model_list: list[SaveMessageModel] = []
-
-        for message in message_list:
-            save_message_model = to_save_message_model(
-                message = message,
-                content = message.text,
-                role = MessageRole.ASSISTANT,
+        if action == ChatAction.STALE:
+            _logger.warning(
+                "remind: в чате chat_id=%s уже идёт диалог, напоминание пропущено",
+                chat.chat_info_model.id,
             )
 
-            if save_message_model:
-                save_message_model_list.append(save_message_model)
-            else:
-                _logger.warning(
-                    f"save_message: пустой text_content, message = {message}",
-                )
 
-        await self.save_message_use_case.invoke(
-            save_message_model_list = save_message_model_list,
-        ),
-
-
-_logger = get_logger(TypingLoopUseCase.__name__)
+_logger = get_logger(ReminderService.__name__)

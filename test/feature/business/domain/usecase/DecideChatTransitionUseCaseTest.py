@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -206,3 +206,40 @@ class TestDecideChatTransitionUseCase:
 
         assert decision.action == ChatAction.STALE
         assert decision.state == state
+
+class TestStuckPhase:
+
+    LATER = NOW + timedelta(minutes = 11)
+
+    @pytest.mark.parametrize("phase", [ChatPhase.PREPARING, ChatPhase.ANSWERING])
+    def test_when_message_in_stuck_phase_expect_new_preparing(
+        self,
+        phase: ChatPhase,
+    ):
+        state = _state(phase, version = 4, phase_version = 2, pending = (1,))
+
+        decision = DecideChatTransitionUseCase().invoke(state, _message(9), self.LATER)
+
+        assert decision.action == ChatAction.START_PREPARING
+        assert decision.state.phase == ChatPhase.PREPARING
+        assert decision.state.phase_version == 5
+        assert decision.state.pending_message_ids == (9,)
+
+    def test_when_remind_in_stuck_phase_expect_answering(self):
+        state = _state(ChatPhase.PREPARING, version = 4, phase_version = 2)
+
+        decision = DecideChatTransitionUseCase().invoke(
+            state,
+            ChatEvent(kind = ChatEventKind.REMIND),
+            self.LATER,
+        )
+
+        assert decision.action == ChatAction.START_ANSWER
+
+    def test_when_fresh_phase_expect_unchanged_behaviour(self):
+        state = _state(ChatPhase.PREPARING, version = 4, phase_version = 2, pending = (1,))
+
+        decision = DecideChatTransitionUseCase().invoke(state, _message(9), NOW + timedelta(minutes = 9))
+
+        assert decision.action == ChatAction.NONE
+
