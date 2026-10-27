@@ -8,7 +8,7 @@ fi
 
 cd "$CLAUDE_PROJECT_DIR"
 
-pip install --quiet --disable-pip-version-check -r requirements.txt
+pip install --quiet --disable-pip-version-check -r requirements-dev.txt
 
 # Файл ключа для YDB_AUTH_KEY_FILE создаём из секрета окружения YANDEX_AUTHORIZED_KEY.
 if [ -n "${YANDEX_AUTHORIZED_KEY:-}" ]; then

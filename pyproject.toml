@@ -1,0 +1,28 @@
+# Только конфигурация инструментов. Проект не пакуется.
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+extend-exclude = ["scratch", ".idea", "infra"]
+
+[tool.ruff.lint]
+# Минимум ограждений (S0). Форматирование НЕ проверяем и ruff format не запускаем:
+# по yak-python-code-style каждый параметр на отдельной строке при более чем одном аргументе.
+select = ["PLR0913", "C901", "TID251"]
+
+[tool.ruff.lint.pylint]
+max-args = 5
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"time.sleep".msg = "Блокирует event loop бота: используйте await asyncio.sleep."
+"requests".msg = "Синхронный HTTP блокирует event loop: используйте aiohttp/httpx или клиент SDK."
+
+[tool.ruff.lint.per-file-ignores]
+# BASELINE: существующие нарушения. Только сокращать, новые не добавлять.
+"bot/feature/business/data/datasource/UserRemoteDataSource.py" = ["TID251"]
+"bot/feature/business/data/repository/ChatHistoryRepositoryImpl.py" = ["TID251"]
+"bot/feature/business/domain/usecase/SendAiRequestUseCase.py" = ["PLR0913"]
+"bot/feature/business/entrypoint/service/ReminderService.py" = ["PLR0913"]

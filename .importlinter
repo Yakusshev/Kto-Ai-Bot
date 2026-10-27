@@ -1,0 +1,102 @@
+# Ограждения архитектуры (задача S0). Запуск: lint-imports
+# Слои внутри фичи: entrypoint -> data -> domain; di знает обо всех слоях.
+# Новая фича = новый контейнер в feature-layers и свой контракт isolated.
+# Блоки ignore_imports - baseline существующих нарушений: только сокращать.
+
+[importlinter]
+root_package = bot
+include_external_packages = True
+
+[importlinter:contract:domain-pure]
+name = domain не знает об инфраструктуре
+type = forbidden
+source_modules =
+    bot.feature.*.domain
+    bot.core.domain
+forbidden_modules =
+    aiogram
+    aiogram_i18n
+    ydb
+    yandexcloud
+    openai
+    boto3
+    botocore
+    fluent_runtime
+    grpc
+allow_indirect_imports = True
+
+[importlinter:contract:feature-layers]
+name = Слои фичи - entrypoint, data, domain
+type = layers
+containers =
+    bot.feature.admin
+    bot.feature.business
+layers =
+    entrypoint
+    (data)
+    domain
+# BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
+ignore_imports =
+    bot.feature.business.data.repository.TaskSchedulerRepositoryImpl -> bot.feature.business.entrypoint.HumanWaitingBehavior
+    bot.feature.business.domain.usecase.GetChatStrListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+    bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+    bot.feature.business.domain.usecase.SaveMessageUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.SendAiRequestUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.TypingLoopUseCase -> bot.feature.business.data.repository.BotRepositoryImpl
+    bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+
+[importlinter:contract:admin-isolated]
+name = admin не лезет в data и entrypoint чужих фич
+type = forbidden
+source_modules =
+    bot.feature.admin.domain
+    bot.feature.admin.entrypoint
+forbidden_modules =
+    bot.feature.business.data
+    bot.feature.business.entrypoint
+allow_indirect_imports = True
+# BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
+ignore_imports =
+    bot.feature.admin.entrypoint.handler.admin_handlers -> bot.feature.business.entrypoint.service.ReminderService
+
+[importlinter:contract:business-isolated]
+name = business не лезет в data и entrypoint чужих фич
+type = forbidden
+source_modules =
+    bot.feature.business.domain
+    bot.feature.business.data
+    bot.feature.business.entrypoint
+forbidden_modules =
+    bot.feature.admin.entrypoint
+allow_indirect_imports = True
+
+[importlinter:contract:data-only-from-di]
+name = data импортируется только из di и main
+type = forbidden
+source_modules =
+    bot.feature.*.domain
+    bot.feature.*.entrypoint
+    bot.core
+    bot.util
+forbidden_modules =
+    bot.feature.*.data
+allow_indirect_imports = True
+# BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
+ignore_imports =
+    bot.feature.business.domain.usecase.GetChatStrListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+    bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+    bot.feature.business.domain.usecase.SaveMessageUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.SendAiRequestUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.TypingLoopUseCase -> bot.feature.business.data.repository.BotRepositoryImpl
+    bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
+    bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
+    bot.feature.business.entrypoint.business_message_handlers -> bot.feature.business.data.repository.TaskSchedulerRepositoryImpl
+    bot.feature.business.entrypoint.service.ReminderService -> bot.feature.business.data.repository.BotRepositoryImpl
+    bot.feature.business.entrypoint.service.ReminderService -> bot.feature.business.data.repository.TaskSchedulerRepositoryImpl
