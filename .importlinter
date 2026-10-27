@@ -37,7 +37,6 @@ layers =
     domain
 # BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
 ignore_imports =
-    bot.feature.business.data.repository.TaskSchedulerRepositoryImpl -> bot.feature.business.entrypoint.HumanWaitingBehavior
     bot.feature.business.domain.usecase.GetChatStrListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.GetInactiveChatListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
@@ -45,7 +44,6 @@ ignore_imports =
     bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
     bot.feature.business.domain.usecase.SaveMessageUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.SendAiRequestUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
-    bot.feature.business.domain.usecase.TypingLoopUseCase -> bot.feature.business.data.repository.BotRepositoryImpl
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
 
@@ -94,9 +92,5 @@ ignore_imports =
     bot.feature.business.domain.usecase.GetUserListUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
     bot.feature.business.domain.usecase.SaveMessageUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.SendAiRequestUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
-    bot.feature.business.domain.usecase.TypingLoopUseCase -> bot.feature.business.data.repository.BotRepositoryImpl
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
-    bot.feature.business.entrypoint.business_message_handlers -> bot.feature.business.data.repository.TaskSchedulerRepositoryImpl
-    bot.feature.business.entrypoint.service.ReminderService -> bot.feature.business.data.repository.BotRepositoryImpl
-    bot.feature.business.entrypoint.service.ReminderService -> bot.feature.business.data.repository.TaskSchedulerRepositoryImpl

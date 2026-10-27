@@ -56,4 +56,14 @@ class TelegramRemoteDataSource:
             business_connection_id = business_connection_id,
         )
 
-
+    async def read_business_message(
+        self,
+        chat_id: int,
+        business_connection_id: str,
+        message_id: int,
+    ) -> None:
+        await self.bot.read_business_message(
+            business_connection_id = business_connection_id,
+            chat_id = chat_id,
+            message_id = message_id,
+        )

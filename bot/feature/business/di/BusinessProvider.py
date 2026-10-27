@@ -1,4 +1,4 @@
-from dishka import Provider, Scope, provide, provide_all
+from dishka import Provider, Scope, alias, provide, provide_all
 
 from bot.feature.business.data.datasource.ChatStateRemoteDataSource import \
     ChatStateRemoteDataSource
@@ -12,12 +12,11 @@ from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
 from bot.feature.business.data.repository.ChatStateRepositoryImpl import \
     ChatStateRepositoryImpl
-from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
 from bot.feature.business.data.repository.UserRepositoryImpl import \
     UserRepositoryImpl
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.repository.AiRepository import AiRepository
+from bot.feature.business.domain.repository.BotRepository import BotRepository
 from bot.feature.business.domain.repository.ChatStateRepository import \
     ChatStateRepository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
@@ -75,16 +74,13 @@ class BusinessProvider(Provider):
         scope = Scope.APP,
     )
 
+    # Действия бота в Telegram (порт из domain -> реализация из data)
+    bot_repository = alias(source = BotRepositoryImpl, provides = BotRepository)
+
     @provide(scope = Scope.APP)
     def get_local_data_source(self) -> LocalDataSource:
         # Синглтон на уровне класса: все экземпляры делят одного владельца
         return LocalDataSource()
-
-    @provide(scope = Scope.APP)
-    def get_task_scheduler(self) -> TaskSchedulerRepositoryImpl:
-        # Синглтон с состоянием (FSM ответов по чатам). Поведение прежнее,
-        # в S1 планировщик переделают.
-        return TaskSchedulerRepositoryImpl()
 
     @provide(scope = Scope.APP)
     def get_ai_repository(self) -> AiRepository:

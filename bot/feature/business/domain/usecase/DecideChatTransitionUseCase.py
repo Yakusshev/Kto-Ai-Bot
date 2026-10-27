@@ -1,9 +1,13 @@
 from dataclasses import replace
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bot.feature.business.domain.model.ChatDecision import ChatAction, ChatDecision
 from bot.feature.business.domain.model.ChatEvent import ChatEvent, ChatEventKind
 from bot.feature.business.domain.model.ChatState import ChatPhase, ChatState
+
+# Фаза без изменений дольше этого срока считается зависшей (шаг потерялся: рестарт
+# процесса с in-memory очередью, сбой постановки в очередь). Паузы шагов - секунды.
+STUCK_PHASE_TIMEOUT = timedelta(minutes = 10)
 
 
 class DecideChatTransitionUseCase:
@@ -19,6 +23,8 @@ class DecideChatTransitionUseCase:
         answering + сообщение -> answering (version+1, отмена и ответ сразу на всё)
         любая фаза + ответ владельца -> idle (version+1, отмена)
         idle + напоминание -> answering; в других фазах напоминание игнорируется
+        зависшая фаза (нет изменений дольше STUCK_PHASE_TIMEOUT) для сообщения и напоминания
+        считается idle: иначе чат навсегда остался бы без ответов
         preparing -> answering и answering -> idle - по событиям отложенных шагов,
         если талон шага не устарел (иначе STALE и состояние не меняется)
     """
@@ -29,6 +35,9 @@ class DecideChatTransitionUseCase:
         event: ChatEvent,
         now: datetime,
     ) -> ChatDecision:
+        if event.kind in (ChatEventKind.USER_MESSAGE, ChatEventKind.REMIND):
+            state = self._release_stuck_phase(state, now)
+
         match event.kind:
             case ChatEventKind.USER_MESSAGE:
                 return self._on_user_message(state, event, now)
@@ -40,6 +49,15 @@ class DecideChatTransitionUseCase:
                 return self._on_preparing_finished(state, event, now)
             case ChatEventKind.ANSWER_FINISHED:
                 return self._on_answer_finished(state, event, now)
+
+    @staticmethod
+    def _release_stuck_phase(
+        state: ChatState,
+        now: datetime,
+    ) -> ChatState:
+        if state.phase != ChatPhase.IDLE and now - state.updated_at > STUCK_PHASE_TIMEOUT:
+            return replace(state, phase = ChatPhase.IDLE, pending_message_ids = ())
+        return state
 
     @staticmethod
     def _on_user_message(

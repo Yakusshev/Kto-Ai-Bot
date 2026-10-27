@@ -24,8 +24,7 @@ from bot.core.entry.ShutdownSignal import ShutdownSignal
 from bot.feature.admin import admin_bot_manager
 from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
-from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
-    TaskSchedulerRepositoryImpl
+from bot.feature.business.domain.repository.DelayedTaskQueue import DelayedTaskQueue
 from bot.feature.business.entrypoint.business_message_handlers import business_router
 from bot.resource.GracefulShutdownFluentRuntimeCore import \
     GracefulShutdownFluentRuntimeCore
@@ -65,9 +64,10 @@ async def shutdown(
     await admin_bot_manager.stop()
     await user_bot_manager.stop()
 
-    # Покрывает и ответы бизнес-бота, и напоминания, запущенные из админ-бота
-    _logger.info("Остановка: жду завершения ответов в процессе")
-    await (await container.get(TaskSchedulerRepositoryImpl)).wait_task_completion()
+    # Покрывает и ответы бизнес-бота, и напоминания из админ-бота: запущенные шаги
+    # дописываются, не начатые отбрасываются (в SQS они остались бы в очереди)
+    _logger.info("Остановка: жду завершения запущенных шагов")
+    await (await container.get(DelayedTaskQueue)).shutdown()
 
     await admin_bot_manager.close()
     await user_bot_manager.close()
