@@ -15,24 +15,22 @@ import ydb
 from aiogram import types
 from aiogram_i18n import I18nMiddleware
 from aiogram_i18n.cores import FluentRuntimeCore
+from dishka import AsyncContainer
+from dishka.integrations.aiogram import AiogramProvider, setup_dishka
 
+from bot.core.di.AiogramI18nProvider import AiogramI18nProvider
+from bot.core.di.container import create_container
 from bot.core.entry.ShutdownSignal import ShutdownSignal
 from bot.feature.admin import admin_bot_manager
-from bot.feature.admin.di.ReminderServiceMiddleware import ReminderServiceMiddleware
 from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
-from bot.feature.business.data.ydb.CreateYdbDriver import create_ydb_driver
 from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
-from bot.feature.business.di.ChatServiceMiddleware import ChatServiceMiddleware
-from bot.feature.business.di.StringsMiddleware import StringsMiddleware
 from bot.feature.business.entrypoint.business_message_handlers import business_router
 from bot.resource.GracefulShutdownFluentRuntimeCore import \
     GracefulShutdownFluentRuntimeCore
 from bot.util.log_util import get_logger, get_logging_config
 import logging.config
-from bot.feature.admin.di.GetRemindInfoTextScenarioMiddleware import \
-    GetRemindInfoTextScenarioMiddleware
 
 
 async def main():
@@ -41,30 +39,26 @@ async def main():
     shutdown_signal = ShutdownSignal()
     shutdown_signal.install(loop = asyncio.get_running_loop())
 
-    driver = create_ydb_driver()
-    ydb_session_pool = ydb.SessionPool(driver)
+    container = create_container(
+        AiogramProvider(),
+        AiogramI18nProvider(),
+    )
 
     try:
-        chat_service_middleware = ChatServiceMiddleware(
-            driver = driver,
-            ydb_session_pool = ydb_session_pool,
-        )
+        # Драйвер YDB поднимаем сразу: ошибка подключения должна остановить запуск
+        await container.get(ydb.SessionPool)
 
-        await start_admin_bot(chat_service_middleware)
-        await prepare_business_bot(chat_service_middleware)
+        await start_admin_bot(container)
+        await prepare_business_bot(container)
 
         _logger.info("Бот запущен, ожидаю SIGTERM/SIGINT для остановки")
         await shutdown_signal.wait()
     finally:
-        await shutdown(
-            driver = driver,
-            ydb_session_pool = ydb_session_pool,
-        )
+        await shutdown(container = container)
 
 
 async def shutdown(
-    driver: ydb.Driver,
-    ydb_session_pool: ydb.SessionPool,
+    container: AsyncContainer,
 ) -> None:
     """Штатная остановка: новые сообщения не принимаем, текущие ответы дописываем."""
     _logger.info("Остановка: прекращаю приём новых сообщений")
@@ -73,18 +67,18 @@ async def shutdown(
 
     # Покрывает и ответы бизнес-бота, и напоминания, запущенные из админ-бота
     _logger.info("Остановка: жду завершения ответов в процессе")
-    await TaskSchedulerRepositoryImpl().wait_task_completion()
+    await (await container.get(TaskSchedulerRepositoryImpl)).wait_task_completion()
 
     await admin_bot_manager.close()
     await user_bot_manager.close()
 
-    await asyncio.to_thread(ydb_session_pool.stop)
-    await asyncio.to_thread(driver.stop)
+    # Закрывает session pool и driver YDB (в порядке, обратном созданию)
+    await container.close()
     _logger.info("Остановка завершена")
 
 
 async def prepare_business_bot(
-    chat_service_middleware: ChatServiceMiddleware,
+    container: AsyncContainer,
 ):
     i18n = I18nMiddleware(
         core = GracefulShutdownFluentRuntimeCore(
@@ -94,9 +88,12 @@ async def prepare_business_bot(
     )
     i18n.setup(dispatcher = user_bot_manager.dispatcher)
 
-    user_bot_manager.dispatcher.business_message.middleware(StringsMiddleware())
-
-    user_bot_manager.dispatcher.business_message.middleware(chat_service_middleware)
+    # После i18n: Strings берёт I18nContext из data апдейта
+    setup_dishka(
+        container = container,
+        router = user_bot_manager.dispatcher,
+        auto_inject = True,
+    )
 
     # 4. Регистрируем обработчик подключения к бизнес-аккаунту
     @user_bot_manager.dispatcher.business_connection()
@@ -122,7 +119,7 @@ async def prepare_business_bot(
 
 
 async def start_admin_bot(
-    chat_service_middleware: ChatServiceMiddleware,
+    container: AsyncContainer,
 ):
     I18nMiddleware(
         core = FluentRuntimeCore(
@@ -131,13 +128,10 @@ async def start_admin_bot(
         default_locale = "ru",
     ).setup(dispatcher = admin_bot_manager.dispatcher)
 
-    admin_bot_manager.dispatcher.message.middleware(StringsMiddleware())
-    admin_bot_manager.dispatcher.message.middleware(chat_service_middleware)
-    admin_bot_manager.dispatcher.message.middleware(
-        ReminderServiceMiddleware(),
-    )
-    admin_bot_manager.dispatcher.message.middleware(
-        GetRemindInfoTextScenarioMiddleware(),
+    setup_dishka(
+        container = container,
+        router = admin_bot_manager.dispatcher,
+        auto_inject = True,
     )
 
     admin_bot_manager.dispatcher.include_router(router = admin_router)
