@@ -1,5 +1,7 @@
 from dishka import Provider, Scope, provide, provide_all
 
+from bot.feature.business.data.datasource.ChatStateRemoteDataSource import \
+    ChatStateRemoteDataSource
 from bot.feature.business.data.datasource.LocalDataSource import LocalDataSource
 from bot.feature.business.data.datasource.TelegramRemoteDataSource import \
     TelegramRemoteDataSource
@@ -8,14 +10,22 @@ from bot.feature.business.data.datasource.UserRemoteDataSource import \
 from bot.feature.business.data.repository.BotRepositoryImpl import BotRepositoryImpl
 from bot.feature.business.data.repository.ChatHistoryRepositoryImpl import \
     ChatHistoryRepositoryImpl
+from bot.feature.business.data.repository.ChatStateRepositoryImpl import \
+    ChatStateRepositoryImpl
 from bot.feature.business.data.repository.TaskSchedulerRepositoryImpl import \
     TaskSchedulerRepositoryImpl
 from bot.feature.business.data.repository.UserRepositoryImpl import \
     UserRepositoryImpl
 from bot.feature.business.di.llm_module import get_llm_repository
 from bot.feature.business.domain.repository.AiRepository import AiRepository
+from bot.feature.business.domain.repository.ChatStateRepository import \
+    ChatStateRepository
 from bot.feature.business.domain.scenario.GenerateAiReponseScenario import \
     GenerateAiResponseScenario
+from bot.feature.business.domain.usecase.ApplyChatEventUseCase import \
+    ApplyChatEventUseCase
+from bot.feature.business.domain.usecase.DecideChatTransitionUseCase import \
+    DecideChatTransitionUseCase
 from bot.feature.business.domain.usecase.GetChatStrListUseCase import \
     GetChatInfoTupleUseCase
 from bot.feature.business.domain.usecase.GetForwardOriginTextForAiUseCase import \
@@ -27,6 +37,8 @@ from bot.feature.business.domain.usecase.GetSystemInstructionUseCase import \
 from bot.feature.business.domain.usecase.GetUserListUseCase import GetUserListUseCase
 from bot.feature.business.domain.usecase.HandleAiResponseUseCase import \
     HandleAiResponseUseCase
+from bot.feature.business.domain.usecase.IsChatStepActualUseCase import \
+    IsChatStepActualUseCase
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
 from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
     SendAiRequestUseCase
@@ -52,6 +64,14 @@ class BusinessProvider(Provider):
         ChatHistoryRepositoryImpl,
         UserRepositoryImpl,
         BotRepositoryImpl,
+        ChatStateRemoteDataSource,
+        scope = Scope.APP,
+    )
+
+    # Состояние диалога в YDB (порт из domain -> реализация из data)
+    chat_state_repository = provide(
+        ChatStateRepositoryImpl,
+        provides = ChatStateRepository,
         scope = Scope.APP,
     )
 
@@ -83,6 +103,9 @@ class BusinessProvider(Provider):
         GetUserListUseCase,
         UpdateUserTableFromChatHistoryUseCase,
         TypingLoopUseCase,
+        DecideChatTransitionUseCase,
+        ApplyChatEventUseCase,
+        IsChatStepActualUseCase,
         ChatService,
         ReminderService,
         scope = Scope.REQUEST,
