@@ -18,8 +18,8 @@ from bot.feature.business.domain.repository.DelayedTaskQueue import DelayedTaskQ
 from bot.feature.business.domain.usecase.HandleChatStepUseCase import \
     HandleChatStepUseCase
 from bot.feature.business.domain.repository.AiRepository import AiRepository
-from bot.feature.business.entrypoint.service.ChatService import ChatService
-from bot.feature.business.entrypoint.service.ReminderService import ReminderService
+from bot.feature.business.entry.service.ChatService import ChatService
+from bot.feature.business.entry.service.ReminderService import ReminderService
 from bot.feature.business.domain.model.ChatState import ChatPhase, StepTicket
 from bot.feature.business.domain.model.ChatStep import ChatStepKind, ChatStepPayload
 from bot.feature.business.domain.repository.ChatStateRepository import \

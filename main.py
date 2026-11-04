@@ -22,10 +22,10 @@ from bot.core.di.AiogramI18nProvider import AiogramI18nProvider
 from bot.core.di.container import create_container
 from bot.core.entry.ShutdownSignal import ShutdownSignal
 from bot.feature.admin import admin_bot_manager
-from bot.feature.admin.entrypoint.handler.admin_handlers import admin_router
+from bot.feature.admin.entry.handler.admin_handlers import admin_router
 from bot.feature.business import user_bot_manager
 from bot.feature.business.domain.repository.DelayedTaskQueue import DelayedTaskQueue
-from bot.feature.business.entrypoint.business_message_handlers import business_router
+from bot.feature.business.entry.business_message_handlers import business_router
 from bot.resource.GracefulShutdownFluentRuntimeCore import \
     GracefulShutdownFluentRuntimeCore
 from bot.util.log_util import get_logger, get_logging_config

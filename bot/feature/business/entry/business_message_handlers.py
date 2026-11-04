@@ -7,7 +7,7 @@ from bot.feature.business.domain.model.ChatStep import ChatStepContext
 from bot.feature.business.domain.model.SaveMessageModel import MessageRole
 from bot.feature.business.domain.usecase.ProcessChatEventUseCase import \
     ProcessChatEventUseCase
-from bot.feature.business.entrypoint.service.ChatService import ChatService
+from bot.feature.business.entry.service.ChatService import ChatService
 from bot.resource.Strings import Strings
 from bot.util.log_util import get_logger
 
