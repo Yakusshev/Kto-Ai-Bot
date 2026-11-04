@@ -1,5 +1,8 @@
 # Инструменты проверки кода (CI и локально). В прод-образ (Dockerfile) не попадают.
+# Версии точные: baseline mypy и поведение правил зависят от версии. Ставит их в .venv хук SessionStart.
 -r requirements.txt
 import-linter==2.15
 ruff==0.17.3
 mypy==2.4.0
+pytest==9.2.0
+pytest-asyncio==1.4.1.post1

@@ -1,7 +1,8 @@
-# Ограждения архитектуры (задача S0). Запуск: lint-imports
-# Слои внутри фичи: entry -> data -> domain; di знает обо всех слоях.
-# Новая фича = новый контейнер в feature-layers и свой контракт isolated.
-# Блоки ignore_imports - baseline существующих нарушений: только сокращать.
+# Ограждения архитектуры (S0, AT-90). Запуск: lint-imports (без кэша: lint-imports --no-cache).
+# ignore_imports - baseline старых нарушений (храповик): только сокращать. Исправил нарушение - удали строку
+# (иначе lint-imports упадёт на неиспользуемом исключении); новые строки не добавлять - число исключений
+# держит test/architecture/ImportlinterBaselineTest.py, а рост относительно ветки спринта - scripts/baseline_ratchet.py.
+# Новая фича подхватывается шаблонами bot.feature.*: контракты править не нужно.
 
 [importlinter]
 root_package = bot
@@ -9,6 +10,7 @@ include_external_packages = True
 
 [importlinter:contract:domain-pure]
 name = domain не знает об инфраструктуре
+# Домен (со сценариями) - чистый Python: без Telegram, БД, LLM, облачных SDK
 type = forbidden
 source_modules =
     bot.feature.*.domain
@@ -26,13 +28,14 @@ forbidden_modules =
 allow_indirect_imports = True
 
 [importlinter:contract:feature-layers]
-name = Слои фичи - entry, data, domain
+name = Слои фичи - di, entry, data, domain
+# Верхний слой может импортировать нижний, обратно - нет. Слой в скобках может отсутствовать
 type = layers
 containers =
-    bot.feature.admin
-    bot.feature.business
+    bot.feature.*
 layers =
-    entry
+    (di)
+    (entry)
     (data)
     domain
 # BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
@@ -47,30 +50,75 @@ ignore_imports =
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.ChatHistoryRepositoryImpl
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
 
-[importlinter:contract:admin-isolated]
-name = admin не лезет в data и entry чужих фич
+[importlinter:contract:domain-layers]
+name = Слои внутри домена - orchestrator, scenario, usecase
+# Оркестратор управляет сценариями, сценарий собирает use case'ы; нижний о верхнем не знает
+type = layers
+containers =
+    bot.feature.*.domain
+layers =
+    (orchestrator)
+    (scenario)
+    (usecase)
+# BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
+ignore_imports =
+    bot.feature.business.domain.usecase.GenerateAndSendStepUseCase -> bot.feature.business.domain.scenario.GenerateAiReponseScenario
+
+[importlinter:contract:domain-util-pure]
+name = domain/util - чистые функции
+# Функция из domain/util работает только с переданными данными: без портов и без вышестоящих слоёв домена.
+# Нужен репозиторий, шлюз или часы - это use case. Модели, константы и ошибки - можно
 type = forbidden
 source_modules =
-    bot.feature.admin.domain
-    bot.feature.admin.entry
+    bot.feature.*.domain.util
 forbidden_modules =
-    bot.feature.business.data
-    bot.feature.business.entry
-allow_indirect_imports = True
+    bot.feature.*.domain.repository
+    bot.feature.*.domain.gateway
+    bot.feature.*.domain.analytics
+    bot.feature.*.domain.usecase
+    bot.feature.*.domain.scenario
+    bot.feature.*.domain.orchestrator
+    bot.feature.*.data
+    bot.feature.*.entry
+# BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
+ignore_imports =
+    bot.feature.business.domain.util.HumanDelays -> bot.feature.business.domain.repository.DelayedTaskQueue
+
+[importlinter:contract:data-no-scenario]
+name = data не знает о сценариях
+# Реализация порта не вызывает сценарии домена - только наоборот, через порт
+type = forbidden
+source_modules =
+    bot.feature.*.data
+forbidden_modules =
+    bot.feature.*.domain.scenario
+
+[importlinter:contract:presenter-no-client]
+name = Presenter не знает клиента
+# Presenter (entry/presenter) общий для бота и будущей мини-аппы: без Telegram, i18n-обёртки и entry/bot.
+# Тексты - через Strings. Пока в проекте нет ни одного Presenter - контракт начнёт работать с первой фичей по эталону
+type = forbidden
+source_modules =
+    bot.feature.*.entry.presenter
+forbidden_modules =
+    aiogram
+    aiogram_i18n
+    bot.feature.*.entry.bot
+
+[importlinter:contract:feature-entry-public]
+name = entry чужой фичи - только через публичный модуль
+# Публичный модуль фичи - feature/<имя>/public.py; кроме него entry фичи видят только сборщики (DI).
+# Заменяет прежние контракты admin-isolated и business-isolated: data чужой фичи закрывает data-only-from-di
+type = protected
+protected_modules =
+    bot.feature.*.entry
+allowed_importers =
+    bot.core.di
+    bot.feature.*.di
+    bot.feature.*.public
 # BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
 ignore_imports =
     bot.feature.admin.entry.handler.admin_handlers -> bot.feature.business.entry.service.ReminderService
-
-[importlinter:contract:business-isolated]
-name = business не лезет в data и entry чужих фич
-type = forbidden
-source_modules =
-    bot.feature.business.domain
-    bot.feature.business.data
-    bot.feature.business.entry
-forbidden_modules =
-    bot.feature.admin.entry
-allow_indirect_imports = True
 
 [importlinter:contract:data-only-from-di]
 name = data импортируется только из di и main

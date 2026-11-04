@@ -68,11 +68,13 @@ bot/feature/<имя>/
 - `domain` ничего не знает об инфраструктуре (`aiogram`, `ydb`, `openai`, `boto3`, ...), а также о `data` и `entry`.
 - Зависимости слоёв внутри фичи: `entry` -> `data` -> `domain` (обратных нет).
 - `*.data` импортируется только из `di` и `main.py`; `entry`, `domain`, `core` работают через интерфейсы из `domain`.
-- `data` и `entry` чужой фичи недоступны (только через `domain` или `di`).
+- `data` чужой фичи недоступен (только через `domain` или `di`); `entry` чужой фичи - только через её `public.py` (и из `di`).
+- `domain/util` - чистые функции: без репозиториев, шлюзов и вышестоящих слоёв домена; внутри домена `orchestrator` -> `scenario` -> `usecase`.
 - Файлы не длиннее 500 строк.
 
 Новый код: фича в `bot/feature/<имя>/{entry,domain,data,di}`; общее для всех фич - в `bot/core`.
-Новая фича = добавить контейнер в контракт `feature-layers` и контракт `<имя>-isolated` в `.importlinter`.
+Новая фича подхватывается шаблонами `bot.feature.*` в контрактах `.importlinter`: править их не нужно.
+Структуру фичи (корень, `domain/`, `entry/`, имена в `repository/`) проверяет `test/architecture/FeatureStructureTest.py`.
 
 ## DI: где добавить зависимость
 
@@ -93,24 +95,29 @@ DI на dishka, контейнер не привязан к aiogram: `bot/core/d
 
 ## Проверки и запуск
 
-Зависимости: `pip install -r requirements-dev.txt` (инструменты не входят в прод-образ).
+Зависимости: `pip install -r requirements-dev.txt` (точные версии; инструменты не входят в прод-образ). В облачной сессии хук SessionStart ставит их в `.venv` (Python 3.11, как в Dockerfile и CI) и добавляет `.venv/bin` в `PATH`.
 
 | Что ловит | Команда | Конфиг |
 |---|---|---|
-| Нарушения слоёв | `lint-imports` | `.importlinter` |
-| Длина файлов | `python -m pytest test/architecture` | `test/architecture/FileLengthTest.py` |
-| Сложность, число аргументов, запрещённые API | `ruff check .` | `pyproject.toml` |
+| Направление зависимостей: слои фичи и домена, чистые domain и `domain/util`, `entry` и `data` чужой фичи | `lint-imports --no-cache` | `.importlinter` |
+| Форма кода: структура фич, один `__call__` у UseCase/Scenario/Orchestrator, порядок в модуле, `TYPE_CHECKING`, длина файлов, потолки базовых линий | `python -m pytest test/architecture` | `test/architecture/*Test.py` |
+| Сложность, число аргументов, запрещённые API, ненужные `noqa` | `ruff check .` | `pyproject.toml` |
 | Типы | `mypy` | `mypy.ini` |
+| Базовые линии не выше, чем в ветке спринта | `python -m scripts.baseline_ratchet` (`--base origin/sprint4`) | `scripts/baseline_ratchet.py` |
 | Юнит-тесты | `python -m pytest test` | `pytest.ini` |
 
-Всё то же самое выполняет CI (`.github/workflows/ci.yml`, отдельные обязательные джобы), он же гейт деплоя.
-Хук Stop (`.claude/hooks/architecture-check.sh`) запускает `lint-imports` и тесты архитектуры и не даёт
-завершить работу при нарушении; без установленных зависимостей молча выходит.
+Всё то же самое выполняет CI (`.github/workflows/ci.yml`, отдельные обязательные джобы; храповик - джоб `guards`), он же гейт деплоя.
+Хук Stop (`.claude/hooks/architecture-check.sh`) запускает `lint-imports`, тесты архитектуры и храповик и не даёт
+завершить работу при нарушении; он молчит, если дерево чистое и все коммиты уже на origin, и не блокирует, если инструменты не установлены.
+
+**На новый код `# noqa`, строки в `ignore_imports` (`.importlinter`), записи в `per-file-ignores` (`pyproject.toml`), секции `[mypy-...]` в `mypy.ini` и записи в `_LEGACY_*` не ставятся - нарушение исправляется в коде.** Если правило мешает нормальному коду, не обходи его: опиши в PR («Решения для ревью») и предложи правку правила (`python-architecture-guards`, раздел 4).
 
 ## Baseline существующих нарушений
 
-`ignore_imports` в `.importlinter`, `per-file-ignores` в `pyproject.toml`, секции `[mypy-...]` в `mypy.ini`,
-`LEGACY_LIMITS` в тесте длины. Только сокращать: исправили нарушение - удалите запись; новые записи не добавлять.
+`ignore_imports` в `.importlinter`, `per-file-ignores` в `pyproject.toml` и `# noqa` в коде (с пояснением: `python -m scripts.explain_noqa`), секции `[mypy-...]` в `mypy.ini`,
+списки и потолки `_LEGACY_*` в `test/architecture` (плоский `entry/`, API домена, порядок в модуле, длина файлов, `TYPE_CHECKING`).
+Только сокращать: исправили нарушение - удалите запись и уменьшите число в `ImportlinterBaselineTest.py` / `RuffBaselineTest.py`.
+Рост проверяет `scripts/baseline_ratchet.py` относительно ветки спринта.
 
 ## Стиль кода
 
