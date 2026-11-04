@@ -1,5 +1,5 @@
 # Ограждения архитектуры (задача S0). Запуск: lint-imports
-# Слои внутри фичи: entrypoint -> data -> domain; di знает обо всех слоях.
+# Слои внутри фичи: entry -> data -> domain; di знает обо всех слоях.
 # Новая фича = новый контейнер в feature-layers и свой контракт isolated.
 # Блоки ignore_imports - baseline существующих нарушений: только сокращать.
 
@@ -26,13 +26,13 @@ forbidden_modules =
 allow_indirect_imports = True
 
 [importlinter:contract:feature-layers]
-name = Слои фичи - entrypoint, data, domain
+name = Слои фичи - entry, data, domain
 type = layers
 containers =
     bot.feature.admin
     bot.feature.business
 layers =
-    entrypoint
+    entry
     (data)
     domain
 # BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
@@ -48,28 +48,28 @@ ignore_imports =
     bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase -> bot.feature.business.data.repository.UserRepositoryImpl
 
 [importlinter:contract:admin-isolated]
-name = admin не лезет в data и entrypoint чужих фич
+name = admin не лезет в data и entry чужих фич
 type = forbidden
 source_modules =
     bot.feature.admin.domain
-    bot.feature.admin.entrypoint
+    bot.feature.admin.entry
 forbidden_modules =
     bot.feature.business.data
-    bot.feature.business.entrypoint
+    bot.feature.business.entry
 allow_indirect_imports = True
 # BASELINE: текущие нарушения. Только сокращать, новые не добавлять.
 ignore_imports =
-    bot.feature.admin.entrypoint.handler.admin_handlers -> bot.feature.business.entrypoint.service.ReminderService
+    bot.feature.admin.entry.handler.admin_handlers -> bot.feature.business.entry.service.ReminderService
 
 [importlinter:contract:business-isolated]
-name = business не лезет в data и entrypoint чужих фич
+name = business не лезет в data и entry чужих фич
 type = forbidden
 source_modules =
     bot.feature.business.domain
     bot.feature.business.data
-    bot.feature.business.entrypoint
+    bot.feature.business.entry
 forbidden_modules =
-    bot.feature.admin.entrypoint
+    bot.feature.admin.entry
 allow_indirect_imports = True
 
 [importlinter:contract:data-only-from-di]
@@ -77,7 +77,7 @@ name = data импортируется только из di и main
 type = forbidden
 source_modules =
     bot.feature.*.domain
-    bot.feature.*.entrypoint
+    bot.feature.*.entry
     bot.core
     bot.util
 forbidden_modules =
