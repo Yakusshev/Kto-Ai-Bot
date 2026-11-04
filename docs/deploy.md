@@ -13,7 +13,8 @@
 
 - **CI** (`ci.yml`) — на каждый PR и push в рабочие ветки, все джобы обязательные: `pytest test`,
   `lint-imports` (контракты слоёв, `.importlinter`), `ruff` (`pyproject.toml`), тесты архитектуры
-  (`test/architecture`), `mypy` (весь проект, `mypy.ini`), `docker build` без пуша и проверка,
+  (`test/architecture`), `guards` (базовые линии не выше, чем в целевой ветке PR, `scripts/baseline_ratchet.py`),
+  `mypy` (весь проект, `mypy.ini`), `docker build` без пуша и проверка,
   что зависимости в образе импортируются. Накопленные нарушения занесены в baseline
   (см. CLAUDE.md), новые блокируют PR.
 - **Deploy** (`deploy.yml`):

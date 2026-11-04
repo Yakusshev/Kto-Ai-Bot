@@ -2,7 +2,7 @@
 Ограждение архитектуры: длина файлов.
 
 Новые файлы - не длиннее MAX_LINES строк. У уже существующих больших файлов
-потолок равен их текущему размеру (LEGACY_LIMITS): файл можно сокращать,
+потолок равен их текущему размеру (_LEGACY_LIMITS): файл можно сокращать,
 но нельзя растить. Когда файл разрезан до MAX_LINES и меньше, его запись
 нужно удалить (тест напомнит). Только сокращать.
 """
@@ -26,7 +26,7 @@ GENERATED = frozenset(
 
 # Существующие файлы длиннее MAX_LINES: путь от корня -> потолок (текущий размер).
 # На момент заведения таких файлов нет (самый длинный - около 400 строк).
-LEGACY_LIMITS: dict[str, int] = {}
+_LEGACY_LIMITS: dict[str, int] = {}
 
 
 def _line_count(path: Path) -> int:
@@ -55,7 +55,7 @@ def test_python_files_not_too_long():
         rel = _relative(path)
         if rel in GENERATED:
             continue
-        limit = LEGACY_LIMITS.get(rel, MAX_LINES)
+        limit = _LEGACY_LIMITS.get(rel, MAX_LINES)
         lines = _line_count(path)
         if lines > limit:
             violations.append(f"{rel}: {lines} строк при потолке {limit}")
@@ -66,12 +66,12 @@ def test_python_files_not_too_long():
     )
 
 
-@pytest.mark.parametrize("rel", sorted(LEGACY_LIMITS))
+@pytest.mark.parametrize("rel", sorted(_LEGACY_LIMITS))
 def test_legacy_limits_are_actual(rel):
     path = ROOT / rel
-    assert path.is_file(), f"{rel} удалён или переименован: уберите запись из LEGACY_LIMITS"
+    assert path.is_file(), f"{rel} удалён или переименован: уберите запись из _LEGACY_LIMITS"
     assert _line_count(path) > MAX_LINES, (
-        f"{rel} уже не длиннее {MAX_LINES} строк: уберите запись из LEGACY_LIMITS"
+        f"{rel} уже не длиннее {MAX_LINES} строк: уберите запись из _LEGACY_LIMITS"
     )
 
 

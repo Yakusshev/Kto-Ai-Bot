@@ -44,8 +44,8 @@ from bot.feature.business.domain.usecase.SendAiRequestUseCase import \
 from bot.feature.business.domain.usecase.TypingLoopUseCase import TypingLoopUseCase
 from bot.feature.business.domain.usecase.UpdateUserTableFromChatHistoryUseCase import \
     UpdateUserTableFromChatHistoryUseCase
-from bot.feature.business.entrypoint.service.ChatService import ChatService
-from bot.feature.business.entrypoint.service.ReminderService import ReminderService
+from bot.feature.business.entry.service.ChatService import ChatService
+from bot.feature.business.entry.service.ReminderService import ReminderService
 
 
 class BusinessProvider(Provider):
