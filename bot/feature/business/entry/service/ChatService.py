@@ -2,7 +2,7 @@ from aiogram.types import Message
 
 from bot.feature.business.domain.model.SaveMessageModel import MessageRole
 from bot.feature.business.domain.usecase.SaveMessageUseCase import SaveMessageUseCase
-from bot.feature.business.entrypoint.SaveMessageModelMapper import \
+from bot.feature.business.entry.SaveMessageModelMapper import \
     to_save_message_model
 from bot.resource.Strings import Strings
 from bot.util.log_util import get_logger
